@@ -1,0 +1,7 @@
+
+attribute haplo:attribute:twitter as Twitter
+    title: Twitter
+    search-name: twitter
+    qualifier std:qualifier:null
+    data-type plugin
+    data-type-options haplo:twitter

@@ -1,0 +1,12 @@
+{
+  "pluginName": "haplo_twitter",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Twitter",
+  "displayDescription": "Data type and support for Twitter accounts",
+  "apiVersion": 4,
+  "loadPriority": 1010,
+  "load": [
+      "js/twitter_username_data_type.js"
+    ]
+}
