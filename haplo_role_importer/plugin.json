@@ -1,0 +1,15 @@
+{
+  "pluginName": "haplo_role_importer",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Role Importer",
+  "displayDescription": "Import and export user roles and committee configuration",
+  "installSecret": "4ca97704b55d5b552d93a26e6e82c34360a31526",
+  "apiVersion": 4,
+  "load": [
+      "js/role_exporter.js",
+      "js/role_importer.js",
+      "js/haplo_role_importer.js"
+    ],
+  "respond": ["/do/haplo-role-importer"]
+}

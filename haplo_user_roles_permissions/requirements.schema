@@ -1,0 +1,7 @@
+
+label std:label:concept as CONCEPT
+label std:label:structure as STRUCTURE
+
+group std:group:everyone as Everyone
+
+type std:type:person as Person

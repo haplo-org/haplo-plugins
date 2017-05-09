@@ -1,0 +1,33 @@
+{
+    "pluginName": "haplo_user_sync",
+    "pluginAuthor": "Haplo Services",
+    "pluginVersion": 1,
+    "displayName": "Haplo User Sync",
+    "displayDescription": "Tool to sync user data",
+    "installSecret": "b8d229c915c4fbac4833d2c61e156772f794a93b",
+    "apiVersion": 4,
+    "loadPriority": 2000,
+    "privilegesRequired": [
+        "pDatabase",
+        "pSendEmail",
+        "pBackgroundProcessing",
+        "pCreateUser",
+        "pUserSetDetails",
+        "pSetupSystem",
+        "pUserActivation",
+        "pReportHealthEvent",
+        "pUserSetRef"],
+    "depend": [
+        "std_document_store",
+        "std_reporting"],
+    "use": ["std:document_store",
+            "std:reporting"],
+    "load": [
+        "js/haplo_user_sync.js",
+        "js/haplo_user_sync_upload.js",
+        "js/haplo_user_sync_admin.js",
+        "js/haplo_user_sync_apply.js",
+        "js/haplo_user_sync_mapping.js"
+    ],
+    "respond": ["/do/haplo-user-sync", "/api/haplo-user-sync"]
+}

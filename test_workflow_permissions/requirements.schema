@@ -1,0 +1,35 @@
+type test:type:grief as Grief
+    title: Grief
+    search-name: grief
+    behaviour physical
+    attribute test:attribute:victim [sort=1000]
+    attribute test:attribute:victor [sort=1010]
+    attribute test:attribute:aroma [sort=1020]
+    render-type grief
+    render-icon: E210,1,f
+    render-category 0
+    REMOVE label-applicable std:label:common
+    create-position normal
+
+type std:type:person as Person
+     label-applicable std:label:common
+
+attribute test:attribute:victim as Victim
+    title: Victim
+    search-name: victim
+    qualifier std:qualifier:null
+    data-type link
+    linked-type std:type:person
+
+attribute test:attribute:victor as Victor
+    title: Victor
+    search-name: victor
+    qualifier std:qualifier:null
+    data-type link
+    linked-type std:type:person
+
+attribute test:attribute:aroma as Aroma
+    title: Aroma
+    search-name: aroma
+    qualifier std:qualifier:null
+    data-type text

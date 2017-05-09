@@ -1,0 +1,16 @@
+pageTitle("Role Importer")
+
+<h2>"Export"</h2>
+
+<a href="/do/haplo-role-importer/export-all"><button>"Export all institute roles and committee's"</button></a>
+
+<h2>"Import"</h2>
+
+<h3>"Import from JSON"</h3>
+<form action="/do/haplo-role-importer/import-all" method="POST">std:form:token()
+  <p><b>"This should only be used in new systems. Use with caution."</b></p>
+  <textarea name="data" cols="80" rows="15"></textarea>
+  <p><input type="submit" value="Import"></p>
+</form>
+
+//<a href="/do/haplo-role-importer/import-all"><button>"Import"</button></a>

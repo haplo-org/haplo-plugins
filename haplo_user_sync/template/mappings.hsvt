@@ -1,0 +1,7 @@
+
+pageTitle("User Sync Mapping")
+
+<p> <a href="/do/haplo-user-sync/edit-mappings"> "Edit mappings..." </a> </p>
+<p> <a href="/do/haplo-user-sync/mappings-help">"Help"</a> </p>
+
+render(ui.deferredDocument)

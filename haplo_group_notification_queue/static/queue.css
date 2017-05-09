@@ -1,0 +1,53 @@
+/* Haplo Plugins                                     https://haplo.org
+ * (c) Haplo Services Ltd 2006 - 2017   https://www.haplo-services.com
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
+
+
+table.hgn_width {
+    width: 400px;
+}
+
+tr.hgn_hover:hover {
+    background: #deebf5;
+}
+
+table.hgn_no_wrapping {
+    table-layout: fixed;
+}
+
+table.hgn_no_wrapping tr td,
+table.hgn_no_wrapping tr th {
+    vertical-align:top;
+}
+
+table.hgn_no_wrapping tr:not(:hover) td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hgn_source {
+    width: 180px;
+}
+
+.hgn_description {
+    width: 240px;
+}
+
+.hgn_created {
+    width: 100px;
+}
+
+.hgn_completed {
+    width: auto;
+}
+
+.hgn_done {
+    color: #8c8c8c;
+}
+
+.hgn_done td {
+    color: #8c8c8c;
+}

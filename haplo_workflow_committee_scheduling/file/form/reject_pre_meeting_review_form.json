@@ -1,0 +1,13 @@
+{
+    "specificationVersion":0,
+    "formId": "rejectPreMeetingReview",
+    "formTitle": "Reject pre-meeting review",
+    "renderDocumentOmitEmpty": true,
+    "elements": [
+        {
+            "type": "paragraph",
+            "path": "reasons",
+            "label": "Reasons"
+        }
+    ]
+}

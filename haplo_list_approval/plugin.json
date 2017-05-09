@@ -1,0 +1,17 @@
+{
+  "pluginName": "haplo_list_approval",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo List Approval",
+  "displayDescription": "Support for looping through lists of approvers in workflows",
+  "installSecret": "ddd5b930b4e8f81a7549df4d4ed1ca26074cb50d",
+  "apiVersion": 4,
+  "loadPriority": 2000,
+  "depend": [
+      "std_workflow"
+    ],
+  "use": ["std:workflow"],
+  "load": [
+      "js/haplo_list_approval.js"
+    ]
+}

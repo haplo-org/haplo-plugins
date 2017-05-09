@@ -1,0 +1,15 @@
+
+# -------- Attributes -----------------------------
+
+attribute dc:attribute:date as Date
+attribute std:attribute:organised-by as OrganisedBy
+attribute haplo:attribute:location as Location
+attribute haplo:attribute:committee-member as CommitteeMember
+attribute haplo:attribute:committee-representative as CommitteeRepresentative
+attribute haplo:attribute:chair as Chair
+attribute haplo:attribute:deputy-chair as DeputyChair
+attribute haplo:attribute:committee-meeting as CommitteeMeeting
+
+# -------- Types -----------------------------------
+
+type haplo:type:meeting:committee-meeting as CommitteeMeeting

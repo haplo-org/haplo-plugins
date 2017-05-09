@@ -1,0 +1,11 @@
+
+pageTitle("Fetch files from services")
+
+backLink("/do/haplo-user-sync/admin") { "Back" }
+
+<p> "Fetch files collected from institutional web services." </p>
+
+<form method="POST" action="/api/haplo-user-sync/fetch-files"> std:form:token()
+    <p> <input type="submit" value="Fetch files"> </p>
+</form>
+

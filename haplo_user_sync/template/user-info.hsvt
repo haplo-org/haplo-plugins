@@ -1,0 +1,82 @@
+
+pageTitle("Synced User: " lookup)
+
+unless(row) {
+    <p> "No user found for "<tt>lookup</tt> "." </p>
+    <p> <a href="/do/haplo-user-sync/admin"> "Back" </a> </p>
+} else {
+    if(userCannotLoginBecauseNotInFeed) {
+        std:ui:notice("This user cannot log in because the latest feed does not contain any information about this user.")
+    }
+    within(row) {
+        <h2> "Sync details" </h2>
+        <table>
+            <tr>
+                <td> "Username" </td>
+                <td> username </td>
+            </tr>
+            <tr>
+                <td> "User ID" </td>
+                <td> userId </td>
+            </tr>
+            <tr>
+                <td> "Data digest" </td>
+                <td> dataDigest </td>
+            </tr>
+            <tr>
+                <td> "Last sync" </td>
+                <td> <a href=["/do/haplo-user-sync/admin/sync-info/" lastSync]> lastSync </a> </td>
+            </tr>
+            <tr>
+                <td> "Error?" </td>
+                <td> if(error) {"yes"} else {"no"} </td>
+            </tr>
+            <tr>
+                <td> "In most recent feed?" </td>
+                <td> if(inFeed) {"yes"} else {"no"} </td>
+            </tr>
+        </table>   
+    }
+    <h2> "User details" </h2>
+    <table>
+        <tr>
+            <td> "Name" </td>
+            <td> user.nameFirst " " user.nameLast </td>
+        </tr>
+        <tr>
+            <td> "Email" </td>
+            <td> user.email </td>
+        </tr>
+        <tr>
+            <td> "Active?" </td>
+            <td> if(user.isActive) {"yes"} else {"no"} </td>
+        </tr>
+        <tr>
+            <td> "Profile" </td>
+            <td> std:object(profile "linkedheading") </td>
+        </tr>
+        <tr>
+            <td> </td>
+            <td> std:object(profile) </td>
+        </tr>
+    </table>
+
+    if(json) {
+        <h2> "Received details" </h2>
+        <pre> json </pre>
+    }
+
+    <h2> "Troubleshooting" </h2>
+    
+    if(row.error) {
+        <p> "User is in error state, and will not be skipped on next sync." </p>
+    } else {
+        <form method="POST" action="/do/haplo-user-sync/set-user-to-error-state"> std:form:token()
+
+            <input type="hidden" name="r" value=row.id>
+
+            <p> <input type="submit" value="Set error state"> " for this user to reapply changes on next sync." </p>
+
+        </form>    
+    }
+}

@@ -1,0 +1,4 @@
+pageTitle("Mappings Help")
+
+<p> "The mappings interface allows you to inform the sync engine of the meaning of entries in the feed.  Tables display the current translations from codes to data in PhD Manager, and are editable via the \"Edit mappings...\" link at the top of the page. A record of past versions of the mappings tables can be found on the right hand side." </p>
+<p> "For the mappings to take effect you must ensure that you have clicked through all of the mappings tables, ending by clicking \"Save and finish\". The updated mappings will be applied to the input data when the next sync is run." </p>

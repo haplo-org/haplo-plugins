@@ -1,0 +1,20 @@
+{
+    "specificationVersion": 0,
+    "formId": "configure",
+    "formTitle": "Configure help feedback",
+    "elements": [
+        {
+            "type": "document-text",
+            "label": "Introductory help text",
+            "path": "help"
+        },
+        {
+            "type": "repeating-section",
+            "path": "topics",
+            "elements": [
+                { "type":"text", "path":"topic", "label":"Topic", "required":true, "whitespace":"minimise" },
+                { "type":"text", "path":"email", "label":"Email for feedback delivery", "required":true, "validationRegExp":"@", "whitespace":"minimise" }
+            ]
+        }
+    ]
+}

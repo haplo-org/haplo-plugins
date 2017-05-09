@@ -1,0 +1,19 @@
+pageTitle(
+  specification.pageTitle
+  if(specification.object) {
+    ": " specification.object.title
+  }
+)
+if(specification.object) {
+  backLink(std:object:url(specification.object))
+}
+
+each(keyObjects) {
+  std:object(key "linkedheading")
+}
+
+<p> "&nbsp;" </p>
+
+each(sections) {
+  render(deferred)
+}

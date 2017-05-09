@@ -1,0 +1,27 @@
+
+# ------ Types -------
+
+type std:type:person as Person
+
+# ------ Attributes --
+
+attribute std:attribute:email as EmailAddress
+
+# ------ Groups ------
+
+group haplo:group:user-system-admin as UserSystemAdmin
+    title: User System Administration
+    member haplo:group:it-support
+    REMOVE member phd:group:graduate-school-registry
+
+group haplo:group:external-systems-user-feed as Uploader
+    title: External Systems: User Feed
+
+group std:group:administrators as Administrators
+
+# -------- Email templates -------------------------
+
+email-template haplo:email-template:user-sync-report
+    title: User Sync Report
+    description: Emailed user sync logs
+    purpose: Gives information on sync and any errors

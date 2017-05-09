@@ -1,0 +1,24 @@
+{
+  "pluginName": "haplo_committee_support",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Committee Support",
+  "displayDescription": "Support for committee functionality",
+  "installSecret": "ddd5b930b4e8f81a7549df4d4ed1ca26074cb50d",
+  "apiVersion": 4,
+  "loadPriority": 2000,
+  "privilegesRequired": ["pDatabase", "pSendEmail"],
+  "depend": [
+    "hres_schema",
+    "haplo_descriptive_object_labelling",
+    "haplo_user_roles_permissions",
+    "std_action_panel"
+  ],
+  "load": [
+    "js/haplo_committee_support_permissions.js",
+    "js/haplo_committee_support.js"
+  ],
+  "respond": [
+    "/do/haplo-committee-support"
+  ]
+}

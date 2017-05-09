@@ -1,0 +1,11 @@
+pageTitle(M.title ": " spec.displayName)
+backLink(M.url)
+
+each(notifications) {
+  <div style="margin-bottom:64px">
+    <div style="background:#eee;margin-bottom:8px;padding:4px 8px">
+      "Sent on " <b> std:date(sentAt) </b> " by " <b> sentBy.name </b>
+    </div>
+    std:text:document(text)
+  </div>
+}

@@ -1,0 +1,19 @@
+pageTitle("Roles for " object.title)
+backLink(std:object:url(object))
+
+<p>
+  if(user) {
+    "User account: " user.name " (id " user.id ")"
+  } else {
+    "No user account for this profile."
+  }
+</p>
+
+<h2>Roles</h2>
+if(roles) {
+  each(roles) {
+    <p><b> roleName </b> " at " std:object:link(at) </p>
+  }
+} else {
+  <p> "User has no roles." </p>
+}

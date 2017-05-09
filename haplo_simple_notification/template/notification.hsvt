@@ -1,0 +1,14 @@
+
+if(object) {
+    std:object(object "linkedheading")
+}
+
+template:std:ui:confirm()
+
+<p> "&nbsp;" </p>
+
+if(responses.length) { <h2> "Replies" </h2> <br> }
+each(responses) {
+    <p> <i> sender.name " - " std:date(datetime) </i> </p>
+    std:text:paragraph(content)
+}

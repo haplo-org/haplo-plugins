@@ -1,0 +1,20 @@
+{
+  "pluginName": "haplo_workflow_follow_on_notes",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Workflow Follow On Notes",
+  "displayDescription": "Follow on notes to be added after a workflow is complete",
+  "installSecret": "ecc73d538803ad22aa11c0eab4a86b582c4c98d2",
+  "apiVersion": 4,
+  "loadPriority": 2000,
+  "depend": [
+      "std_workflow"
+    ],
+  "use": [
+      "std:workflow"
+    ],
+  "load": [
+      "js/haplo_workflow_follow_on_notes.js"
+    ],
+  "respond": ["/do/workflow-follow-on-notes"]
+}

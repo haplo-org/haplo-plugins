@@ -1,0 +1,23 @@
+{
+  "pluginName": "haplo_workflow_committee_scheduling",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Workflow Committee Scheduling",
+  "displayDescription": "Committee scheduling feature for use in workflows",
+  "installSecret": "e1de8662140dd5886fdf398fcf5f6f56da6e8141",
+  "apiVersion": 4,
+  "loadPriority": 2000,
+  "privilegesRequired": ["pDatabase"],
+  "depend": [
+      "std_workflow",
+      "haplo_committee_support"
+    ],
+  "use": [
+    "std:workflow"
+  ],
+  "load": [
+      "js/haplo_workflow_committee_scheduling.js",
+      "js/haplo_workflow_online_decision.js",
+      "js/haplo_workflow_pre_meeting_review.js"
+    ]
+}

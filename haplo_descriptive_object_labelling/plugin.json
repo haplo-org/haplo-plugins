@@ -1,0 +1,13 @@
+{
+  "pluginName": "haplo_descriptive_object_labelling",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Descriptive Object Labelling",
+  "displayDescription": "Apply labels to objects based on attributes and other descriptions. Labels are applied based on rules provided by other plugins.",
+  "apiVersion": 4,
+  "loadPriority": 1015,
+  "privilegesRequired": ["pBackgroundProcessing"],
+  "load": [
+      "js/haplo_descriptive_object_labelling.js"
+    ]
+}

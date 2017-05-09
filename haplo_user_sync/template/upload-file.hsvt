@@ -1,0 +1,10 @@
+
+pageTitle("Upload Test File")
+
+<p> "Upload a test file. Please note that this will add test users to the system." </p>
+
+<form method="POST" action="/api/haplo-user-sync/upload-file" enctype="multipart/form-data"> std:form:token()
+    <p> "Name of file: " <input type="text" name="name"> </p>
+    <p> <input type="file" name="file"> </p>
+    <p> <input type="submit" value="Upload file"> </p>
+</form>

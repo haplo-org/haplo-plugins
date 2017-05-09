@@ -1,0 +1,8 @@
+
+each(documents) {
+  <div id=unsafeAttributeValue(unsafeAnchor) style="padding:8px 16px;background:#eee">
+    <h1 style="margin:0;padding:0"> title </h1>
+  </div>
+  render(deferred)
+  <p> "&nbsp;" </p>
+}

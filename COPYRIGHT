@@ -3,3 +3,12 @@ Haplo Plugins are copyright Haplo Services Ltd. The Haplo Plugins are licensed t
 you under the terms of the Mozilla Public License Version 2.0, a copy of which is
 provided in the LICENSE file.
 
+
+------------------------------------------------------------------------------------
+
+This repository contains software by other authors, licensed to you as follows:
+
+Tablesort.js
+thirdparty_client_side_ui/static/tablesort.js
+  https://github.com/tristen/tablesort
+  MIT License

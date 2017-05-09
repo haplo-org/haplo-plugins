@@ -1,0 +1,7 @@
+
+pageTitle("Edit User Sync Configuration")
+
+<form method="POST">std:form:token()
+    std:form(form)
+    <p> <input type="submit" value="Save configuration"> </p>
+</form>

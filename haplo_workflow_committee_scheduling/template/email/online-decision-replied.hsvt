@@ -1,0 +1,24 @@
+#option:no-tag-attribute-quote-minimisation
+
+<h1>title</h1>
+
+<p>"There has been a reply to a thread you participated on the " NAME("online decision") " for "<a href=appUrl>appTitle</a></p>
+
+<hr>
+
+within(thread) {
+<p class="message-header">user " (" std:date:time(date) ")"
+if(choice) {
+<span class="message-choice">" recommended: " choice</span>
+}
+</p>
+<p class="message-text">text</p>
+each(children) {
+<p class="message-header">user " (" std:date:time(date) ")"</p>
+<p class="message-text">text</p>
+}
+}
+
+
+<p class="button"> <a href=decisionUrl>NAME("Online decision")</a> </p>
+

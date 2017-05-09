@@ -1,0 +1,13 @@
+
+group std:group:administrators as Administrators
+
+qualifier std:qualifier:null as Null
+
+type hres:type:research-institute as ResearchInstitute
+type haplo:type:committee as Committee
+type std:type:person as Person
+
+attribute hres:attribute:research-institute as ResearchInstitute
+attribute std:attribute:email as EmailAddress
+attribute dc:attribute:title as Title
+

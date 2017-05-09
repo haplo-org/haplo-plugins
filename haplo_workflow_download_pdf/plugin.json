@@ -1,0 +1,15 @@
+{
+  "pluginName": "haplo_workflow_download_pdf",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Workflow Download PDF",
+  "displayDescription": "Downloadable PDFs of workflows",
+  "apiVersion": 4,
+  "privilegesRequired": ["pFileTransformPipeline"],
+  "depend": ["std_workflow"],
+  "use": ["std:workflow"],
+  "load": [
+      "js/haplo_workflow_download_pdf.js"
+    ],
+  "respond": ["/do/haplo-workflow-download-pdf"]
+}

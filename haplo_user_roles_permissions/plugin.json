@@ -1,0 +1,15 @@
+{
+  "pluginName": "haplo_user_roles_permissions",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "User Roles Permissions",
+  "displayDescription": "Implement permissions based around user roles, determined by object attributes and group membership.",
+  "apiVersion": 4,
+  "loadPriority": 1010,
+  "load": [
+      "js/haplo_user_roles_permissions.js",
+      "js/haplo_workflow_permissions.js",
+      "js/haplo_user_roles_permissions_admin.js"
+    ],
+  "respond": ["/do/haplo-user-roles-permissions"]
+}

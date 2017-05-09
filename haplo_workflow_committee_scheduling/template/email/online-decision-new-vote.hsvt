@@ -1,0 +1,19 @@
+#option:no-tag-attribute-quote-minimisation
+
+<h1>title</h1>
+
+<p>"There has been a " if(message.choice) { "new recommendation submitted" } else { "new comment added" } " to the " NAME("online decision") " for "<a href=appUrl>appTitle</a></p>
+
+<hr>
+
+within(message) {
+<p class="message-header">user " (" std:date:time(date) ")"
+if(choice) {
+<span class="message-choice">" recommended: " choice</span>
+}
+</p>
+<p class="message-text">text</p>
+}
+
+<p class="button"> <a href=decisionUrl>NAME("Online decision")</a> </p>
+

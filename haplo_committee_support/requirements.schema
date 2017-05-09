@@ -1,0 +1,161 @@
+
+# --------- Groups ----------------------------
+
+group std:group:everyone as Everyone
+
+# -------- Attributes -------------------------
+
+attribute std:attribute:organised-by as OrganisedBy
+    linked-type haplo:type:committee
+
+attribute dc:attribute:date as Date
+attribute hres:attribute:research-institute as ResearchInstitute
+attribute hres:attribute:researcher as Researcher
+attribute std:attribute:attendee as Attendee
+
+attribute haplo:attribute:committee-member as CommitteeMember
+    title: Committee member
+    search-name: member
+    qualifier std:qualifier:null
+    data-type link
+    linked-type std:type:person
+
+attribute haplo:attribute:committee-representative as CommitteeRepresentative
+    title: Committee representative
+    search-name: committee-rep
+    qualifier std:qualifier:null
+    data-type link
+    linked-type std:type:person
+
+attribute haplo:attribute:chair as Chair
+    title: Chair
+    search-name: chair
+    qualifier std:qualifier:null
+    data-type link
+    linked-type std:type:person
+
+attribute haplo:attribute:deputy-chair as DeputyChair
+    title: Deputy chair
+    search-name: deputy-chair
+    qualifier std:qualifier:null
+    data-type link
+    linked-type std:type:person
+
+attribute haplo:attribute:committee-meeting as CommitteeMeeting
+    REMOVE title: Committee Meeting
+    title: Committee meeting
+    search-name: committee-meeting
+    qualifier std:qualifier:null
+    data-type link
+    linked-type std:type:event
+
+attribute haplo:attribute:committee as Committee
+    title: Committee
+    search-name: committee
+    qualifier std:qualifier:null
+    data-type link
+    ui-options dropdown
+    linked-type haplo:type:committee
+
+attribute haplo:attribute:location as Location
+    title: Location
+    search-name: location
+    qualifier std:qualifier:null
+    data-type text
+
+attribute haplo:attribute:agenda-circulated as AgendaCirculated
+    title: Agenda circulated (number of weeks before meeting)
+    search-name: agenda-circulated
+    qualifier std:qualifier:null
+    data-type text
+
+attribute haplo:attribute:deadline-for-agenda-items
+    title: Deadline for agenda items
+    search-name: deadline-for-agenda-items
+    qualifier std:qualifier:null
+    data-type datetime
+    ui-options d,n,n,n,n
+
+attribute haplo:attribute:description as Description
+    title: Description
+    search-name: description
+    qualifier std:qualifier:null
+    relevancy 0.75
+    data-type text-document
+
+# -------- Types -----------------------------------
+
+type haplo:type:meeting as Meeting
+    title: Meeting
+    search-name: meeting
+    attribute dc:attribute:title
+    attribute std:aliased-attribute:date-and-time
+    attribute haplo:attribute:location
+    attribute dc:attribute:type
+    attribute std:attribute:organised-by
+    attribute std:attribute:attendee
+    attribute std:attribute:notes
+    attribute std:attribute:file
+    render-type event
+    render-icon: E207,1,f E418,6,e
+    render-category 3
+    create-position common
+
+type haplo:type:meeting:committee-meeting as CommitteeMeeting
+    title: Committee meeting
+    parent-type: haplo:type:meeting
+    search-name: committee meeting
+    create-position infrequent
+    element: std:group:everyone right std:action_panel {"panel":"committee_meeting"}
+    # For migration
+    REMOVE parent-type: std:type:event
+    REMOVE attribute-hide std:attribute:url
+    REMOVE attribute-hide std:attribute:speaker
+    REMOVE attribute-hide dc:attribute:subject
+
+type haplo:type:committee as Committee
+    title: Committee
+    search-name: committee
+    attribute dc:attribute:title [sort=10000]
+    attribute dc:attribute:type [sort=10100]
+    attribute haplo:attribute:committee-member [sort=11000]
+    attribute haplo:attribute:committee-representative [sort=12000]
+    attribute haplo:attribute:chair [sort=13000]
+    attribute haplo:attribute:deputy-chair [sort=13100]
+    attribute haplo:attribute:agenda-circulated [sort=14000]
+    attribute haplo:attribute:description [sort=20000]
+    render-icon: E414,5,f,y E20C,1,f
+    render-category 0
+    default-subtype haplo:type:committee
+    create-position infrequent
+    element: std:group:everyone right std:action_panel {"panel":"committee"}
+
+
+# -------- Groups ----------------------------------
+
+group std:group:administrators as Administrators
+
+
+# -------- Email templates -------------------------
+
+email-template haplo:email-template:committee-notification
+    title: Haplo Committee Notification
+    description: Committee notification
+    purpose: Generic
+
+# -------- Features --------------------------------
+
+feature std:navigation
+    entry: plugin haplo:committee-information
+
+# -------- Restrictions ----------------------------
+
+label hres:label:allow-view-committee-meeting-files as AllowViewCommitteeMeetingFiles
+    title: Allow View Committee Meeting Files
+    category: Restriction
+
+restriction hres:restriction:committee-meeting-files
+    title: Committee Meeting Files
+    restrict-type haplo:type:meeting
+    label-unrestricted hres:label:allow-view-committee-meeting-files
+    attribute-restricted std:attribute:file

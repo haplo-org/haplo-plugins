@@ -1,0 +1,19 @@
+{
+  "pluginName": "test_workflow_permissions",
+  "pluginAuthor": "Haplo Services Limited",
+  "pluginVersion": 1,
+  "displayName": "Test Workflow Permissions",
+  "displayDescription": "Use a test workflow and schema to confirm the correct operation of the workflow permissions system",
+  "installSecret": "0bc4e6512553ac4a55ff31208cb51ecc124d0ece",
+  "apiVersion": 4,
+  "depend": [
+      "std_workflow",
+      "haplo_descriptive_object_labelling",
+      "haplo_user_roles_permissions"
+    ],
+  "load": [
+      "js/test_workflow_permissions.js"
+  ],
+  "use": ["std:workflow"],
+  "privilegesRequired": ["pDatabase","pCreateUser"]
+}

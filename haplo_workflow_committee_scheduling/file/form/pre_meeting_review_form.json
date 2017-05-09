@@ -1,0 +1,20 @@
+{
+    "specificationVersion":0,
+    "formId": "preMeetingReview",
+    "formTitle": "Pre-meeting review",
+    "renderDocumentOmitEmpty": true,
+    "elements": [
+        {
+            "type": "choice",
+            "style": "multiple",
+            "path": "members",
+            "label": "Committee members",
+            "choices": "committeeMembers"
+        },
+        {
+            "type": "paragraph",
+            "path": "notes",
+            "label": "Notes"
+        }
+    ]
+}

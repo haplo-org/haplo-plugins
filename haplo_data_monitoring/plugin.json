@@ -1,0 +1,16 @@
+{
+  "pluginName": "haplo_data_monitoring",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Data Monitoring",
+  "displayDescription": "Monitoring and reporting of data issues in Haplo systems",
+  "installSecret": "7432235b895c9babf11de8466776b3bf433b2088",
+  "apiVersion": 4,
+  "depend": [
+      "std_merge_objects"
+    ],
+  "load": [
+      "js/haplo_data_monitoring.js"
+    ],
+  "respond": ["/do/haplo-data-monitoring"]
+}

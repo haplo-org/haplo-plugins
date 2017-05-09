@@ -1,0 +1,11 @@
+{
+  "pluginName": "haplo_information_pages",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Information Pages",
+  "displayDescription": "Common implementations of pages which bring together information from multiple plugins.",
+  "apiVersion": 4,
+  "load": [
+      "js/infopage_overview.js"
+    ]
+}

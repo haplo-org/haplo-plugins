@@ -1,0 +1,62 @@
+
+pageTitle("Sync " sync.created)
+
+<table>
+    <tr>
+        <td> "ID" </td>
+        <td> sync.id </td>
+    </tr>
+    <tr>
+        <td> "Status" </td>
+        <td> syncStatusText </td>
+    </tr>
+    <tr>
+        <td> "Created" </td>
+        <td> sync.created </td>
+    </tr>
+    <tr>
+        <td> "Applied" </td>
+        <td> sync.applied </td>
+    </tr>
+    <tr>
+        <td> "Comment" </td>
+        <td> sync.comment </td>
+    </tr>
+    <tr>
+        <td> "Errors" </td>
+        <td> sync.errors </td>
+    </tr>
+</table>
+
+<form method="POST" action="/do/haplo-user-sync/admin/sync-action"> std:form:token()
+    <input type="hidden" name="id" value=sync.id>
+    <p> <select name="action">
+        <option value=""> "--- select action ---" </option>
+
+        if(cancelable) {
+            <option value="cancel"> "Cancel" </option>
+        }
+        if(cancelableForce) {
+            <option value="cancel"> "Unsafe mark cancelled" </option>
+        }
+        if(applyable) {
+            <option value="apply"> "Apply" </option>
+        }
+        if(reapplyable) {
+            <option value="reapply"> "Re-apply" </option>
+        }
+        </select>
+
+        <input type="submit" value="Apply">
+    </p>
+</form>
+
+if(logText) {
+    <h2> "Log" </h2>
+    <pre style="font-size:10px;line-height:12px"> logText </pre>    
+}
+
+if(files) {
+    <h2> "Files" </h2>
+    std:document(files)
+}

@@ -1,0 +1,29 @@
+
+<h1> M.title </h1>
+
+if(headerTable) {
+    <table>
+        each(headerTable) {
+            <tr> <td style="width:150px;"> name </td> <td> first.value </td> </tr>
+            each(rest) {
+                <tr> <td> </td> <td> value </td> </tr>
+            }
+        }
+    </table>
+}
+
+<hr>
+
+each(sections) {
+    <h1> title </h1>
+    render(deferred)
+    unless(isLast) { <hr> }
+}
+
+if(files.length) {
+    <hr>
+    <h1> "Attached files" </h1>
+    each(files) {
+        <p> filename </p>
+    }
+}

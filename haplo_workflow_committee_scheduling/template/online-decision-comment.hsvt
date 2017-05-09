@@ -1,0 +1,37 @@
+std:plugin:resources("online-decision.css")
+
+pageTitle("Add comment")
+
+within(thread) {
+<div class="root-message">
+  <div class="message">
+    <p class="message-date">std:date:time(date)</p>
+    <p class="message-header">user
+    if(choice) {
+    <span class="message-choice">" " if(isChange) { "changed their recommendation:" } else { "recommended:" } " " choice</span>
+    }
+    </p>
+    if(text) {
+      <div class="message-body">
+        <p class="message-text">text</p>
+      </div>
+    }
+  </div>
+  each(children) {
+  <div class="message-threaded-reply">
+    <div class="message">
+      <p class="message-date">std:date:time(date)</p>
+      <p class="message-header">user</p>
+      <div class="message-body">
+        <p class="message-text">text</p>
+      </div>
+    </div>
+  </div>
+  }
+</div>
+}
+
+<form method="POST"> std:form:token()
+  std:form(instance)
+  <p><input type="submit" value="Save"></p>
+</form>

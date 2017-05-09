@@ -1,0 +1,15 @@
+{
+  "pluginName": "haplo_group_notification_queue",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Group Notification Queue",
+  "displayDescription": "Implement task queues for groups",
+  "apiVersion": 4,
+  "privilegesRequired": ["pDatabase"],
+  "load": [
+    "js/haplo_group_notification_queue.js"
+  ],
+  "respond": [
+    "/do/haplo-group-notification-queue"
+  ]
+}

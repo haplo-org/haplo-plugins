@@ -1,0 +1,21 @@
+<tr class="hgn_hover hgn_done">
+    <td><strike>std:object:link(ref)</strike></td>
+    <td class="hgn_description"><strike>
+    if(deferredRenderDescription) {
+        render(deferredRenderDescription)
+    } else {
+        description
+    }
+    </strike></td>
+    <td>std:date(created)</td>
+    <td>
+        std:date(done) <br>
+        "By: " <a href=[O.application.url "/" doneBy.ref]>doneBy.name</a>
+        <form style="float: right;" method="post" action=["/do/haplo-group-notification-queue/task/" id]>
+            std:form:token()
+            <input type="hidden" name="group" value=group>
+            <input type="hidden" name="action" value="undo">
+            <input type="submit" value="Undo">
+        </form>
+    </td>
+</tr>

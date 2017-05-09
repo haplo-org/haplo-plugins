@@ -1,0 +1,60 @@
+std:plugin:resources("online-decision.css")
+
+pageTitle("Online decision overview")
+
+std:object(app "linkedheading")
+
+<div class="summary">
+<table class="vote-table">
+  <tr>
+    <th>"Recommendation"</th>
+    <th>"Count"</th>
+  </tr>
+  each(votes) {
+  <tr>
+    <td>title</td>
+    <td>count</td>
+  </tr>
+  }
+</table>
+</div>
+
+<p><a href=breakdownUrl>"View committee member recommendations"</a></p>
+
+<h2>"Discussion"</h2>
+
+each(messages) {
+<div class="root-message">
+  <div class="message" id=unsafeAttributeValue(unsafeid)>
+    <p class="message-date">std:date:time(date)</p>
+    <p class="message-header">user
+    if(choice) {
+    <span class="message-choice">" " if(isChange) { "changed their recommendation:" } else { "recommended:" } " " choice</span>
+    }
+    </p>
+    if(text) {
+      <div class="message-body">
+        <p class="message-text">text</p>
+      </div>
+    }
+  </div>
+  each(children) {
+  <div class="message-threaded-reply">
+    <div class="message" id=unsafeAttributeValue(unsafeid)>
+      <p class="message-date">std:date:time(date)</p>
+      <p class="message-header">user</p>
+      <div class="message-body">
+        <p class="message-text">text</p>
+      </div>
+    </div>
+  </div>
+  }
+  if(isOpen) {
+    <div class="message-reply">
+      <p class="reply-link"><a href=replyUrl>"Reply"</a></p>
+    </div>
+  }
+</div>
+}
+
+if(addCommentUrl) { <p><a href=addCommentUrl>"Add comment"</a></p> }

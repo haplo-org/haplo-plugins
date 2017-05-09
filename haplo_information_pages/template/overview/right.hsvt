@@ -1,0 +1,6 @@
+
+each(links) {
+    <p><a href=href> label </a></p>
+}
+
+render(panel)

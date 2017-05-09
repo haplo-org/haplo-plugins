@@ -1,0 +1,42 @@
+std:plugin:resources("duplicate-profiles.js")
+std:layout:wide()
+
+pageTitle("Duplicate profiles dashboard")
+
+<div>
+  <table class="tablesort">
+    <thead>
+      <tr><th>Researcher</th><th>Duplicate</th><th>Identical email</th><th>Merge</th><th>Remove from list</th></tr>
+    </thead>
+    <tbody>
+      each(duplicates) {
+        <tr>
+          <td class="researcher" data-ref=researcher.ref>
+            <a href=["/" researcher.ref] target="_blank"> researcher.title </a><br>
+            <i> "(" researcherType ")" </i>
+          </td>
+          if(potential) {
+            <td class="researcher" data-ref=potential.ref>
+              <a href=["/" potential.ref] target="_blank"> potential.title </a><br>
+              <i> "(" potentialType ")" </i>
+            </td>
+          }
+          <td style="width: 50px;"> if(identicalEmail) { "&#10003;" } </td>
+          if(merge) {
+            <td><a href=[ ? action="merge" ref=researcher.ref] class="mergelink"> "Merge" </a></td>
+          }
+          <td><a href=[ ? action="remove" ref=researcher.ref] class="remove"> "Remove" </a></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <i> "found " count " potential duplicates (in " generated "s)" </i>
+  if(ignoring) {
+    <h3> "Ignoring" </h3>
+    <p> "Ignoring the following profiles as not duplicates:" </p>
+    each(ignoring) {
+      <p> researcher.title " (" <a href=[ ? action="unignore" ref=researcher.ref]> "unremove" </a> ")" </p>
+    }
+    <p> "(" <a href=[ ? action="unignoreAll" ]> "remove all from ignore list" </a> ")" </p>
+  }
+</div>

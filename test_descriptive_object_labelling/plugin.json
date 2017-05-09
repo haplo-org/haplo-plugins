@@ -1,0 +1,16 @@
+{
+  "pluginName": "test_descriptive_object_labelling",
+  "pluginAuthor": "Haplo Services Limited",
+  "pluginVersion": 1,
+  "displayName": "Test Descriptive Object Labelling",
+  "displayDescription": "Use generated sample data to confirm the correct operation of the descriptive object labelling system",
+  "installSecret": "896e45a0cbb0aef4e189a586e5c1df5374a15724",
+  "apiVersion": 4,
+  "depend": [
+      "haplo_descriptive_object_labelling"
+    ],
+  "privilegesRequired": ["pCreateUser"],
+  "load": [
+      "js/test_descriptive_object_labelling.js"
+  ]
+}

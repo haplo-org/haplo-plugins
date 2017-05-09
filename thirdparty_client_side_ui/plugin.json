@@ -1,0 +1,11 @@
+{
+  "pluginName": "thirdparty_client_side_ui",
+  "pluginAuthor": "3rd party code",
+  "pluginVersion": 1,
+  "displayName": "Third Party Client Side UI",
+  "displayDescription": "Provide third party client side UI code",
+  "apiVersion": 4,
+  "load": [
+      "js/thirdparty_client_side_ui.js"
+    ]
+}

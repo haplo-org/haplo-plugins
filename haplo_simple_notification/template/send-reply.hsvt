@@ -1,0 +1,18 @@
+
+pageTitle(details.title)
+backLink("/do/haplo-simple-notification/" workUnit.id)
+
+if(workUnit.ref) {
+    std:object(workUnit.ref "linkedheading")
+}
+
+<div style="background:#eee;padding:15px;border-radius:5px;">
+    std:text:paragraph(details.text)
+</div>
+
+<p> "&nbsp;" </p>
+
+<form method="POST"> std:form:token()
+    <p><textarea rows="12" cols="80" name="emailText" autofocus="autofocus"></textarea></p>
+    <p><input type="submit" value="Send"></p>
+</form>

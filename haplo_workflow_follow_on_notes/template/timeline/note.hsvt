@@ -1,0 +1,6 @@
+<i> entry.user.name </i> " added a " if(entry.data.private) { <b> NAME("std:workflow:notes-private-adjective" "private") </b> " " } "follow-on note"
+<div class=[
+    "z__workflow_timeline_entry_note"
+    if(entry.data.private){"z__workflow_timeline_entry_note_private"}
+  ]>
+</div>

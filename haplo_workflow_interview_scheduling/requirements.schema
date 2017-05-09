@@ -1,0 +1,17 @@
+
+group std:group:administrators as Administrators
+
+# --------- Attributes ----------------------------------------------
+
+attribute haplo:attribute:meeting-date as MeetingDate
+    title: Meeting date
+    search-name: meeting-date
+    qualifier: std:qualifier:null
+    data-type datetime
+    ui-options m,n,n,n,n
+
+attribute haplo:attribute:meeting-location as MeetingLocation
+    title: Meeting location
+    search-name meeting-location
+    qualifier std:qualifier:null
+    data-type text

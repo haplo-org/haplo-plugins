@@ -1,0 +1,4 @@
+pageTitle("Edit: " spec.title)
+<form method="POST"> std:form:token()
+  render(deferred)
+</form>

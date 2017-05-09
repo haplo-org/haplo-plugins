@@ -1,0 +1,8 @@
+
+group std:group:administrators as Administrators
+
+email-template haplo:email-template:help-feedback-delivery
+    title: Help Feedback
+    description: Feedback from users.
+    purpose: Generic
+    part: {"1000":["html","both","<h1>Feedback from user</h1>\r\n"]}

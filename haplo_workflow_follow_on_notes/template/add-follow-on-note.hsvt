@@ -1,0 +1,16 @@
+pageTitle("Add follow-on note")
+backLink(M.url)
+
+if(M.workUnit.ref) {
+    std:object(M.workUnit.ref "linkedheading")
+}
+
+<form method="POST"> std:form:token()
+    std:form(form)
+    if(allowPrivate) {
+        if(privateNoteExplanation) {
+            std:text:paragraph(privateNoteExplanation)
+        }
+    }
+    <input type="submit" value="Save">
+</form>

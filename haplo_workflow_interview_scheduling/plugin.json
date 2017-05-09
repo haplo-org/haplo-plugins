@@ -1,0 +1,23 @@
+{
+  "pluginName": "haplo_workflow_interview_scheduling",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Workflow Interview Scheduling",
+  "displayDescription": "Interview scheduling feature for use in workflows",
+  "installSecret": "218c7dc42dfc12fd231923573dd96d72529dabf6",
+  "apiVersion": 4,
+  "loadPriority": 2000,
+  "depend": [
+      "std_workflow",
+      "std_document_store"
+    ],
+  "use": [
+      "std:workflow"
+    ],
+  "load": [
+      "js/haplo_workflow_interview_scheduling.js"
+    ],
+  "respond": [
+      "/do/haplo-workflow-interview-scheduling"
+    ]
+}

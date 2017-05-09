@@ -1,0 +1,15 @@
+pageTitle("Configure help & feedback")
+
+if(form.complete) {
+    <p> <b> "The configuration has been updated" </b> </p>
+} else {
+    <p> "The text below will be displayed when the user clicks the " <i> "Help" </i> " link in the top right, and if any topics and email addresses are specified, the user will be able to send feedback." </p>
+}
+
+<form method="POST"> std:form:token()
+    if(formError) {
+        std:ui:notice("Please complete all the fields.")
+    }
+    std:form(form)
+    <p><input type="submit" value="Save configuration"></p>
+</form>

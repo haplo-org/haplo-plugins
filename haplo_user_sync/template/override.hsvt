@@ -1,0 +1,10 @@
+if(saved) {
+  std:ui:notice("Saved")
+}
+
+<form method="POST"> std:form:token()
+  <p> "JSON formatted attribute overrides" <br>
+    <textarea name="json" rows="16" cols="80"> overrideJSON </textarea>
+  </p>
+  <p><input type="submit" value="Save"></p>
+</form>

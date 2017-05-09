@@ -1,0 +1,4 @@
+
+<a href=fullInfo> title </a>
+
+<p> if(taskNote) { taskNote } else { "Please mark this as complete" } </p>

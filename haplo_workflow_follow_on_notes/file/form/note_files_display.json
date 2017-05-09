@@ -1,0 +1,13 @@
+{
+    "specificationVersion": 0,
+    "formId": "note_files_display",
+    "formTitle": "Files",
+    "elements": [
+        {
+            "type": "file-repeating-section",
+            "path": "files",
+            "renderDocumentOmitEmpty": true,
+            "elements": [{"type":"file","path":"."}]
+        }
+    ]
+}

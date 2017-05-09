@@ -1,0 +1,5 @@
+unless(pageTitle) {
+    pageTitle($impl.note.title)
+}
+
+std:text:document($impl.document)

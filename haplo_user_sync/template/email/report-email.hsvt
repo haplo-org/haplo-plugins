@@ -1,0 +1,10 @@
+
+#option:no-tag-attribute-quote-minimisation
+
+<p> "Sync run at " syncTime </p>
+<h1> "Change in error count: " errorDelta </h1>
+
+if(log) {
+    <h3> "Sync log" </h3>
+    std:text:paragraph(log)
+}

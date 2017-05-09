@@ -1,0 +1,5 @@
+
+// Only display links if there's something other than 1 document
+switch(documents.length)
+    { each(documents) { <p> <a href=[#unsafeAnchor]> title </a> </p> } }
+  1 { }

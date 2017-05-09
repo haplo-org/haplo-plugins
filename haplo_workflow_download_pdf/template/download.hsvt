@@ -1,0 +1,5 @@
+pageTitle("Download as PDF: " M.title)
+backLink(M.url)
+std:object(application "linkedheading")
+<p> "&nbsp;" </p>
+template:std:ui:confirm()

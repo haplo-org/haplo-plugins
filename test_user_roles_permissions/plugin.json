@@ -1,0 +1,20 @@
+{
+  "pluginName": "test_user_roles_permissions",
+  "pluginAuthor": "Haplo Services Ltd",
+  "pluginVersion": 1,
+  "displayName": "Test User Roles Permissions",
+  "displayDescription": "Using a sample set of permissions, test the correctness of the haplo_user_roles_permissions plugin",
+  "installSecret": "890773a5410a7bd8d919f6323fa3dd6c4c51b8d1",
+  "apiVersion": 4,
+  "depend": [
+      "std_workflow",
+      "haplo_user_roles_permissions",
+      "haplo_descriptive_object_labelling",
+      "test_descriptive_object_labelling"
+    ],
+  "privilegesRequired": ["pCreateUser"],
+  "load": [
+      "js/test_user_roles_permissions.js"
+    ],
+  "use": ["test:schema:surgery"]
+}

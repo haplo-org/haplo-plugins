@@ -1,0 +1,31 @@
+{
+    "specificationVersion":0,
+    "formId": "note",
+    "formTitle": "Follow on note",
+    "renderDocumentOmitEmpty": true,
+    "elements": [
+        {
+            "type": "paragraph",
+            "path": "followOnNotes",
+            "rows": 10,
+            "label": "Notes",
+            "required": true
+        },
+        {
+            "type": "file-repeating-section",
+            "path": "files",
+            "allowAdd": false,
+            "allowDelete": false,
+            "label": "Files",
+            "renderDocumentOmitEmpty": true,
+            "elements": [{"type":"file","path":"."}]
+        },
+        {
+            "type": "boolean",
+            "style": "checkbox",
+            "path": "private",
+            "label": "NAME(std:workflow:notes-private-label|Private note)",
+            "include": {"path":"$p", "operation":"===", "value":true}
+        }
+    ]
+}

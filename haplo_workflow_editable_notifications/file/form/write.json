@@ -1,0 +1,10 @@
+{
+    "specificationVersion": 0,
+    "formId": "write",
+    "formTitle": "Write notification",
+    "elements": [{
+        "type": "document-text",
+        "path": "notification",
+        "required": true
+    }]
+}

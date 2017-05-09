@@ -1,0 +1,21 @@
+std:plugin:resources("online-decision.css")
+
+pageTitle("Online decision choice breakdown")
+
+std:object(app "linkedheading")
+
+<h2>"Choices"</h2>
+
+<table class="breakdown-table">
+  <tr>
+    <th>"Invitee"</th>
+    <th>"Choice"</th>
+  </tr>
+  each(votes) {
+  <tr>
+    <td>title</td>
+    <td>if(voted) { choice } else { <span class="no-vote-entered">choice</span> }</td>
+  </tr>
+  }
+</table>
+

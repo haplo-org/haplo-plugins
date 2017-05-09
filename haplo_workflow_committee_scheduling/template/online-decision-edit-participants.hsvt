@@ -1,0 +1,9 @@
+
+pageTitle("Edit online decision participants")
+
+<p>"Any participants you add will be informed by email of the invitation. Any participants that are removed will no longer be able to vote, and will no longer have a task asking them to vote. If a participant has already voted, their vote and comments remain part of the online decision."</p>
+
+<form method="POST"> std:form:token()
+  std:form(instance)
+  <p><input type="submit" value="Save changes to participants"></p>
+</form>

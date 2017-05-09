@@ -1,0 +1,21 @@
+{
+  "pluginName": "haplo_calendar_access",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Calendar Access",
+  "displayDescription": "Support for generating calendar subscription feeds",
+  "installSecret": "f2e789d6634296eaf896a18bcbcd1370adffa2fc",
+  "privilegesRequired": ["pDatabase"],
+  "apiVersion": 4,
+  "depend": [
+    "haplo_icalendar_support"
+  ],
+  "load": [
+    "js/haplo_calendar_access.js"
+  ],
+  "respond": [
+    "/do/haplo-calendar-access",
+    "/do/cal"
+  ],
+  "allowAnonymousRequests": true
+}

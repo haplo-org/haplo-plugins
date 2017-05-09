@@ -1,0 +1,24 @@
+<p> "Dear " toUser.nameFirst </p>
+
+<p>
+    "This is a reminder about the " committee.title " meeting on " std:date(date)
+    if(location) {
+        " at " location
+    }
+    "."
+</p>
+
+if(appDetails.length) {
+    <p> "The following applications will be discussed during this meeting:" </p>
+    each(appDetails) {
+        <p>
+            <a href=url> typeName " - " applicantSurname </a>
+            if(reviewers.length) {
+                <br> "Reviewed by" haplo_committee_support:render_object_list(reviewers)
+            }
+        </p>
+    }
+}
+
+<p> "More information:" </p>
+<p><a href=fullInfoURL> "Committee Meeting Details and Applications" </a></p>

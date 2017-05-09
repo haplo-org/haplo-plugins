@@ -1,0 +1,5 @@
+
+type std:type:label as Label
+
+label std:label:structure as Structure
+

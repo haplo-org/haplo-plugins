@@ -1,0 +1,20 @@
+{
+  "pluginName": "haplo_public_information_pages",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Public Information Pages",
+  "displayDescription": "Display and editing of public information pages",
+  "apiVersion": 4,
+  "loadPriority": 9200,
+  "privilegesRequired": ["pDatabase"],
+  "depend": ["std_document_store"],
+  "use": ["std:document_store"],
+  "load": [
+      "js/haplo_public_information_pages.js"
+    ],
+  "respond": [
+      "/do/public-information",
+      "/do/public-information-edit"
+    ],
+  "allowAnonymousRequests": true
+}

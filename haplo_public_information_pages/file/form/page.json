@@ -1,0 +1,19 @@
+{
+    "specificationVersion": 0,
+    "formId": "page",
+    "formTitle": "Information page",
+    "elements": [
+        {
+            "type": "document-text",
+            "path": "document"
+        },
+        {
+            "type": "file-repeating-section",
+            "path": "files",
+            "allowAdd": false,
+            "allowDelete": false,
+            "renderDocumentOmitEmpty": true,
+            "elements": [{"type":"file","path":"."}]
+        }
+    ]
+}

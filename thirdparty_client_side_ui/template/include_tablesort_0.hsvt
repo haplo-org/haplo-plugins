@@ -1,0 +1,4 @@
+std:plugin:resources(
+    "tablesort.js"
+    "tablesort.css"
+)

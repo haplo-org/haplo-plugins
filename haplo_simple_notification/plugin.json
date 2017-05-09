@@ -1,0 +1,18 @@
+{
+  "pluginName": "haplo_simple_notification",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Simple Notification",
+  "displayDescription": "Send simple notifications",
+  "installSecret": "f1d190472f5469a25845d14dd5e3a731e89de819",
+  "apiVersion": 4,
+  "loadPriority": 2000,
+  "privilegesRequired": ["pDatabase", "pSendEmail"],
+  "depend": [
+    "std_workflow"
+  ],
+  "load": [
+      "js/haplo_simple_notification.js"
+    ],
+  "respond": ["/do/haplo-simple-notification"]
+}

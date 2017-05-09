@@ -1,0 +1,10 @@
+pageTitle("Edit " activity.title " guidance notes")
+backLink("/do/activity/" activity.name)
+
+each(notes) {
+    <p>
+        <a href=["/do/activity-guidance-notes/edit-note/" ^{activity.name} "/" name]>
+            title
+        </a>
+    </p>
+}

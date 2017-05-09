@@ -1,0 +1,37 @@
+/* Haplo Plugins                                     https://haplo.org
+ * (c) Haplo Services Ltd 2006 - 2017   https://www.haplo-services.com
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
+
+
+.tablesort {
+	table-layout: fixed;
+}
+
+.tablesort th {
+    cursor: pointer;
+}
+
+.tablesort th.sort-down,
+.tablesort th.sort-up {
+    background: #bbb !important;
+    position: relative;
+}
+
+.tablesort th.sort-down:after, 
+.tablesort th.sort-up:after {
+    position: absolute;
+    display:block;
+    top: 4px;
+    right: 7px;
+    font-weight: bold;
+}
+
+.tablesort th.sort-down:after { content: "\2193"; }
+.tablesort th.sort-up:after { content: "\2191"; }
+
+.tablesort tr:hover {
+    background: #deebf5;
+}
+

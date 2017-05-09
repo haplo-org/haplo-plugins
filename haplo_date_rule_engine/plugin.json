@@ -1,0 +1,13 @@
+{
+  "pluginName": "haplo_date_rule_engine",
+  "pluginAuthor": "Haplo Services Ltd",
+  "pluginVersion": 1,
+  "displayName": "Haplo Date Rule Engine",
+  "displayDescription": "Computes dates according to rules, such as standard project deadlines",
+  "installSecret": "68cbc91ab99ee5f9a2b5b27165f0a17fb5e62fad",
+  "apiVersion": 4,
+  "privilegesRequired": ["pDatabase"],
+  "load": [
+      "js/haplo_date_rule_engine.js"
+    ]
+}

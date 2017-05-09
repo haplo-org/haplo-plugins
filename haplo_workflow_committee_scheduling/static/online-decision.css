@@ -1,0 +1,78 @@
+/* Haplo Plugins                                     https://haplo.org
+ * (c) Haplo Services Ltd 2006 - 2017   https://www.haplo-services.com
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
+
+
+h2 { 
+    margin-bottom: 20px;
+}
+
+.breakdown-table, .vote-table {
+    margin-bottom: 30px;
+}
+
+.vote-table td:first-child {
+    width: 80%;
+}
+
+.breakdown-table td:first-child {
+    width: 45%;
+}
+
+.root-message {
+    border-top: 1px solid #aaa;
+    margin-bottom: 20px;
+}
+
+.message {
+    margin-bottom: 10px;
+}
+
+.message-header {
+    margin: 0;
+    padding: 5px 5px 5px 10px;
+    background-color: #d8d8d8;
+}
+
+.message-date {
+    margin: 5px 5px 15px 15px;
+    color: #888;
+    float: right;
+}
+
+.message-choice {
+    font-style: italic;
+}
+
+.message-body {
+    padding: 5px 0px 5px 0px;
+    background-color: #f2f2f2;
+}
+
+.message-text {
+    clear: both;
+    padding-left: 20px;
+    margin-bottom: 5px;
+}
+
+.message-reply {
+    margin: 0;
+    background-color: #f2f2f2;
+    margin-left: 40px;
+    padding-left: 20px;
+}
+
+.message-threaded-reply {
+    padding-left: 40px;
+}
+
+.no-vote-entered {
+    color: #333;
+    font-style: italic;
+}
+
+.summary {
+    margin-top: 30px;
+}

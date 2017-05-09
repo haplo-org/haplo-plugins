@@ -1,0 +1,43 @@
+
+pageTitle("User Sync Administration")
+
+<h2> "User lookup" </h2>
+<form method="GET" action="/do/haplo-user-sync/admin/user-info">
+    <p> <input type="text" name="lookup" placeholder="Username or email address" style="width:200px">
+    <input type="submit" value="Find user"> </p>
+</form>
+
+<h2> "Sync runs" </h2>
+<table>
+    <tr>
+        <th> "Created" </th>
+        <th> "Status" </th>
+        <th> "Errors" </th>
+        <th></th>
+    </tr>
+    each(syncs) {
+    <tr>
+        <td> sync.created </td>
+        <td> syncStatusText </td>
+        <td> sync.errors </td>
+        <td> <a href=["/do/haplo-user-sync/admin/sync-info/" sync.id]> "View..." </a> </td>
+    </tr>
+  }
+</table>
+if(lastSyncTime) {
+    <p> <a href=[? s=lastSyncTime]> "Previous" </a> </p>
+}
+<h2> "Configuration" </h2>
+<p> <a href="/do/haplo-user-sync/admin/config"> "Edit configuration..." </a> </p>
+std:document(config)
+
+if(overridesEnabled) {
+    <p> <a href="/do/haplo-user-sync/admin/override"> "Edit user detail overrides..." </a> </p>
+}
+
+render(implAdminUIHTML)
+
+<h2> "Testing" </h2>
+<p> <a href="/do/haplo-user-sync/test/upload-file"> "Upload a file..." </a> </p>
+<p> <a href="/do/haplo-user-sync/test/fetch-files"> "Fetch files..." </a> </p>
+<p> <a href="/do/haplo-user-sync/test/get-mappings-for-application-move"> "Get mappings documents..." </a> </p>

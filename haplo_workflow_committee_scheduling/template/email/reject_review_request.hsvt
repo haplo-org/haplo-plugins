@@ -1,0 +1,14 @@
+emailSubject("Pre-meeting review")
+
+<p> "Dear " toUser.nameFirst </p>
+
+<p> reviewer.title " has indicated they cannot review the following application:" </p>
+
+std:object:link(M.entities.object)
+
+if(reasoning.reasons) {
+    <p> "The following reasoning was given:" </p>
+    std:text:paragraph(reasoning.reasons)
+} else {
+    <p> "No reasoning was given." </p>
+}

@@ -1,0 +1,18 @@
+if(notes.length) {
+    <p> "&nbsp;" </p>
+    <h1> "Follow-on notes" </h1>
+    each(notes) {
+        <h3>
+            std:date(entry.datetime)
+            " &mdash; "
+            entry.user.name
+            if(document.private) {
+                " &nbsp (" NAME("std:workflow:notes-private-adjective" "private") ")"
+            }
+        </h3>
+        std:text:paragraph(document.followOnNotes)
+        if(files) {
+            std:document(files)
+        }
+    }
+}

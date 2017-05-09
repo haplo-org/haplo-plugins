@@ -1,0 +1,15 @@
+#option:no-tag-attribute-quote-minimisation
+
+<h1>title</h1>
+
+<p>"You are invited to participate in the " NAME("online decision") " process for "<a href=appUrl>appTitle</a></p>
+
+if(note) {
+    <p>"Note: " note</p>
+}
+if(deadline) {
+    <p>"Please respond by: " std:date(deadline)</p>
+}
+
+<p class="button"> <a href=appUrl>appTitle</a> </p>
+

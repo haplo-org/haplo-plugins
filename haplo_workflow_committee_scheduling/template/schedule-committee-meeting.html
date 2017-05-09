@@ -1,0 +1,16 @@
+
+{{#if haveMeetings}}
+  <p>{{humanReadableVerb}} this application for discussion at the {{committeeName}} meeting on:</p>
+
+  <form method="POST">{{>std:form_csrf_token}}
+    {{#each meetings}}
+      <p><button name="meeting" value="{{ref}}">{{datetime}}</button>{{#if location}} ({{location}}){{/if}}<p>
+    {{/each}}
+  </form>
+{{else}}
+  <p>There are no meetings scheduled for {{committeeName}}.</p>
+{{/if}}
+
+<p><a href="/do/haplo-committee-support/new-committee-meeting/{{committeeRef}}?back={{thisPagePath}}">Schedule another meeting for {{committeeName}}</a></p>
+
+{{#if onlineDecisionUrl}}<p><a href="{{onlineDecisionUrl}}">Begin the {{onlineDecisionName}} process for {{committeeName}}</a></p>{{/if}}

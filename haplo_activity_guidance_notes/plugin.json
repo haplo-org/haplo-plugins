@@ -1,0 +1,17 @@
+{
+  "pluginName": "haplo_activity_guidance_notes",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Activity Guidance Notes",
+  "displayDescription": "Editable guidance notes",
+  "apiVersion": 4,
+  "loadPriority": 2140,
+  "privilegesRequired": ["pDatabase"],
+  "depend": [
+      "haplo_activity_navigation"
+    ],
+  "load": [
+      "js/haplo_activity_guidance_notes.js"
+    ],
+  "respond": ["/do/activity-guidance-notes"]
+}

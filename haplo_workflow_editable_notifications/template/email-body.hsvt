@@ -1,0 +1,9 @@
+#option:no-tag-attribute-quote-minimisation
+
+emailSubject(if(subject) { subject } else { spec.displayName " - " M.title })
+
+std:text:document(notification.text)
+
+<p class="button">
+  <a href=url> M.title </a>
+</p>

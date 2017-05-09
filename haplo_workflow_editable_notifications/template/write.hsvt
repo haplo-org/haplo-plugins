@@ -1,0 +1,7 @@
+pageTitle(M.title ": " spec.displayName)
+backLink(M.url) { "Cancel" }
+
+<form method="POST"> std:form:token()
+  std:form(form)
+  <p><input type="submit" value="Review notification"> "&nbsp; &nbsp;" <input type="submit" value="Save for later" name="save"></p>
+</form>

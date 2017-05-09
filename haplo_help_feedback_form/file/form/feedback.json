@@ -1,0 +1,21 @@
+{
+    "specificationVersion": 0,
+    "formId": "feedback",
+    "formTitle": "Send feedback",
+    "elements": [
+        {
+            "type": "choice",
+            "path": "topic",
+            "label": "What is your feedback or question about?",
+            "choices": "topics",
+            "required": true
+        },
+        {
+            "type": "paragraph",
+            "path": "message",
+            "label": "Message",
+            "rows": 7,
+            "required":true
+        }
+    ]
+}

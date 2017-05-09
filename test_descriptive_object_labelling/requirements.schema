@@ -1,0 +1,60 @@
+label test:label:messy as Messy
+    title: Messy
+
+attribute test:attribute:surgeon as Surgeon
+     title: Surgeon
+     search-name: surgeon
+     qualifier std:qualifier:null
+     data-type link
+     linked-type std:type:person
+
+attribute test:attribute:anaesthetist as Anaesthetist
+     title: Anaesthetist
+     search-name: anaesthetist
+     qualifier std:qualifier:null
+     data-type link
+     linked-type std:type:person
+
+attribute test:attribute:nurse as Nurse
+     title: Nurse
+     search-name: nurse
+     qualifier std:qualifier:null
+     data-type link
+     linked-type std:type:person
+
+attribute test:attribute:patient as Patient
+     title: Patient
+     search-name: patient
+     qualifier std:qualifier:null
+     data-type link
+     linked-type std:type:person
+
+type test:type:meeting as Meeting
+     title: Meeting
+     search-name: meeting
+     attribute test:attribute:surgeon [sort=1000]
+     attribute test:attribute:anaesthetist [sort=1010]
+     attribute test:attribute:nurse [sort=1020]
+     attribute test:attribute:patient [sort=1020]
+     REMOVE label-applicable std:label:common
+     create-position normal
+
+attribute test:attribute:meeting as Meeting
+     title: Meeting
+     search-name: meeting
+     qualifier std:qualifier:null
+     data-type link
+     linked-type test:type:meeting
+
+type test:type:operation as Operation
+     title: Operation
+     search-name: operation
+     attribute test:attribute:surgeon [sort=1000]
+     attribute test:attribute:anaesthetist [sort=1010]
+     attribute test:attribute:nurse [sort=1020]
+     attribute test:attribute:patient [sort=1030]
+     attribute test:attribute:meeting [sort=1040]
+     REMOVE label-applicable std:label:common
+     create-position normal
+
+type std:type:person as Person

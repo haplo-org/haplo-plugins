@@ -1,0 +1,13 @@
+{
+  "pluginName": "haplo_help_feedback_form",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Help Feedback Form",
+  "displayDescription": "Use a configurable feedback form instead of the built-in help system.",
+  "apiVersion": 4,
+  "privilegesRequired": ["pSendEmail"],
+  "load": [
+      "js/haplo_help_feedback_form.js"
+    ],
+  "respond": ["/do/haplo-help-feedback-form"]
+}

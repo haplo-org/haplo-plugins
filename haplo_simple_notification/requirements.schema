@@ -1,0 +1,5 @@
+
+email-template haplo:simple-notification:template
+    title: Simple notification template
+    description: Template used by simple notification for sending emails
+    purpose: Generic notification

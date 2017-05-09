@@ -1,0 +1,15 @@
+label test:label:messy as Messy
+attribute test:attribute:surgeon as Surgeon
+attribute test:attribute:anaesthetist as Anaesthetist
+attribute test:attribute:nurse as Nurse
+attribute test:attribute:patient as Patient
+type test:type:meeting as Meeting
+attribute test:attribute:meeting as Meeting
+type test:type:operation as Operation
+type std:type:person as Person
+
+group test:group:cleaners as Cleaners
+      title: Cleaners
+
+group test:group:admins as Admins
+      title: Surgical Administrators

@@ -1,0 +1,12 @@
+{
+  "pluginName": "haplo_icalendar_support",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo iCalendar Support",
+  "displayDescription": "Haplo iCalendar format support",
+  "installSecret": "22b9ebab102931534aaffa614b33ba124f7ddbd1",
+  "apiVersion": 4,
+  "load": [
+      "js/ical_exporter.js"
+    ]
+}

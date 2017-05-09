@@ -1,0 +1,24 @@
+pageTitle("Role Importer")
+backLink("/do/haplo-role-importer/admin")
+
+<h2>"Import"</h2>
+
+if(live) {
+<h3>"Changes applied"</h3>
+
+<a href="/do/haplo-role-importer/admin"><button>"Return to importer overview"</button></a>
+}
+
+<h3>"Log output"</h3>
+
+<pre>log</pre>
+
+unless(live) {
+<form action="/do/haplo-role-importer/import-all" method="POST">std:form:token()
+  <p><b>"If the log above looks like what you expect, then click to apply the import"</b></p>
+  <input type="hidden" name="data" value=data>
+  <input type="hidden" name="live" value="true">
+  <p><input type="submit" value="Apply"></p>
+</form>
+}
+

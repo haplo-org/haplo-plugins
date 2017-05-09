@@ -1,0 +1,5 @@
+
+std:plugin:resources("queue.css")
+std:layout:wide()
+template:std:ui:tabs:links()
+render(ui)

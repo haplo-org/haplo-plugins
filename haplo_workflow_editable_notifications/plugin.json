@@ -1,0 +1,18 @@
+{
+  "pluginName": "haplo_workflow_editable_notifications",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Workflow Editable Notifications",
+  "displayDescription": "Editable notifications for workflow",
+  "apiVersion": 4,
+  "privilegesRequired": ["pDatabase"],
+  "depend": ["std_workflow"],
+  "use": ["std:workflow"],
+  "loadPriority": 2000,
+  "load": [
+      "js/haplo_workflow_editable_notifications.js"
+    ],
+  "respond": [
+      "/do/workflow-notifications"
+    ]
+}

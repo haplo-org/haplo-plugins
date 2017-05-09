@@ -1,0 +1,17 @@
+{
+  "pluginName": "haplo_workflow_review_documents",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Workflow Review Documents",
+  "displayDescription": "Workflow component to force users to review documents before performing a workflow transition.",
+  "apiVersion": 4,
+  "depend": [
+      "std_workflow",
+      "std_document_store"
+    ],
+  "use": ["std:workflow"],
+  "load": [
+      "js/haplo_workflow_review_documents.js"
+    ],
+  "respond": ["/do/haplo-workflow-review-documents"]
+}

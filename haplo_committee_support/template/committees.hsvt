@@ -1,0 +1,3 @@
+pageTitle("Committees")
+
+each(committees) { std:object(. "searchresult") }
