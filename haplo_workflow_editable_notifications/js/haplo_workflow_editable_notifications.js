@@ -378,7 +378,7 @@ TextBuilder.prototype._build = function() {
     // Interpolate
     var interpolations = this.$interpolations;
     doc = doc.replace(/\[([A-Z0-9_]+)\]/g, function(m, key) {
-        return interpolations[key] || key;
+        return _.escape(interpolations[key] || key);
     });
     return doc;
 };
