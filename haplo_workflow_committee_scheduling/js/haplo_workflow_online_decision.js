@@ -143,6 +143,29 @@ var getChoices = function(stateInfo, M) {
         stateInfo.onlineDecision.choices;
 };
 
+// TODO: Implement a better workflow status
+P.implementService("haplo:committee_scheduling:online_decision:is_decision_in_progress", function(workflow, M) {
+    var openDecisions = workflow.plugin.db.csOnlineDecision.select().where("object","=",M.workUnit.ref).where("closed","=",null);
+    var inProgress = (0 !== openDecisions.length);
+    var status = {inProgress:inProgress};
+    if(inProgress) {
+        var discussion = workflow.plugin.db.csDiscussion.select().
+            where("onlineDecision","=",openDecisions[0]).
+            order("datetime",true);
+        if(discussion.length) {
+            status.lastActivity = discussion[0].datetime;
+        }
+        // TODO: Voter counts and number of voted users should be quicker to obtain.
+        var votes = O.refdict();
+        _.each(discussion, function(row) {
+            if(row.choice) { votes.set(row.user,true); }
+        });
+        status.haveVotedCount = votes.length;
+        status.voterCount = (JSON.parse(openDecisions[0].document).invited || []).length;
+    }
+    return status;
+});
+
 P.makeOnlineDecisionHandlers = function(workflow, spec) {
     var plugin = workflow.plugin;
 

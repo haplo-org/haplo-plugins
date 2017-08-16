@@ -27,8 +27,8 @@
  *      customShouldEditForm: (OPTIONAL)
  *      customShouldDisplayForm: (OPTIONAL)
  *  }
- *  informScheduled: function(M) {} - optional
- *      used for informing users when the meeting has been scheduled
+ *  onScheduled: function(M) {} - optional
+ *      called as soon as the meeting has been scheduled
  *  projectDate: (OPTIONAL)
  *      string of Project Date to save interview date to        
  *  onSaveCompletedForm: function(spec, M, object, document) {} - optional

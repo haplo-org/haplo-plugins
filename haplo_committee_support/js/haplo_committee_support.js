@@ -183,7 +183,7 @@ P.implementService("std:action_panel:committee_meeting", function(display, build
     var apps = O.query().link(display.object.ref).sortByTitle().execute();
     if(apps.length) {
         var panel = builder.panel(100);
-        panel.element(0, {title:"Agenda"});
+        panel.element(0, {title:NAME("Agenda")});
         _.each(apps, function(app) {
             panel.link("default", app.url(), app.title);
         });

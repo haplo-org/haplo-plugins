@@ -5,6 +5,7 @@
   "displayName": "Haplo Workflow Download PDF",
   "displayDescription": "Downloadable PDFs of workflows",
   "apiVersion": 4,
+  "loadPriority": 30000,
   "privilegesRequired": ["pFileTransformPipeline"],
   "depend": ["std_workflow"],
   "use": ["std:workflow"],

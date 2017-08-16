@@ -1,0 +1,12 @@
+{
+  "pluginName": "haplo_respond_after_http_request",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Respond after HTTP request",
+  "displayDescription": "API to implement request handlers which respond after performing an HTTP request in the background",
+  "privilegesRequired": ["pHTTPClient"],
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_respond_after_http_request.js"
+    ]
+}

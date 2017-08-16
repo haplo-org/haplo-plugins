@@ -76,6 +76,13 @@ var TRANSITION_BUTTON_PRIORITIES = {
     "send_to_dep_chair": 120
 };
 
+var getScheduledMeetingForWorkflow = function(M) {
+    return M.workUnit.data.currentCommitteeMeeting ? O.ref(M.workUnit.data.currentCommitteeMeeting) : undefined;
+};
+P.implementService("haplo:committee_scheduling:workflow_is_scheduled", function(M) {
+    return !!(getScheduledMeetingForWorkflow(M));
+});
+
 P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
     function(workflow, spec) {
         var plugin = workflow.plugin;

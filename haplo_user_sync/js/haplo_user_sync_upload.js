@@ -171,3 +171,32 @@ P.respond("POST", "/api/haplo-user-sync/start-sync", [
             break;
     }
 });
+
+// --------------------------------------------------------------------------------------------------
+
+// Used by VRE/legacy user syncs to upload files using an old method
+P.implementService("haplo_user_sync:backwards_compatible_sync", function(dataFile, filename) {
+    var impl = P.getImplementation();
+    // Find or create a new sync group
+    var sync = P.db.sync.create({
+        created: new Date(),
+        filesJSON: '{}'
+    });
+
+    // Store file and stuff
+    var files = sync.getFiles();
+    var file = O.file(dataFile);
+    files[filename] = {
+        digest: file.digest,
+        fileSize: file.fileSize,
+        filename: file.filename
+    };
+    sync.filesJSON = JSON.stringify(files);
+    sync.status = P.SYNC_STATUS.ready;
+    sync.save();
+
+    if(P.data.config.autoApply) {
+        P.applySync(sync);
+    }
+});
+

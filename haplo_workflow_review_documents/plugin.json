@@ -5,6 +5,7 @@
   "displayName": "Haplo Workflow Review Documents",
   "displayDescription": "Workflow component to force users to review documents before performing a workflow transition.",
   "apiVersion": 4,
+  "loadPriority": 30000,
   "depend": [
       "std_workflow",
       "std_document_store"

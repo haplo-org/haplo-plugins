@@ -308,6 +308,9 @@ var getUserRoles = function(user) {
                 });
             }
         }
+        // Add roles through other means?
+        // NOTE: This service should be used as a last resort
+        O.serviceMaybe("haplo:user_roles_permissions:add_roles_to_user", userRoles, user, userRef);
         // Cache and return
         userRolesCache[user.id] = userRoles;
         userRolesCacheCount ++;
