@@ -189,6 +189,11 @@ P.hook("hPostObjectChange", function(response, object, operation, previous) {
     }
 });
 
+// Allow other plugins to flush cache ie, if adding to roles with add_roles_to_user
+P.implementService("haplo:user_roles_permissions:invalidate_user_roles_cache", function() {
+    invalidateUserRolesCache.signal();
+});
+
 // --------------------------------------------------------------------------
 
 var UserRoles = function(userId, userRef) {
