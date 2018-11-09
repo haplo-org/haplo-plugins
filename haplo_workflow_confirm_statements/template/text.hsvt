@@ -1,0 +1,17 @@
+if(text.header) {
+  std:text:paragraph(text.header)
+}
+
+if(text.unsafeHTML) {
+  unsafeHTML(text.unsafeHTML)
+} else {
+  <ul>
+    each(text.statements) {
+      <li> . </li>
+    }
+  </ul>
+}
+
+if(text.footer) {
+  std:text:paragraph(text.footer)
+}

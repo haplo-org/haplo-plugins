@@ -22,3 +22,7 @@ if(appDetails.length) {
 
 <p> "More information:" </p>
 <p><a href=fullInfoURL> "Committee Meeting Details and Applications" </a></p>
+
+if(noAttendees) {
+    "Please note there are no attendees listed on the committee meeting so this notification has only been sent to the committee representatives. Please notify other members as necessary."
+}

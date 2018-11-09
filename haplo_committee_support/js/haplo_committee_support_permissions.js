@@ -6,7 +6,7 @@
 
 
 P.implementService("haplo:descriptive_object_labelling:setup", function(type) {
-    type(T.CommitteeMeeting, {
+    type(T.Meeting, {
         labelWith: [A.OrganisedBy],
         labelsFromLinked: [[A.OrganisedBy,A.ResearchInstitute]]
     });

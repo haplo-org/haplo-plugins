@@ -1,0 +1,16 @@
+{
+  "pluginName": "haplo_workflow_confirm_statements",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Workflow Confirm Statements",
+  "displayDescription": "User must confirm they agree with statements when completing a workflow step.",
+  "apiVersion": 4,
+  "loadPriority": 2000,
+  "depend": ["std_workflow"],
+  "use": ["std:workflow"],
+  "privilegesRequired": ["pDatabase"],
+  "load": [
+      "js/haplo_workflow_confirm_statements.js"
+    ],
+  "respond": ["/do/workflow-confirm-statements"]
+}

@@ -6,6 +6,7 @@
   "displayDescription": "API to implement request handlers which respond after performing an HTTP request in the background",
   "privilegesRequired": ["pHTTPClient"],
   "apiVersion": 4,
+  "loadPriority": 2000,
   "load": [
       "js/haplo_respond_after_http_request.js"
     ]

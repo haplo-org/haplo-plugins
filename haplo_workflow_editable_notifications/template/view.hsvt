@@ -1,10 +1,10 @@
-pageTitle(M.title ": " spec.displayName)
+pageTitle(M.title ": " displayName)
 backLink(M.url)
 
 each(notifications) {
   <div style="margin-bottom:64px">
     <div style="background:#eee;margin-bottom:8px;padding:4px 8px">
-      "Sent on " <b> std:date(sentAt) </b> " by " <b> sentBy.name </b>
+      "Sent on " <b> std:date(sentAt) </b> " by " <b> sentBy.name </b> <div style="float:right"><a href=url>"Download as PDF..."</a></div>
     </div>
     std:text:document(text)
   </div>

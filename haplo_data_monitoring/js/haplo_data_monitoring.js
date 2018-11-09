@@ -41,7 +41,9 @@ P.respond("GET", "/do/haplo-data-monitoring/duplicate-profiles", [
         var a = allProfiles[i-1],
             b = allProfiles[i];
         if(O.serviceMaybe("haplo_data_monitoring:remove_from_duplicates_list", a, b)) {
-            b = allProfiles[i+1];
+            if(i < allProfiles.length-1) {
+                b = allProfiles[i+1];
+            }
         }
         var aTitle = a.firstTitle().toFields(),
             bTitle = b.firstTitle().toFields();

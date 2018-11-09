@@ -122,6 +122,11 @@ P.implementService("haplo_user_sync:last_raw_data_for_user", function(user) {
     return q.length ? JSON.parse(q[0].json) : undefined;
 });
 
+// This service should only be required for migration actions
+P.implementService("haplo_user_sync:query_users", function() {
+    return P.db.users.select();
+});
+
 // --------------------------------------------------------------------------------------------------
 
 P.implementService("haplo_user_sync:set_all_active_users_to_error_state", function() {

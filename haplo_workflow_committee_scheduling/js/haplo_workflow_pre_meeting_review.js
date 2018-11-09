@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-
 P.db.table("preMeetingReviews", {
     application: {type:"ref", indexed:true},
     committee: {type:"ref", indexed:true},
@@ -103,7 +102,8 @@ P.committeePreMeetingReview = function(workflow, spec) {
                 }),
                 view: {
                     committee: committee,
-                    date: date.start
+                    date: date.start,
+                    notes: document.notes
                 }
             });
             return E.response.redirect(app.url());
@@ -171,10 +171,9 @@ P.committeePreMeetingReview = function(workflow, spec) {
 
     _.each(spec.scheduleInfo, function(stateInfo) {
 
-        // TODO should use actionPanelTransitionUI
         workflow.actionPanel({state:stateInfo.state}, function(M, builder) {
             if(M.workUnit.isActionableBy(O.currentUser)) {
-                builder.link(70, spec.path+"/pre-meeting-review/"+M.workUnit.id,
+                builder.panel(P.COMMITTEE_ACTION_PANEL_PRIORITY).link(70, spec.path+"/pre-meeting-review/"+M.workUnit.id,
                     "Request review", "primary");
             }
 

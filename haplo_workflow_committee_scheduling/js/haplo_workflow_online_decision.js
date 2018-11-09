@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-
 var startOnlineDecisionForm = P.form({
     specificationVersion: 0,
     formId: "startOnlineDecisionForm",
@@ -103,7 +102,7 @@ var sendNotificationEmail = function(M, recipient, template, title, app, view) {
     view.appUrl =  O.application.url+app.url();
     title = title || NAME("Online Decision");
     view.emailSubject = view.title = title;
-    if(recipient && recipient.id !== 0) {
+    if(recipient && (recipient.id !== 0 || recipient.length > 0)) {
         M.sendEmail({
             template: template,
             to: recipient,
@@ -128,11 +127,11 @@ var getCommitteeMembersList = function(committee) {
     }, []), function(p) { return p[0]; });
 };
 
-P.showOnlineDecisionCreationLink = function(workflow, app) {
+var showOnlineDecisionCreationLink = function(workflow, M) {
     var plugin = workflow.plugin;
-    if("csOnlineDecision" in plugin.db) {
+    if("csOnlineDecision" in plugin.db && M.workUnit.isActionableBy(O.currentUser)) {
         var count = plugin.db.csOnlineDecision.select().
-            where("object","=",app.ref).where("closed","=",null).count();
+            where("object","=",M.entities.object.ref).where("closed","=",null).count();
         return (count === 0);
     }
 };
@@ -207,37 +206,68 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
         }
     });
 
-    _.each(spec.scheduleInfo, function(stateInfo) {
-        workflow.actionPanel({state:stateInfo.state}, function(M, builder) {
-            var app = M.entities.object;
-            var onlineDecision = plugin.db.csOnlineDecision.select().
-                where("object","=",app.ref).where("closed","=",null);
-            if(onlineDecision.length) {
-                if(O.work.query("haplo_workflow_committee_scheduling:online_decision").
-                        actionableBy(O.currentUser).tag("id", onlineDecision[0].id).latest() ||
-                        M.workUnit.isActionableBy(O.currentUser)) {
-                    builder.link(30, spec.path+"/online-decision/"+onlineDecision[0].id,
-                        "Participate in "+NAME("online decision"), "primary");
-                }
-            }
-        });
-    });
-
     workflow.actionPanel({}, function(M, builder) {
         var app = M.entities.object;
+        var stateInfo = _.find(spec.scheduleInfo, function(si) { return si.state === M.state; });
+        var currentOnlineDecision;
+
+        if(stateInfo && stateInfo.onlineDecision) {
+            var onlineDecision = plugin.db.csOnlineDecision.select().where("object","=",app.ref).
+                where("state","=",stateInfo.state).where("closed","=",null);
+            var path;
+            var indicator = "primary";
+            if(onlineDecision.length) {
+                var od = onlineDecision[0];
+                var decisionWu = O.work.query("haplo_workflow_committee_scheduling:online_decision").
+                    isEitherOpenOrClosed().actionableBy(O.currentUser).tag("id", od.id).latest();
+                var discussionIsActionableByUser = M.workUnit.isActionableBy(O.currentUser);
+                if(discussionIsActionableByUser || decisionWu) {
+                    path = spec.path+"/online-decision/"+od.id;
+                    currentOnlineDecision = od.id;
+                    if(discussionIsActionableByUser) { indicator = "secondary"; }
+                }
+            } else {
+                path = showOnlineDecisionCreationLink(workflow, M) ? 
+                    spec.path+"/start-online-decision/"+M.workUnit.id : undefined;
+            }
+            if(path) {
+                builder.panel(P.COMMITTEE_ACTION_PANEL_PRIORITY).link(30, path, NAME("Online decision"), indicator);
+            }
+        }
         var onlineDecisions = plugin.db.csOnlineDecision.select().
             where("object","=",app.ref);
-        var panel = builder.panel(250);
+        var panel = builder.panel(P.COMMITTEE_PANEL_PRIORITY);
         _.each(onlineDecisions, function(od) {
             var committee = od.committee.load();
             // TODO: permissions, who can see online decisions
-            if(committee.has(O.currentUser.ref)) {
+            if(od.id !== currentOnlineDecision && committee.has(O.currentUser.ref)) {
                 panel.link(od.id, spec.path+"/online-decision/"+od.id,
                     committee.title+" decision");
             }
         });
         if(!panel.empty) {
             panel.element(0, {title:NAME("Online decision")});
+        }
+    });
+
+    workflow.implementWorkflowService("std:document_store:sidebar_panel", function(M, builder) {
+        var app = M.entities.object;
+        var stateInfo = _.find(spec.scheduleInfo, function(si) { return si.state === M.state; });
+
+        if(stateInfo && stateInfo.onlineDecision && stateInfo.onlineDecision.enableDocStorePanel) {
+            var onlineDecision = plugin.db.csOnlineDecision.select().where("object","=",app.ref).
+                where("state","=",stateInfo.state).where("closed","=",null);
+            var path;
+            var indicator = "primary";
+            if(onlineDecision.length) {
+                var od = onlineDecision[0];
+                var decisionWu = O.work.query("haplo_workflow_committee_scheduling:online_decision").
+                    isEitherOpenOrClosed().actionableBy(O.currentUser).tag("id", od.id).latest();
+                if(decisionWu) {
+                    builder.panel(P.COMMITTEE_ACTION_PANEL_PRIORITY).
+                        link(30, spec.path+"/online-decision/"+od.id, NAME("Online decision"), indicator);
+                }
+            }
         }
     });
 
@@ -250,7 +280,7 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
         var stateInfo = _.find(spec.scheduleInfo, function(si) {
             return si.state === M.state;
         });
-        if(!stateInfo) { O.stop("Invalid state"); }
+        if(!stateInfo || !stateInfo.onlineDecision) { O.stop("Invalid state"); }
         var committee = M.entities[stateInfo.committeeEntityName];
         if(!committee) { O.stop("Cannot find committee"); }
         var people = getCommitteeMembersList(committee);
@@ -403,7 +433,7 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
                 var elements = [
                     {href: spec.path+"/online-decision/vote/"+wu.id,
                         label: wu.closed ? "Change recommendation" : "Submit recommendation",
-                        indicator: "primary"}
+                        indicator: wu.closed ? "secondary" : "primary"}
                 ];
                 if(!wu.closed) {
                     elements.push({
@@ -564,12 +594,24 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
             _.each(wus, function(wu) {
                 wu.deleteObject();
             });
+            var today = new Date();
             // mark closed in db
-            onlineDecision.closed = new Date();
+            onlineDecision.closed = today;
             onlineDecision.save();
             // make task visible again
-            M.workUnit.openedAt = new Date();
+            M.workUnit.openedAt = today;
             M.workUnit.save();
+
+            if(today < new Date(onlineDecision.deadline)) {
+                var document = JSON.parse(onlineDecision.document);
+                var recipients = _.map(_.filter(document.invited, function(refStr) {
+                    return !_.contains(document.declined, refStr);
+                }), function(refStr) {
+                    return O.ref(refStr);
+                });
+                sendNotificationEmail(M, recipients, "email/online-decision-close",
+                    NAME("Online decision")+" closed ("+app.title+")", app);
+            }
             return E.response.redirect(app.url());
         }
         E.render({
@@ -869,14 +911,12 @@ P.workUnit({
     description: "Committee online decision task",
     render: function(W) {
         if(W.context === "object") { return; }
-        var onlineDecisionId = W.workUnit.tags.id;
         var appRef = W.workUnit.ref;
         var app = appRef.load();
-        var url = W.workUnit.data.url;
         W.render({
-            appTitle: app.title,
-            fullInfo: url,
+            object: app,
+            fullInfo: app.url(),
             fullInfoText: "Submit recommendation..."
-        }, "workunit_online_decision");
+        }, "workunit");
     }
 });

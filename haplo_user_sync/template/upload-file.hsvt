@@ -6,5 +6,25 @@ pageTitle("Upload Test File")
 <form method="POST" action="/api/haplo-user-sync/upload-file" enctype="multipart/form-data"> std:form:token()
     <p> "Name of file: " <input type="text" name="name"> </p>
     <p> <input type="file" name="file"> </p>
+    <input type="hidden" name="rdr" value="/do/haplo-user-sync/test/upload-file">
     <p> <input type="submit" value="Upload file"> </p>
 </form>
+
+if(syncStatusText) {
+  <h2> "Sync status: " syncStatusText </h2>
+}
+if(files) {
+    std:document(files)
+}
+
+if(previousFiles) {
+    <h2>"Files from previous syncs"</h2>
+    each(previousFiles) {
+        <form method="POST" action="/do/haplo-user-sync/test/use-file"> std:form:token()
+            <p> "File: " name </p>
+            <input type="hidden" name="name" value=name>
+            <input type="hidden" name="digest" value=digest>
+            <p> <input type="submit" value="Use this file"> </p>
+        </form>
+    }
+}

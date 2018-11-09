@@ -1,0 +1,16 @@
+
+if(requiredNotice) {
+  std:ui:notice(requiredNotice)
+}
+
+if(text.singleStatement) {
+  <p> <label> <input type="checkbox" name="_wcs_confirm"> text.singleStatement </label> </p>
+  if(text.footer) {
+    std:text:paragraph(text.footer)
+  }
+} else {
+  template:text()
+  <p> <label> <input type="checkbox" name="_wcs_confirm"> text.label </label> </p>
+}
+
+<div style="border-bottom:1px solid #ddd;margin:16px 0"></div>

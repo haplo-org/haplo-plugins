@@ -15,6 +15,11 @@ if(headerTable) {
 <hr>
 
 each(sections) {
+    if(isDraft) {
+        <div class="notice">
+            <p> "This is a draft version" </p>
+        </div>
+    }
     <h1> title </h1>
     render(deferred)
     unless(isLast) { <hr> }

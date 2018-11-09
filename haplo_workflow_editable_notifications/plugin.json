@@ -5,7 +5,7 @@
   "displayName": "Workflow Editable Notifications",
   "displayDescription": "Editable notifications for workflow",
   "apiVersion": 4,
-  "privilegesRequired": ["pDatabase"],
+  "privilegesRequired": ["pDatabase", "pFileTransformPipeline"],
   "depend": ["std_workflow"],
   "use": ["std:workflow"],
   "loadPriority": 2000,

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
 
-var findOrCreateSyncGroup = function() {
+var findOrCreateSyncGroup = P.findOrCreateSyncGroup = function() {
     var sync, syncQuery = P.db.sync.select().order("created",true).limit(1).stableOrder().limit(1);
     if(syncQuery.length === 0 || syncQuery[0].status >= P.SYNC_STATUS.complete) {
         sync = P.db.sync.create({
@@ -21,8 +21,9 @@ var findOrCreateSyncGroup = function() {
 
 P.respond("POST", "/api/haplo-user-sync/upload-file", [
     {parameter: "name", as:"string", validate:/^[a-z0-9A-Z_\-]+$/},
-    {parameter: "file", as:"file"}
-], function(E, name, uploadedFile) {
+    {parameter: "file", as:"file"},
+    {parameter: "rdr", as:"string", optional:true}
+], function(E, name, uploadedFile, rdr) {
     var impl = P.getImplementation();
     // Find or create a new sync group
     var sync = findOrCreateSyncGroup();
@@ -44,6 +45,10 @@ P.respond("POST", "/api/haplo-user-sync/upload-file", [
     sync.filesJSON = JSON.stringify(files);
     if(impl.allFilesUploaded(files)) { sync.status = P.SYNC_STATUS.ready; }
     sync.save();
+    if(rdr) { // Allow UI to use endpoint but redirect to somewhere more sensible
+        rdr = decodeURIComponent(rdr);
+        if(0 === rdr.indexOf("/")) { return E.response.redirect(rdr); }
+    }
     E.response.kind = 'json';
     E.response.body = JSON.stringify(sync.files[name], undefined, 2);
 });
@@ -80,13 +85,12 @@ P.respond("POST", "/api/haplo-user-sync/fetch-files", [
     }
 });
 
-P.backgroundCallback("fetch_files", function() {
+var updateFiles = function(newFiles) {
     var impl = P.getImplementation();
     // Find or create a new sync group
     var sync = findOrCreateSyncGroup();
-    var fetchedFiles = impl.fetchFilesFromServices();
     var files = sync.files;
-    _.each(fetchedFiles, function(ff, name) {
+    _.each(newFiles, function(ff, name) {
         var file = O.file(ff);
         files[name] = {
             digest: file.digest,
@@ -97,6 +101,16 @@ P.backgroundCallback("fetch_files", function() {
     sync.filesJSON = JSON.stringify(files);
     if(impl.allFilesUploaded(files)) { sync.status = P.SYNC_STATUS.ready; }
     sync.save();
+};
+
+P.backgroundCallback("fetch_files", function() {
+    var impl = P.getImplementation();
+    var fetchedFiles = impl.fetchFilesFromServices();
+    updateFiles(fetchedFiles);
+});
+
+P.implementService("haplo_user_sync:update_files", function(files) {
+    updateFiles(files);
 });
 
 // --------------------------------------------------------------------------------------------------
@@ -123,6 +137,13 @@ var unsafeFileSizeDifference = function(current, previous) {
     return unsafe;
 };
 
+var STATUS_REPORT_TEXT = {
+    "ok:": 'OK. Sync queued.',
+    "disabled": 'OK: Auto apply disabled; must apply manually.',
+    "unready": 'Last sync is not ready. Upload all the required files.',
+    "unsafe": 'OK: Files uploaded are too different to previous sync; must apply manually.'
+};
+
 var startSync = function() {
     var status;
     var syncQuery = P.db.sync.select().order("created",true).limit(2); // Most recent 2 sync groups
@@ -140,6 +161,10 @@ var startSync = function() {
             status = "disabled";
         }
     }
+    if(status !== 'ok') {
+        O.reportHealthEvent("User sync for "+O.application.hostname+" has failed to apply. "+
+            "Start signal responded with: "+status+": "+STATUS_REPORT_TEXT[status]);
+    }
     return status;
 };
 
@@ -151,24 +176,11 @@ P.respond("POST", "/api/haplo-user-sync/start-sync", [
 ], function(E) {
     var startStatus = startSync();
     E.response.kind = 'text';
-    switch(startStatus) {
-        case "ok":
-            E.response.body = 'OK: Sync queued.';
-            break;
-        case "disabled":
-            E.response.body = 'OK: Auto apply disabled; must apply manually.';
-            break;
-        case "unready":
-            E.response.body = 'Last sync is not ready. Upload all the required files.';
-            E.response.statusCode = HTTP.BAD_REQUEST;
-            break;
-        case "unsafe":
-            E.response.body = 'OK: Files uploaded are too different to previous sync; must apply manually.';
-            break;
-        default:
-            E.response.body = "Error: sync start signal returned unknown status.";
-            E.response.statusCode = HTTP.INTERNAL_SERVER_ERROR;
-            break;
+    E.response.body = STATUS_REPORT_TEXT[startStatus];
+    if(startStatus === "unready") { E.response.statusCode = HTTP.BAD_REQUEST; }
+    if(!(startStatus in STATUS_REPORT_TEXT)) {
+        E.response.body = "Error: sync start signal returned unknown status.";
+        E.response.statusCode = HTTP.INTERNAL_SERVER_ERROR;
     }
 });
 
@@ -178,13 +190,32 @@ P.respond("POST", "/api/haplo-user-sync/start-sync", [
 P.implementService("haplo_user_sync:backwards_compatible_sync", function(dataFile, filename) {
     var impl = P.getImplementation();
     // Find or create a new sync group
-    var sync = P.db.sync.create({
-        created: new Date(),
-        filesJSON: '{}'
-    });
+    var sync, syncQuery = P.db.sync.select().order("created",true).limit(1).stableOrder().limit(1);
+    if(syncQuery.length === 0 ||
+        syncQuery[0].status === P.SYNC_STATUS.complete ||
+        syncQuery[0].status === P.SYNC_STATUS.cancelled ||
+        syncQuery[0].status === P.SYNC_STATUS.failure) {
+        sync = P.db.sync.create({
+            status: P.SYNC_STATUS.uploading,
+            created: new Date(),
+            filesJSON: "{}"
+        });
+    } else {
+        sync = syncQuery[0];
+        if(sync.status !== P.SYNC_STATUS.uploading) {
+            console.log("haplo_user_sync:backwards_compatible_sync is cancelling a sync, state was: "+sync.status);
+            // sync is in an unexpected state
+            // TODO:
+            //      really should just disable P.config.autoApply here
+            //      however the config is constantly overwritten somehow.
+            sync.status = P.SYNC_STATUS.cancelled;
+            sync.save();
+            return;
+        }
+    }
 
     // Store file and stuff
-    var files = sync.getFiles();
+    var files = sync.files;
     var file = O.file(dataFile);
     files[filename] = {
         digest: file.digest,
@@ -192,11 +223,9 @@ P.implementService("haplo_user_sync:backwards_compatible_sync", function(dataFil
         filename: file.filename
     };
     sync.filesJSON = JSON.stringify(files);
-    sync.status = P.SYNC_STATUS.ready;
+    if(impl.allFilesUploaded(files)) { sync.status = P.SYNC_STATUS.ready; }
     sync.save();
 
-    if(P.data.config.autoApply) {
-        P.applySync(sync);
-    }
+    return sync;
 });
 

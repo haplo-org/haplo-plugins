@@ -4,49 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-
-/*
-    Provides a workflow feature to force users making workflow transitions
-    to review documents in document stores.
-
-    ExampleWorkflow.use("haplo:workflow:force_review_documents", {
-        selector: {...},
-        filterDocumentStores: [
-            {selector:{...}, set:[...], exclude:[...]},
-            ...
-        ]
-    });
-
-    The selector chooses which states need this force approval step. It is
-    recommended you use a {flags:[...]} style selector and apply a single
-    flag in your states definition.
-
-    By default, all forms that the user is permitted to see will be displayed
-    for review. In some states, they should only be reviewing a subset of
-    forms. The filterDocumentStores property controls which forms are
-    displayed.
-
-    Each element in the filterDocumentStores array is an object with a
-    selector, which determines whether the filter is applied, then two
-    optional properties which are both arrays of store names:
-
-       set - set the list of stores to be displayed (if the user is
-             permitted to view the store).
-       exclude - exclude the given list of stores from display.
-
-    Filters are applied in order, so an early 'exclude' will be overridden
-    by a later 'set'.
-
-    Even with filtering, only forms that the user is permitted to view will
-    be displayed.
-
-    If there are no forms with data, or they're all filtered out, then the
-    force review UI is skipped.
-
-*/
-
-// --------------------------------------------------------------------------
-
 var specForWorkflow = {};
 
 P.workflow.registerWorkflowFeature("haplo:workflow:force_review_documents", function(workflow, spec) {

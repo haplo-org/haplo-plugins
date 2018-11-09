@@ -53,11 +53,19 @@ unless(row) {
         </tr>
         <tr>
             <td> "Profile" </td>
-            <td> std:object(profile "linkedheading") </td>
+            if(profile) {
+                <td> std:object(profile "linkedheading") </td>
+            } else {
+                <td> "No profile" </td>
+            }
         </tr>
         <tr>
             <td> </td>
-            <td> std:object(profile) </td>
+            if(profile) {
+                <td> std:object(profile) </td>
+            } else {
+                <td></td>
+            }
         </tr>
     </table>
 

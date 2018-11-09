@@ -21,7 +21,8 @@ P.implementService("std:action_panel:committee", function(display, builder) {
     var upcomingMeetings = O.query().
         link(T.CommitteeMeeting, A.Type).
         link(display.object.ref, A.OrganisedBy).
-        dateRange(new Date()).
+        // A.Date specified so it doesn't check other date attributes e.g. deadline for agenda items
+        dateRange(new Date(), null, A.Date).
         sortByDateAscending().
         execute();
 
@@ -39,7 +40,8 @@ P.implementService("std:action_panel:committee", function(display, builder) {
     var pastMeetings = O.query().
         link(T.CommitteeMeeting, A.Type).
         link(display.object.ref, A.OrganisedBy).
-        dateRange(new XDate().addYears(-1).toDate(), new Date()).
+        // A.Date specified so it doesn't check other date attributes e.g. deadline for agenda items
+        dateRange(new XDate().addYears(-1).toDate(), new Date(), A.Date).
         limit(11).
         sortByDate().
         execute();
@@ -68,7 +70,11 @@ P.respond("GET,POST", "/do/haplo-committee-support/new-committee-meeting", [
     var meeting = O.object();
     meeting.appendType(T.CommitteeMeeting);
     meeting.append(committee.ref, A.OrganisedBy);
-    var appendAttendee = function(v,d,q) { meeting.append(v, A.Attendee); }; // TODO: Deduplicate attendees
+    var appendAttendee = function(v,d,q) {
+        if(!meeting.has(v, A.Attendee)) {
+            meeting.append(v, A.Attendee);
+        }
+    };
     committee.every(A.Chair, appendAttendee);
     committee.every(A.DeputyChair, appendAttendee);
     committee.every(A.CommitteeMember, appendAttendee);
@@ -78,8 +84,43 @@ P.respond("GET,POST", "/do/haplo-committee-support/new-committee-meeting", [
         pageTitle: committee.title + ": Schedule new meeting",
         backLink: finishedUrl,
         templateObject: meeting,
-        successRedirect: finishedUrl
+        successRedirect: P.template("success-redirect-url").render({finishedUrl:finishedUrl})
     }, "std:new_object_editor");
+});
+
+P.respond("GET,POST", "/do/haplo-committee-support/confirm-new-committee-meeting", [
+    {parameter:"ref", as:"object"},
+    {parameter:"back", as:"string"},
+    {parameter:"choice", as:"string", optional:true}
+], function(E, meeting, back, choice) {
+    let committee = meeting.first(A.OrganisedBy);
+    if(!committee) { O.stop("Committee not found"); }
+    if(!canCreateMeeting(O.currentUser, committee.load())) { O.stop("Not permitted"); }
+    if(back && !(/^\//.test(back))) { O.stop("Invalid back path"); }
+
+    if(E.request.method === "POST") {
+        if(choice === "edit") { return E.response.redirect("/do/edit/"+meeting.ref+"?back="+back); }
+        else if(choice === "continue") { return E.response.redirect(back); }
+        else { O.stop("Not a valid choice."); }
+    } else {
+        let parameters = { ref: meeting.ref, back: back };
+        let spec = {
+            pageTitle: "Confirm: new "+meeting.title,
+            options: [
+                {parameters:_.extend({}, parameters, {"choice":"edit"}), label: "Edit meeting"},
+                {parameters:_.extend({}, parameters, {"choice":"continue"}), label: "Continue"}
+            ]
+        };
+        if(!meeting.first(A.Date)) {
+            spec.text = "You have not entered a meeting date. Would you like to continue?";
+            E.render(spec, "std:ui:confirm");
+        } else if(meeting.first(A.Date).start < new Date()) {
+            spec.text = "You have entered a meeting date in the past, so you will not be able to schedule items to be discussed at this meeting. Would you like to continue?";
+            E.render(spec, "std:ui:confirm");
+        } else {
+            return E.response.redirect(back);
+        }
+    }
 });
 
 // TODO remove when platform function available
@@ -120,10 +161,17 @@ var sendAgendaNotification = function(meeting) {
         };
     });
     view.appDetails = _.sortBy(_.sortBy(appDetails, "applicantSurname"), "typeName");
+    var attendees = meeting.every(A.Attendee);
     if(committeeRef) {
-        view.committee = committeeRef.load();
+        var committee = committeeRef.load();
+        view.committee = committee;
+        if(!attendees.length) {
+            // If there are no attendees, notify rep
+            attendees = committee.every(A.CommitteeRepresentative);
+            view.noAttendees = true;
+        }
     }
-    meeting.every(A.Attendee, function(recipientRef) {
+    _.each(attendees, function(recipientRef) {
         var toUser = O.user(recipientRef);
         if(toUser) {
             view.toUser = toUser;
@@ -134,18 +182,19 @@ var sendAgendaNotification = function(meeting) {
     });
 };
 
-P.hook("hPostObjectChange", function(response, object, operation, previous) {
-    var meetingRef = object.first(A.CommitteeMeeting);
-    if(meetingRef) {
-        if(previous && object.valuesEqual(previous, A.CommitteeMeeting)) { return; }
-        var meeting = meetingRef.load();
-        var date = meeting.first(A.Date);
-        if(!date || !date.start) { return; }
-        if(new XDate().clearTime().addDays(7).diffDays(date.start) < 0) {
-            sendAgendaNotification(meeting);
-        }
-    }
-});
+if(!O.application.config["haplo_committee_support:disable_notifications_when_items_added"]) {
+    P.hook("hPostObjectChange", function(response, object, operation, previous) {
+        object.every(A.CommitteeMeeting, function(meetingRef) {
+            if(previous && previous.has(meetingRef, A.CommitteeMeeting)) { return; }
+            var meeting = meetingRef.load();
+            var date = meeting.first(A.Date);
+            if(!date || !date.start) { return; }
+            if(new XDate().clearTime().addDays(7).diffDays(date.start) < 0) {
+                sendAgendaNotification(meeting);
+            }
+        });
+    });
+}
 
 P.hook("hScheduleDailyEarly", function() {
     var committeeMeetings = O.refdict(function() { return []; });
@@ -180,7 +229,11 @@ P.respond("GET", "/do/haplo-committee-support/test-scheduled", [
 });
 
 P.implementService("std:action_panel:committee_meeting", function(display, builder) {
-    var apps = O.query().link(display.object.ref).sortByTitle().execute();
+    var apps = O.query().link(display.object.ref).execute();
+    apps = _.sortBy(apps, function(app) {
+        // Using title so new and legacy change requests are ordered correctly
+        return app.title;
+    });
     if(apps.length) {
         var panel = builder.panel(100);
         panel.element(0, {title:NAME("Agenda")});
@@ -214,10 +267,47 @@ P.respond("GET", "/do/haplo-committee-support/upcoming-meetings", [
 });
 
 P.hook("hNavigationPosition", function(response, name) {
-    if(name === "haplo:committee-information") {
+    if(name === "haplo:committee-information" && !O.application.config["haplo_committee_support:hide_committee_navigation"] ) {
         var navigation = response.navigation;
         navigation.separator();
         navigation.link("/do/haplo-committee-support/committees", "Committees").
             link("/do/haplo-committee-support/upcoming-meetings", "Upcoming meetings");
     }
+});
+
+
+// TODO remove this migration handler once it's been used on all ported systems
+P.respond("GET,POST", "/do/haplo-committee-support/migrate-attendees-for-ported-systems", [
+], function(E) {
+    if(!O.currentUser.isMemberOf(Group.Administrators)) { O.stop("Not permitted"); }
+    if(E.request.method === "POST") {
+        var committees = O.refdict();
+        O.query().link(T.Committee, A.Type).execute().each(function(committee) {
+            committees.set(committee.ref, committee);
+        });
+        O.query().link(T.CommitteeMeeting, A.Type).execute().each(function(meeting) {
+            if(!meeting.first(A.Attendee) && meeting.first(A.OrganisedBy)) {
+                var committee = committees.get(meeting.first(A.OrganisedBy));
+                if(committee) {
+                    var mutableMeeting = meeting.mutableCopy();
+                    var appendAttendee = function(v,d,q) {
+                        if(!mutableMeeting.has(v, A.Attendee)) {
+                            mutableMeeting.append(v, A.Attendee);
+                        }
+                    };
+                    committee.every(A.Chair, appendAttendee);
+                    committee.every(A.DeputyChair, appendAttendee);
+                    committee.every(A.CommitteeMember, appendAttendee);
+                    committee.every(A.CommitteeRepresentative, appendAttendee);
+                    mutableMeeting.save();
+                }
+            }
+        });
+        return E.response.redirect("/");
+    }
+    E.render({
+        pageTitle: "Migrate attendees for meetings in ported systems",
+        text: "VRE committee support worked differently in that committee meetings didn't have attendees automatically set on committee meetings and notifications went out to just the names listed on the committee record. Migrate them?",
+        options: [{label:"Confirm"}]
+    }, "std:ui:confirm");
 });

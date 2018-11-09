@@ -1,4 +1,4 @@
-pageTitle(M.title ": " spec.displayName)
+pageTitle(M.title ": " displayName)
 backLink(M.url) { "Cancel" }
 
 <form method="POST"> std:form:token()

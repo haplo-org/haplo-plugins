@@ -6,17 +6,6 @@
 
 /*
 
-    Concepts:
-
-    * Activity - a broad area of functionailty provided by one or more plugins.
-    * Activity owner - the plugin which declares the activity exists. 
-    * Activity tile - the tile on the home page for that activity.
-    * Activity overview - page with intro text and tiles for key functionality
-    * My items - key entry point for the activity which links to the primary
-        page where the user starts work on an activity.
-    * Activity menu - for authorised users, a page of menu entries and
-        key statistics for that activity.
-
     How to set up an application to use it:
 
     * Choose an appropriate home page element from the requirements.schema file.
@@ -78,6 +67,11 @@ P._ensureDiscovered = function() {
             discovered.push(activity);
             activityByName[name] = activity;
         });
+
+        // This service is used by demo applications to modify the activities.
+        // IT SHOULD NOT BE USED BY PRODUCTION APPLICATIONS
+        O.serviceMaybe("__demo__:haplo_activity_navigation:activities_for_modification", discovered);
+
         activities = _.sortBy(discovered, "sort");
     }
 };
@@ -99,7 +93,12 @@ P.validateActivityName = function(name) {
     return name in activityByName;
 };
 
+P.implementService("haplo_activity_navigation:get_all_activities", P.getActivities);
 P.implementService("haplo_activity_navigation:get_activity", P.getActivity);
+
+P.implementService("__qa__:haplo_activity_navigation:internals", function() {
+    return {activities:P.getActivities()};
+});
 
 // --------------------------------------------------------------------------
 
@@ -109,6 +108,7 @@ var Activity = function(sort, name, title, icon, editAction) {
     this.title = title;
     this.icon = icon;
     this.editAction = editAction || DefaultEditAction;
+    this.hide = false;
     var nameForService = name.replace(/-/g,'_');
     this._editOverviewAction = "activity:edit_overview:"+nameForService;
     this._myItemsActionPanelName = "activity:my_items:"+nameForService;
@@ -122,7 +122,7 @@ var Activity = function(sort, name, title, icon, editAction) {
 P.implementService("std:action_panel:home_activities", function(display, builder) {
     var excludes = O.application.config["haplo_activity_navigation:home_exclude_activity"] || [];
     _.each(P.getActivities(), function(activity) {
-        if(-1 === excludes.indexOf(activity.name)) {
+        if(-1 === excludes.indexOf(activity.name) && !(activity.hide)) {
             builder.element(activity.sort, {
                 href:"/do/activity/"+activity.name,
                 label: activity.title,

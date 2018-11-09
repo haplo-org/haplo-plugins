@@ -7,5 +7,6 @@ emailSubject("Pre-meeting review")
 <p>
     "Committee: " committee.title <br>
     "Date of meeting: " std:date(date) <br>
-    "For review: " <a href=[std:object:url:full(M.entities.object)]> M.entities.object.title </a>
+    "For review: " <a href=[std:object:url:full(M.entities.object)]> M.entities.object.title </a> <br>
+    if(notes){ "Notes: " notes }
 </p>

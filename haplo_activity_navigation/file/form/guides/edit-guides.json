@@ -22,6 +22,26 @@
             ]
         },
         {
+            "type": "repeating-section",
+            "heading": "Blank forms",
+            "path": "blankForms",
+            "allowDelete": true,
+            "elements": [
+                {
+                    "type": "choice",
+                    "path": "formId",
+                    "choices": "blankForms",
+                    "objectIdProperty": "name",
+                    "objectDisplayProperty": "title"
+                },
+                {
+                    "type": "text",
+                    "path": "comment",
+                    "placeholder": "(optional comment)"
+                }
+            ]
+        },
+        {
             "type": "section",
             "heading": "Files",
             "elements": [

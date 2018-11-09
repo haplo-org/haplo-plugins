@@ -1,0 +1,16 @@
+std:plugin:resources("minutes.css")
+pageTitle("Actions taken: " meeting.title)
+backLink(std:object:url(meeting))
+
+if(meetingNotStarted) { std:ui:notice("This meeting has not yet taken place.") }
+
+std:object(meeting)
+
+each(agenda) {
+    <h1> std:object:link(item) </h1>
+    <div class="actionInfo">
+        each(actions) {
+            render(.)
+        }
+    </div>
+}

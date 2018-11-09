@@ -18,6 +18,10 @@
   "load": [
       "js/haplo_workflow_committee_scheduling.js",
       "js/haplo_workflow_online_decision.js",
-      "js/haplo_workflow_pre_meeting_review.js"
-    ]
+      "js/haplo_workflow_pre_meeting_review.js",
+      "js/haplo_workflow_committee_minutes.js"
+    ],
+  "respond": [
+    "/do/haplo-workflow-committee-scheduling"
+  ]
 }

@@ -6,26 +6,36 @@
 
 // TODO: Docs
 
+var createNewApprovalLookup = function(allApprovers) {
+    var lookup = O.refdict();
+    // Skip users without acounts
+    _.each(allApprovers, function(approverRef) {
+        var user = O.user(approverRef);
+        if(!user || !user.isActive) { lookup.set(approverRef, true); }
+    });
+    return lookup;
+};
+
 P.workflow.registerWorkflowFeature("haplo:list_approval",
     function(workflow, spec) {
 
         var createLookup = function(M) {
             var timeline = M.timelineSelect().where("previousState","=",spec.state).
                 where("action","=",spec.forwardTransition).order("datetime");
-            var approvedLookup = O.refdict();
             var allApprovers = M.entities[spec.listEntity+"_refList"];
+            var approvedLookup = createNewApprovalLookup(allApprovers);
             // TODO skip users without accounts until we sort out workflow fallbacks properly
-            _.each(allApprovers, function(approverRef) {
-                var user = O.user(approverRef);
-                if(!user || !user.isActive) { approvedLookup.set(approverRef, true); }
-            });
+            // _.each(allApprovers, function(approverRef) {
+            //     var user = O.user(approverRef);
+            //     if(!user || !user.isActive) { approvedLookup.set(approverRef, true); }
+            // });
             _.each(timeline, function(e) {
                 var userRef = e.user.ref;
                 if(userRef) { approvedLookup.set(userRef, true); }
                 if(approvedLookup.length === allApprovers.length) {
                     // This means all users have previously approved but this is running
                     // therefore we've entered this state again so reset
-                    approvedLookup = O.refdict();
+                    approvedLookup = createNewApprovalLookup(allApprovers);
                 }
             });
             return approvedLookup;
@@ -69,6 +79,17 @@ P.workflow.registerWorkflowFeature("haplo:list_approval",
             }
         });
 
+        // Check user is the current actionable user
+        workflow.hasRole(function(M, user, role) {
+            var sd = M.getStateDefinition(spec.state);
+            if(!sd) { throw new Error("Can't find state", spec.state); }
+            if(!sd.actionableBy) { throw new Error("No actionableBy in state", spec.state); }
+            if(M.state === spec.state && role === sd.actionableBy) {
+                var userRef = O.ref(M.target);
+                return userRef == user.ref;
+            }
+        });
+
         workflow.setWorkUnitProperties({state:spec.state}, function(M, transition) {
             var targetRef;
             if(transition === spec.forwardTransition) {
@@ -78,7 +99,9 @@ P.workflow.registerWorkflowFeature("haplo:list_approval",
                 // unless the approver list has changed
                 targetRef = getNextIgnoreCurrent(M);
             }
-            M.workUnit.tags.target = targetRef.toString();
+            if(targetRef) {
+                M.workUnit.tags.target = targetRef.toString();
+            }
         });
 
         workflow.resolveTransitionDestination({state:spec.state}, function(M, name, destinations) {

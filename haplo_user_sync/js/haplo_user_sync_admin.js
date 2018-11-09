@@ -258,5 +258,60 @@ P.respond("GET", "/do/haplo-user-sync/test/fetch-files", [
 
 P.respond("GET", "/do/haplo-user-sync/test/upload-file", [
 ], function(E) {
-    E.render({backLink: "/do/haplo-user-sync/admin"});
+    var sync, syncQuery = P.db.sync.select().
+        or(function(sq) { sq.where("status","=",P.SYNC_STATUS.uploading).where("status","=",P.SYNC_STATUS.ready); }).
+        order("created",true).stableOrder().limit(1);
+    if(syncQuery.length) { sync = syncQuery[0]; }
+    var syncStatusText, fileForm;
+    if(sync) {
+        var files = [];
+        _.each(sync.files, function(file,name) {
+            files.push({name:name,file:file});
+        });
+        fileForm = files.length ? displayFileForm.instance({files:files}) : null;
+        syncStatusText = P.STATUS_TEXT[sync.status];
+    }
+    var previousFiles = [];
+    var lastSync = P.db.sync.select().
+        or(function(sq) { sq.where("status","=",P.SYNC_STATUS.complete).where("status","=",P.SYNC_STATUS.failure); }).
+        order("created",true).stableOrder().limit(1);
+    if(lastSync.length) {
+        _.each(lastSync[0].files, function(file,name) {
+            previousFiles.push({name:name,digest:file.digest});
+        });
+    }
+    E.render({
+        backLink: "/do/haplo-user-sync/admin",
+        syncStatusText: syncStatusText,
+        files: fileForm,
+        previousFiles: previousFiles
+    });
+});
+
+P.respond("POST", "/do/haplo-user-sync/test/use-file", [
+    {parameter: "name", as:"string", validate:/^[a-z0-9A-Z_\-]+$/},
+    {parameter: "digest", as:"string"}
+], function(E, name, digest) {
+    var impl = P.getImplementation();
+    // Find or create a new sync group
+    var sync = P.findOrCreateSyncGroup();
+    if(sync.status !== P.SYNC_STATUS.uploading) {
+        E.response.kind = 'text';
+        E.response.body = 'Sync in unexpected state -- use admin interface to resolve.';
+        E.response.statusCode = HTTP.BAD_REQUEST;
+        return;
+    }
+
+    // Store file and file info
+    var file = O.file(digest);
+    var files = sync.files;
+    files[name] = {
+        digest: file.digest,
+        fileSize: file.fileSize,
+        filename: file.filename
+    };
+    sync.filesJSON = JSON.stringify(files);
+    if(impl.allFilesUploaded(files)) { sync.status = P.SYNC_STATUS.ready; }
+    sync.save();
+    return E.response.redirect("/do/haplo-user-sync/test/upload-file");
 });

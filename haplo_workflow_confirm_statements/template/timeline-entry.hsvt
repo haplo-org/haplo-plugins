@@ -1,0 +1,3 @@
+<i> entry.user.name </i>
+if(text) { " " text " - " } else { " confirmed statements - " }
+<a href=["/do/workflow-confirm-statements/view/" M.workUnit.id "/" entry.id]> "view..." </a>

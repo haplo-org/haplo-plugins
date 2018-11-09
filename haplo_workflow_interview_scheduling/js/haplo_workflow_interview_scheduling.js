@@ -4,40 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-/*
- *  Meeting scheduling workflow feature
- *
- *  Adds functionailty for meeting scheduling to workflows. This includes the date forms, UI, and automatic
- *  transitioning of the workflow after the meeting has taken place.
- *
- *  use by calling .use("haplo:meeting_scheduling", spec) on a std:workflow object
- *  where spec is a JS object defining:
- *
- *  path: the response path of the consuming plugin, as defined in it's plugin.json file
- *  meetingTransition: the name of the transition to the post-meeting state. Can be from many pre-meeting states,
- *                      but all should have the same transition name
- *  documentStore: {  // Values required for document store specification. See std:document_store
- *      name: 
- *      title: (OPTIONAL)
- *      view:
- *      edit:
- *      customFormsForKey: (OPTIONAL) the form(s) returned must have 'date' in the path, as this is used to 
- *                        populate the MeetingDate attribute
- *      customBlankDocumentForKey: (OPTIONAL)
- *      customShouldEditForm: (OPTIONAL)
- *      customShouldDisplayForm: (OPTIONAL)
- *  }
- *  onScheduled: function(M) {} - optional
- *      called as soon as the meeting has been scheduled
- *  projectDate: (OPTIONAL)
- *      string of Project Date to save interview date to        
- *  onSaveCompletedForm: function(spec, M, object, document) {} - optional
- *      allows for custom behaviour on commiting document
- *      return true to prevent default onSaveCompletedForm behaviour from executing
- *
- *  Custom text can be implemented using usual docstore workflow text system integration
- */
-
 var meetingDateForm = P.form({
     specificationVersion: 0,
     formId: "meetingDateForm",
@@ -118,8 +84,6 @@ var onSaveCompletedForm = function(spec, M, object, document) {
     // To guard against invalid customFormsForKey
     if(!("date" in document)) { throw new Error("Meeting form must include 'date' in the document path."); }
 
-    // TODO: Check difference in document to previous one, to prevent multiple notification emails being sent
-
     var mObject = object.mutableCopy();
     mObject.remove(A.MeetingDate);
     mObject.remove(A.MeetingLocation);
@@ -172,6 +136,8 @@ P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow
         shouldEditForm: spec.documentStore.customShouldEditForm,
         shouldDisplayForm: spec.documentStore.customShouldDisplayForm,
         onCommit: spec.documentStore.customOnCommit,
+        getAdditionalUIForViewer: spec.documentStore.customGetAdditionalUIForViewer,
+        getAdditionalUIForEditor: spec.documentStore.customGetAdditionalUIForEditor,
         view: spec.documentStore.view,
         edit: spec.documentStore.edit,
         history: [],      // no viewable history

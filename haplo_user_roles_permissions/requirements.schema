@@ -3,5 +3,6 @@ label std:label:concept as CONCEPT
 label std:label:structure as STRUCTURE
 
 group std:group:everyone as Everyone
+group std:group:administrators as Administrators
 
 type std:type:person as Person

@@ -1,0 +1,11 @@
+{
+  "pluginName": "haplo_service_registry",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Service Registry",
+  "displayDescription": "Service registry to provide queriable metadata about services provided by plugins",
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_service_registry.js"
+    ]
+}

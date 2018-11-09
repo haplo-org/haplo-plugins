@@ -2,7 +2,7 @@
 std:ui:notice("Please review the notification, then click the button below to send it.")
 
 <p>
-  <a href=["/do/workflow-notifications/write/" notification.name "/" M.workUnit.id]> "Edit notification" </a>
+  std:ui:button-link("/do/workflow-notifications/write/" notification.name "/" M.workUnit.id) { "Edit notification" }
 </p>
 
 std:text:document(notification.text)

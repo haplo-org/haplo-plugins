@@ -45,6 +45,22 @@ var groupPermissions = {},
 
 // --------------------------------------------------------------------------
 
+P.implementService("__qa__:haplo_user_roles_permissions:internals", function() {
+    ensureSetup();
+    return {
+        groupPermissions: groupPermissions,
+        groupRestrictionLabels: groupRestrictionLabels,
+        administratorGroups: administratorGroups,
+        groupPersonalRoles: groupPersonalRoles,
+        rolePermissions: rolePermissions,
+        roleRestrictionLabels: roleRestrictionLabels,
+        roles: roles,
+        relevantTypes: relevantTypes
+    };
+});
+
+// --------------------------------------------------------------------------
+
 var ensureSetup = function() {
 
     var rolePermissionsCopy = {};
@@ -77,7 +93,7 @@ var ensureSetup = function() {
         // specified) has a role of "role at O" or, if objectAttr is
         // specified, "role at O.objectAttr". "role" is a human-readable string.
         attributeRole: function(role, type, desc, qual, objectAttr) {
-            var lookup = roles.get(type);
+            var lookup = roles.getWithoutHierarchy(type);
             var key = ''+desc+(qual ? '.'+qual : '');
             var list = lookup[key];
             if(!list) { list = lookup[key] = []; }
@@ -284,7 +300,6 @@ var getUserRoles = function(user) {
                                         attrRoles.forEach(function(r) {
                                             // By default, the role is
                                             // "at" the object
-                                            var ref = obj.ref;
                                             // But if the
                                             // attributeRole
                                             // declaration names an
@@ -293,11 +308,14 @@ var getUserRoles = function(user) {
                                             // to find the "at"
                                             // object.
                                             if(r.objectAttr) {
-                                                ref = obj.first(r.objectAttr);
-                                                if(!O.isRef(ref)) { ref = undefined; }
-                                            }   
-                                            if(ref) {
-                                                userRoles.addRole(r.role, ref);
+                                                obj.every(r.objectAttr, function(v,d,q) {
+                                                    if(O.isRef(v)) { userRoles.addRole(r.role, v); }
+                                                });
+                                            } else {
+                                                var ref = obj.ref;
+                                                if(ref) {
+                                                    userRoles.addRole(r.role, ref);
+                                                }
                                             }
                                         });
                                     }
@@ -416,10 +434,10 @@ P.hook("hUserLabelStatements", function(response, user) {
 
 
 P.hook("hUserAttributeRestrictionLabels", function(response, user) {
-    var changes = O.labelChanges();
+    var userLabels = response.userLabels;
     var addLabelChanges = function(labelsObject, index) {
         var ll = labelsObject[index];
-        if(ll) { changes.add(ll); }
+        if(ll) { userLabels.add(ll); }
     };
 
     user.groupIds.forEach(function(gid) {
@@ -430,6 +448,4 @@ P.hook("hUserAttributeRestrictionLabels", function(response, user) {
     _.each(userRoles._getRawRoles(), function(labels, roleName) {
         addLabelChanges(roleRestrictionLabels, roleName);
     });
-
-    response.labels = changes.change(O.labelList());
 });

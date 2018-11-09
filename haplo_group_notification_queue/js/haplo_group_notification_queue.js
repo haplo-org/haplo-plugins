@@ -13,6 +13,8 @@
     with any queue with outstanding tasks having an open work unit associated with said queue.
 
     O.service("haplo:group_notification_queue:task_definition:TASK_TYPE")
+        with args
+            ref - ref of the object linked to the task
         should return an object with properties:
             description - description of the task itself
 

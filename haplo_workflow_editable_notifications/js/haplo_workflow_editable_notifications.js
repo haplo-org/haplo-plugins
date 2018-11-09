@@ -4,63 +4,81 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-/*
-    For each notification in the workflow:
-    
-    1) Define a state, transition and text where someone must write and send a notification.
-    These are entirely your responsibility. This feature will prevent all transitions until
-    a notification has been written, and then will send it on transition.
+/*HaploDoc
+node: /haplo_workflow_editable_notifications
+title: Haplo Editable Notifications
+sort: 47
+--
 
-    2) use("haplo:editable_notification", spec)
-    where spec has properties:
-        name - unique name of the notification
-        displayName - for notification in list
-        state - state where user will send a notification
-        transition - (optional but advised for best UX) which transition will be
-            performed when the notification has been made
-        subject - (optional) override email subject, can be a string or a function
-            called with the M parameter for per-instance subjects
-        getNotificationTemplateName(M) - (optional) function to get template name
-        sendEmail - (optional) specification for M.sendEmail to send the email
+For each notification in the workflow:
 
-    3) P.implementService("haplo:editable_notification:template_definition:TEMPLATE_NAME", function() { ... });
-    where TEMPLATE_NAME is the name of the template, returned from getNotificationTemplateName().
-    However, you'll probaly just want to use the default template name, which is
-        PLUGIN_NAME:WORKFLOW_NAME:NOTIFICATION_NAME
-    eg "example_plugin:approval:accepted"
+1) Define a state, transition and text where someone must write and send a notification.
+These are entirely your responsibility. This feature will prevent all transitions until
+a notification has been written, and then will send it on transition.
 
-    Your service should return an object with these properties:
-        plugin - plugin which implements this
-        sections - array of [sort, name, xml file, displayName]
-        buildTextForEditing(M,builder) - function to build text (optional)
+2) Use the feature. 
 
-    This separation of notifications and templates is intended to give you more flexibility
-    in how templates are created. For example, this mechanism allows you to have pluggable
-    implementations in your workflows.
+h3(feature). use("haplo:editable_notification", spec)
 
-    Your buildTextForEditing() function is called with a builder object, see the TextBuilder
-    implementation below. This allows you to
-       a) define stock text (which later we'll allow admins to edit)
-       b) add rendered templates for stuff which can't be put in template
-       c) replace [KEY] values in all text with values generated for the workflow,
-          for inserting key values even in edited text.
+where spec has properties:
 
-    TODO: Document builder interface
+| name | unique name of the notification |
+| displayName | for notification in list, supports use of @NAME()@ through string interpolation. |
+| state | state where user will send a notification |
+| transition | (optional but advised for best UX) which transition will be performed when the notification has been made |
+| subject | (optional) override email subject, can be a string or a function called with the M parameter for per-instance subjects |
+| getNotificationTemplateName(M) | (optional) function to get template name |
+| sendEmail | (optional) specification for M.sendEmail for sending the notification by email, can be a spec or a function called with the M parameter for per-instance specs |
+| noRedirect | (optional) boolean to prevent redirecting to the notification edit page when transitioning into the state |
 
-    IMPORTANT: Try to get as much of your notification as possible as possible using
-    the XML files. This maximises the amount of the notification which will be
-    editable by the administrators.
+To replace the text of "Notify: "+displayName or the indicator, use the text system.
 
-    Your XML files are not strictly correct XML, as they should *not* include the root
-    <doc> element. But otherwise they're just the document text XML.
+3) Implement the service.
+
+h3(service). P.implementService("haplo:editable_notification:template_definition:TEMPLATE_NAME", function() { ... });
+
+where @TEMPLATE_NAME@ is the name of the template, returned from @getNotificationTemplateName()@.
+
+However, you'll probaly just want to use the default template name, which is @PLUGIN_NAME:WORKFLOW_NAME:NOTIFICATION_NAME@, eg. "example_plugin:approval:accepted".
+
+Your service should return an object with these properties:
+
+| plugin | plugin which implements this |
+| sections | array of @[sort, name, xml file, displayName]@ |
+| @buildTextForEditing(M,builder)@ | function to build text (optional) |
+
+This separation of notifications and templates is intended to give you more flexibility
+in how templates are created. For example, this mechanism allows you to have pluggable
+implementations in your workflows.
+
+Your @buildTextForEditing()@ function is called with a builder object, see the TextBuilder
+implementation below. This allows you to
+   a) define stock text (which later we'll allow admins to edit)
+   b) add rendered templates for stuff which can't be put in template
+   c) replace @[KEY]@ values in all text with values generated for the workflow,
+      for inserting key values even in edited text.
+
+h4. Builder interface
+
+|_. function |_. Action |
+| add(sort, deferred) | Add a text in the notification from a deferred render template. |
+| interpolate(interpolations) | Add interpolations for the text. |
+| exclude(name) | Exclude a named section. |
+| excludeAll() | Exclude all sections. |
+| include(name) | Explicitly include a section after @excludeAll()@ |
 
 
-    There's also an optional configuration of the notification system for the entire
-    workflow. You probably won't need to use it.
+*IMPORTANT*: Try to get as much of your notification as possible as possible using the XML files. This maximises the amount of the notification which will be editable by the administrators.
 
-    use("haplo:editable_notification:config", config)
-    where config has properties:
-        panel - panel sort for the sent Notifications list
+Your XML files are not strictly correct XML, as they should *not* include the root @<doc>@ element. But otherwise they're just the document text XML.
+
+There's also an optional configuration of the notification system for the entire workflow. You probably won't need to use it.
+
+h3(feature). use("haplo:editable_notification:config", config)
+
+where @config@ has properties:
+
+| panel | panel sort for the sent Notifications list |
 
 */
 
@@ -98,9 +116,9 @@ var getPendingNotification = function(M, name) {
     return pendingq.length ? pendingq[0] : undefined;
 };
 
-var getSubjectFromSpec = function(M, spec) {
-    if(!spec.subject) { return; }
-    return (typeof(spec.subject) === "function") ? spec.subject(M) : spec.subject;
+var getPropertyFromSpec = function(M, spec, property) {
+    if(!spec[property]) { return; }
+    return (typeof(spec[property]) === "function") ? spec[property](M) : spec[property];
 };
 
 // --------------------------------------------------------------------------
@@ -141,18 +159,19 @@ P.workflow.registerWorkflowFeature("haplo:editable_notification",
             if(M.workUnit.isActionableBy(O.currentUser)) {
                 builder.link("default",
                     "/do/workflow-notifications/write/"+spec.name+"/"+M.workUnit.id,
-                    "Notify: "+spec.displayName,
-                    getPendingNotification(M, spec.name) ? "standard" : "primary");
+                    M.getTextMaybe("transition:"+spec.transition) || "Notify: "+O.interpolateNAMEinString(spec.displayName),
+                    getPendingNotification(M, spec.name) ? "standard" : M.getTextMaybe("transition-indicator:"+spec.transition) || "primary");
             }
         });
 
         // Prevent transitions until a notification has been written
         workflow.filterTransition(SELECTOR, function(M, name) {
-            if(!getPendingNotification(M, spec.name)) { return false; }
+            if(spec.transition === name && !getPendingNotification(M, spec.name)) { return false; }
         });
 
         // Display the notification for review on the transition page
         workflow.transitionUI(SELECTOR, function(M, E, ui) {
+            if(ui.requestedTransition !== spec.transition) { return; }
             var pending = getPendingNotification(M, spec.name);
             if(!pending) { return; }
             ui.addFormDeferred("top", P.template("review").deferredRender({
@@ -163,15 +182,16 @@ P.workflow.registerWorkflowFeature("haplo:editable_notification",
 
         // When transitioning, send the notification and mark it as not pending any more
         workflow.observeExit(SELECTOR, function(M, transition) {
+            if(transition !== spec.transition) { return; }
             var pending = getPendingNotification(M, spec.name);
             if(pending) {
                 // Send notification by email
                 if(spec.sendEmail) {
-                    var sendSpec = _.clone(spec.sendEmail);
+                    var sendSpec = _.clone(getPropertyFromSpec(M, spec, "sendEmail"));
                     var sendView = {
-                        spec: spec,
+                        displayName: O.interpolateNAMEinString(spec.displayName),
                         url: O.application.url + M.url,
-                        subject: getSubjectFromSpec(M, spec),
+                        subject: getPropertyFromSpec(M, spec, "subject"),
                         M: M,
                         notification: pending
                     };
@@ -195,6 +215,7 @@ P.workflow.registerWorkflowFeature("haplo:editable_notification",
 
         // When transitioning to this state as the actionable user, go directly to the notification
         workflow.transitionUIPostTransitionRedirectForActionableUser(SELECTOR, function(M, ui) {
+            if(spec.noRedirect) { return; }
             return "/do/workflow-notifications/write/"+spec.name+"/"+M.workUnit.id;
         });
     }
@@ -226,7 +247,7 @@ var actionPanelToDisplaySendNotification = function(M, builder) {
         if(info) { links.push(info.spec); }
     });
     _.each(links, function(spec, index) {
-        panel.link(100+index, "/do/workflow-notifications/view/"+spec.name+"/"+M.workUnit.id, spec.displayName);
+        panel.link(100+index, "/do/workflow-notifications/view/"+spec.name+"/"+M.workUnit.id, O.interpolateNAMEinString(spec.displayName));
     });
 };
 
@@ -262,11 +283,11 @@ P.respond("GET,POST", "/do/workflow-notifications/write", [
         if(E.request.parameters.save) { 
             return E.response.redirect(M.url);
         } else {
-            return E.response.redirect(M.transitionUrl(info.spec.transition));            
+            return E.response.redirect(M.transitionUrl(info.spec.transition));
         }
     }
     E.render({
-        spec: info.spec,
+        displayName: O.interpolateNAMEinString(info.spec.displayName),
         M: M,
         form: form
     });
@@ -274,7 +295,7 @@ P.respond("GET,POST", "/do/workflow-notifications/write", [
 
 // --------------------------------------------------------------------------
 
-P.respond("GET,POST", "/do/workflow-notifications/view", [
+P.respond("GET", "/do/workflow-notifications/view", [
     {pathElement:0, as:"string"},
     {pathElement:1, as:"workUnit", allUsers:true}
 ], function(E, name, workUnit) {
@@ -290,10 +311,49 @@ P.respond("GET,POST", "/do/workflow-notifications/view", [
         order("sentAt",true);   // put latest notifications first
 
     E.render({
-        spec: info.spec,
+        displayName: O.interpolateNAMEinString(info.spec.displayName),
         M: M,
-        notifications: notifications
+        notifications: _.map(notifications, function(notification) {
+            return _.extend(notification, { url: "/do/workflow-notifications/download/"+name+"/"+workUnit.id+"/"+notification.id });
+        })
     });
+});
+
+P.respond("GET", "/do/workflow-notifications/download", [
+    {pathElement:0, as:"string"},
+    {pathElement:1, as:"workUnit", allUsers:true},
+    {pathElement:2, as:"db", table:"notifications"}
+], function(E, name, workUnit, notification) {
+    var info = getWorkflowNotificationInfo(workUnit, name); // stops if not defined
+    const permissionsCheck = workUnit.ref.load();
+    const M = info.workflow.instance(workUnit);
+
+    const notificationHTML = O.text(O.T_TEXT_DOCUMENT, notification.text);
+    const letterHTML = P.template("notification-download").render({ html:notificationHTML });
+    let pipeline = O.fileTransformPipeline();
+    let letterhead, margin;
+    const sender = notification.sentBy;
+    letterhead = O.serviceMaybe("hres_file_templates:get_template:maybe", sender ? sender.ref : null, ["DEFAULT"]);
+    if(letterhead) {
+        pipeline.file("letterhead", letterhead.file);
+        margin = letterhead.margin;
+    }
+    pipeline.transform("std:generate:formatted_text", _.extend({}, margin, {
+        html: letterHTML,
+        css: P.loadFile("notification.css").readAsString()
+    }));
+    if(letterhead) {
+        pipeline.transformPreviousOutput("std:pdf:overlay", {
+            overlay: "letterhead"
+        });
+    }
+    let fileName = O.interpolateNAMEinString(info.spec.displayName)+".pdf";
+    const object = M.entities.object;
+    fileName = (object && object.title) ? object.title + "_" + fileName : fileName;
+    fileName = fileName.replace(/ /g,"_");
+    const redirectURL = pipeline.urlForOuputWaitThenDownload("output", fileName);
+    pipeline.execute();
+    E.response.redirect(redirectURL);
 });
 
 // --------------------------------------------------------------------------

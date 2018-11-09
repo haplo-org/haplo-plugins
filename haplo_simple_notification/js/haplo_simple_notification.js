@@ -4,42 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-
-/*
- * Haplo simple notification plugin
- * 
- * A simple method for sending tasks to users, including email notifications.
- * Recipients can also reply to these. Replies are sent to the user in the
- * createdBy attribute of the workUnit.
- *
- * For each kind of notification you want to have, implement a service called 
- * "haplo:simple_notification:details:example:example_kind", passing the workUnit in.
- *
- * The service should return an object defining the following. By default the notification will
- * be rendered with a std:ui:confirm template.
- *
- *      title: the title of the notification
- *      text: the message of the notification
- *      buttonLabel: (optional) the label for the confirmation button. Default "Mark as complete"
- *      taskNote: (optional) the text that appears on the task list. Default "Please mark this as complete"
- *      link: (optional) if present, this will override the default std:ui:confirm template.
- *
- * Note that if a custom link is used it will be responsible for closing the workUnit.
- *
- * A notification can then be created by calling O.service("haplo:simple_notification:create", spec)
- * where spec is an object defining the following:
- *
- *      kind: the kind as string e.g. "example:example_kind" from the above example
- *      recipient: a SecurityPrincipal object representing a group or user
- *      ref: the Ref object the workUnit is linked to
- *      data: (optional) an object
- *      workflow: (optional) workflow instance so that replies will be saved to the timeline
- *
- * By default clicking "Mark as complete" in the std:ui:confirm template will redirect to the task list.
- * You can customise this by implementing a "haplo:simple_notification:closed:example:example_kind" service.
- * If the service returns something, the plugin will then redirect to the service's return value on clicking "Mark as complete".
- */
-
 P.respond("GET,POST", "/do/haplo-simple-notification", [
     {pathElement:0, as:"workUnit", workType:"haplo_simple_notification:message"}
 ], function(E, workUnit) {
@@ -135,6 +99,14 @@ P.implementService("haplo:simple_notification:create", function(spec) {
         var M = spec.workflow;
         data._originatingWorkflowRef = M.workUnit.ref.toString();
         data._originatingWorkflowType = M.workUnit.workType;
+    }
+    if(spec.deduplicate) {
+        let exists = O.work.query("haplo_simple_notification:message").
+            actionableBy(spec.recipient).
+            tag('kind', spec.kind).
+            ref(spec.ref).
+            isOpen();
+        if(exists.length) { return; }
     }
     return O.work.create({
         workType: "haplo_simple_notification:message",

@@ -5,33 +5,52 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
 
-/*
-    Workflow.use("haplo:download_pdf", spec)
+/*HaploDoc
+node: /haplo-workflow-download-pdf
+title: Haplo Workflow Download PDF
+sort: 450
+module_owner: Ben
+--
 
-    Where spec may have optional properties:
-        selector - when to display the download button
-        setup - function called with 'pdf' object described below
-        categories - array of category names
-        excludeDocumentStores - array of document stores to exclude
+This creates the option of downloading all forms in a workflow \
+as a PDF. To use it, you will need to add this plugin to your \
+plugin's dependencies.
 
-    Plugins may add any other properties to the specifiction, as long
-    as they include a ':' character. This is useful for passing additional
-    information to setup triggered by categories.
+h2(feature). workflow.use("haplo:download_pdf", spec)
 
-    When generating a PDF, calls services named:
-        haplo:workflow:download-pdf:setup   // but prefer to use the category one
-        haplo:workflow:download-pdf:setup:work-type:WORK_TYPE
-        haplo:workflow:download-pdf:setup:category:CATEGORY
+Where spec may have optional properties:
 
-    with a pdf object, which has functions:
-        headerField(sort, name, value)
-        section(sort, title, deferred)
-        file(file)
-    and properties:
-        workType
-        M
-        specification
-        attachingFiles
+* selector - when to display the download button
+* setup - function called with 'pdf' object described below
+* categories - array of category names
+* excludeDocumentStores - array of document stores to exclude
+* margins - margins for use when generating formatted text
+
+Plugins may add any other properties to the specifiction, as long \
+as they include a ':' character. This is useful for passing additional \
+information to setup triggered by categories.
+
+When generating a PDF, calls services named:
+
+* haplo:workflow:download-pdf:setup   // but prefer to use the category one
+* haplo:workflow:download-pdf:setup:work-type:WORK_TYPE
+* haplo:workflow:download-pdf:setup:category:CATEGORY
+
+with a pdf object, which has functions:
+
+* headerField(sort, name, value)
+* section(sort, title, deferred)
+* file(file)
+
+and properties:
+
+* workType
+* M
+* specification
+* attachingFiles
+
+If there is an edited version of the document and the current user is \
+allowed to see the draft, they get the draft version when downloading.
 
 */
 
@@ -44,7 +63,18 @@ P.workflow.registerWorkflowFeature("haplo:download_pdf",
         if(!spec) { spec = {}; }
         registeredWorkflows[workflow.fullName] = spec;
         workflow.actionPanel(spec.selector || {}, function(M, builder) {
-            builder.panel(1498).link("default", "/do/haplo-workflow-download-pdf/download/"+M.workUnit.ref+"/"+M.workUnit.id, "Download printable PDF...");
+            var canDownload = _.some(O.service("std:document_store:workflow:sorted_store_names_action_allowed", M, O.currentUser, "view"), function(name) {
+                if(_.contains(spec.excludeDocumentStores, name)) { return; }
+                var store = workflow.documentStore[name];
+                var instance = store.instance(M);
+                var canViewDraft = O.service("std:document_store:workflow:form_action_allowed",
+                    M, name, O.currentUser, 'viewDraft');
+                return (instance.hasCommittedDocument || canViewDraft);
+            });
+
+            if(canDownload) {
+                builder.panel(1498).link("default", "/do/haplo-workflow-download-pdf/download/"+M.workUnit.ref+"/"+M.workUnit.id, "Download printable PDF...");
+            }
         });
     }
 );
@@ -83,6 +113,13 @@ P.respond("GET,POST", "/do/haplo-workflow-download-pdf/download", [
     });
 });
 
+var DEFAULT_MARGINS = {
+    marginTop: 70,
+    marginBottom: 70,
+    marginLeft: 70,
+    marginRight: 70
+};
+
 P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
     function(M, pipeline, outputName, attachingFiles) {
         var workUnit = M.workUnit;
@@ -91,7 +128,7 @@ P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
         var files = [];
         var headerFields = {};
         var sections = [];
-        var css = [];
+        var css = [ P.loadFile("default.css") ];
 
         var pdf = {
             workType: workUnit.workType,
@@ -149,16 +186,24 @@ P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
                 if(_.contains(spec.excludeDocumentStores, name)) { return; }
                 var store = workflow.documentStore[name];
                 var instance = store.instance(M);
-                if(instance.hasCommittedDocument) {
-                    sections.push({
-                        // TODO: Get title & sort from docstore properly
-                        sort: store.delegate.sortDisplay || store.delegate.priority || 100,
-                        title: M.getTextMaybe("docstore-panel-view-link:"+name) || store.delegate.title,
-                        deferred: instance.deferredRenderLastCommittedDocument()
-                    });
+                var section = {
+                    // TODO: Get title & sort from docstore properly (delegate is not a public property)
+                    sort: store.delegate.sortDisplay || store.delegate.priority || 100,
+                    title: M.getTextMaybe("docstore-panel-view-link:"+name) || store.delegate.title,
+                };
+                var canViewDraft = O.service("std:document_store:workflow:form_action_allowed",
+                    M, name, O.currentUser, 'viewDraft');
+                if(instance.currentDocumentIsEdited && canViewDraft) {
+                    section.deferred = instance.deferredRenderCurrentDocument();
+                    section.isDraft = true;
+                } else if(instance.hasCommittedDocument) {
+                    section.deferred = instance.deferredRenderLastCommittedDocument();
+                }
+                if(section.deferred) {
+                    sections.push(section);
                 }
                 if(attachingFiles) {
-                    searchForFilesInDocument(instance.lastCommittedDocument, 256);
+                    searchForFilesInDocument((section.isDraft ? instance.currentDocument : instance.lastCommittedDocument), 256);
                 }
             });
         }
@@ -185,23 +230,35 @@ P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
         });
 
         // ---- Generate HTML for documents etc
-        if(sections.length) { sections[sections.length-1].isLast = true; }
+        var sortedSections = _.sortBy(sections, "sort");
+        if(sortedSections.length) { sortedSections[sortedSections.length-1].isLast = true; }
         var view = {
             M: M,
             headerTable: _.sortBy(headerTable, "sort"),
-            sections: _.sortBy(sections, "sort"),
+            sections: sortedSections,
             files: files
         };
+
+        var margins = {};
+        if("margins" in spec) {
+            margins = spec.margins;
+            _.each(DEFAULT_MARGINS, function(value, key) {
+                if(!(key in margins)) {
+                    margins[key] = value;
+                }
+            });
+        }
+
         pipeline.transform("std:generate:formatted_text", {
             output: outputName,
             html: P.template("download-text").render(view),
             css: _.map(css, function(file) {
                 return file.readAsString();
             }).join("\n"),
-            marginTop: 70,
-            marginBottom: 70,
-            marginLeft: 70,
-            marginRight: 70
+            marginTop: margins.marginTop,
+            marginBottom: margins.marginBottom,
+            marginLeft: margins.marginLeft,
+            marginRight: margins.marginRight
         });
 
         // ---- Attached files
@@ -221,4 +278,3 @@ P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
         }
     }
 );
-

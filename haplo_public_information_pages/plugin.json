@@ -5,7 +5,7 @@
   "displayName": "Public Information Pages",
   "displayDescription": "Display and editing of public information pages",
   "apiVersion": 4,
-  "loadPriority": 9200,
+  "loadPriority": 2000,
   "privilegesRequired": ["pDatabase"],
   "depend": ["std_document_store"],
   "use": ["std:document_store"],

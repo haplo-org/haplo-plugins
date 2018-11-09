@@ -1,6 +1,6 @@
 #option:no-tag-attribute-quote-minimisation
 
-emailSubject(if(subject) { subject } else { spec.displayName " - " M.title })
+emailSubject(if(subject) { subject } else { displayName " - " M.title })
 
 std:text:document(notification.text)
 

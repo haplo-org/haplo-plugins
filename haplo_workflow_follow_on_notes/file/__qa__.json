@@ -1,0 +1,5 @@
+{
+    "suppress": {
+        "bad-simple-file-repeating-section/haplo_workflow_follow_on_notes/note_files_display/files": "This FormDescription will not be presented for editing. It was implemented to take advantage of the std:document() HTML forms template function to make rendering files on each follow on note easy."
+    }
+}

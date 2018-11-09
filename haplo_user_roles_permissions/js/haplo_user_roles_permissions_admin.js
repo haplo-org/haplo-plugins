@@ -6,7 +6,8 @@
 
 
 var CanSeeRoles = O.action("haplo_user_roles_permissions:can_see_roles").
-        title("Can see roles");
+        title("Can see roles").
+        allow("group", Group.Administrators);
 
 // Add button to object page to roles list
 P.hook("hObjectDisplay", function(response, object) {

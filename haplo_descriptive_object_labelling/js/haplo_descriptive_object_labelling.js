@@ -14,6 +14,22 @@ var typeIsSelfLabelling,
     typeLabelsFromLinked,
     updateLinkedForType;
 
+
+// --------------------------------------------------------------------------
+
+P.implementService("__qa__:haplo_descriptive_object_labelling:internals", function() {
+    ensureSetup();
+    return {
+        typeIsSelfLabelling: typeIsSelfLabelling,
+        typeIsWorkflowIntegrated: typeIsWorkflowIntegrated,
+        typeLabelWithCreator: typeLabelWithCreator,
+        typeLabels: typeLabels,
+        typeLabelWith: typeLabelWith,
+        typeLabelsFromLinked: typeLabelsFromLinked,
+        updateLinkedForType: updateLinkedForType
+    };
+});
+
 // --------------------------------------------------------------------------
 
 P.implementService("std:workflow:notify:permissions:permissions_changed_for_object", function(objRef) {

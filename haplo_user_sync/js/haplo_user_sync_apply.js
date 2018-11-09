@@ -205,12 +205,24 @@ P.doSyncApply = function(sync) {
             return true;    // Did syncing
         },
 
-        getUsernameToRefMapping: function() {
+        getUsernameToRefMapping: function(allUsers) {
             // The mapping isn't known until all the users have been processed.
             if(!postPhase) {
                 throw new Error("Mapping isn't available until all the users have been processed.");
             }
-            return usernameToRef;
+            if(allUsers) {
+                // by default, we only get a mapping for users who are in the feed
+                // but in some cases implementations might need to know the refs of users who have
+                // dropped out of the feed (eg: information only updates to non-current students)
+                var allUsersAndRefs = {};
+                _.each(P.db.users.select(), function(row) {
+                    allUsersAndRefs[row.username] = O.user(row.userId).ref;
+                });
+                return allUsersAndRefs;
+            } else {
+                // Default behaviour/implementation from pre-allUsers flag maintained:
+                return usernameToRef;
+            }
         },
 
         errorForUsername: function(username, message) {
@@ -265,7 +277,7 @@ P.doSyncApply = function(sync) {
         }
     } catch(e) {
         success = false;
-        log("EXCEPTION: Error during sync: "+e);
+        log("EXCEPTION: Error during sync: "+e.message+". File: "+e.fileName+", line: "+e.lineNumber);
     }
 
     log("END: "+new Date());

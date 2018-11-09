@@ -37,8 +37,10 @@ function debug() {
 // state is an internal state, or "false" if there was none previously.
 
 // state[dateName] = an object containing state particular to that date computation.
-// state[dateName].periodStart = [start XDate, end XDate] period start range
-// state[dateName].periodEnd = [start XDate, end XDate] projected period end range
+// state[dateName].periodStart = [start XDate, end XDate] period start range (deprecated)
+// state[dateName].periodEnd = [start XDate, end XDate] projected period end range (deprecated)
+// state[dateName].periodLengthLeast = The previous (active) length of the period (shortest version)
+// state[dateName].periodLengthMost = The previous (active) length of the period (longest version)
 // state[dateName].periodFractionLeast = least fraction (periodLastUpdate as a fraction from midpoint of periodStart to midpoint of periodEnd)
 // state[dateName].periodFractionMost = most fraction (periodLastUpdate as a fraction from midpoint of periodStart to midpoint of periodEnd)
 // state[dateName].periodLastUpdated = XDate periodTimeUsed last calculated
@@ -48,7 +50,7 @@ function debug() {
 // -- and outputDate is marked with a "problem" if the rules or
 // -- inputs contradicted matters, in which case we get a best guess.
 
-function computeDates(now, inputDates, rules, flags, state) {
+function computeDates(now, inputDates, rules, flags, state, suspensions) {
     // Make fresh copies of stuff we will mutate
     var outputDates = _.clone(inputDates);
 
@@ -65,7 +67,7 @@ function computeDates(now, inputDates, rules, flags, state) {
     // are already computed by the time we get to them by iterating
     // through the rules, and that's OK.
     _.each(rules, function(rule, dateName) {
-        computeDate(now, outputDates, rules, flags, state, dateName);
+        computeDate(now, outputDates, rules, flags, state, suspensions, dateName);
     });
     return {outputDates:outputDates, state:state};
 }
@@ -129,9 +131,23 @@ function midpoint(date_range) {
     return datemean(earliest, latest);
 }
 
+// Dates engine carries out floating point arithmetic, and so results need rounding to prevent precision loss
+// causing confusing outputs. We are unlikely to need times with more than minute level precision.
+function roundToNearestMinute(date) {
+    var xdate = new XDate(date);
+    var seconds = xdate.getSeconds();
+    var minutes = xdate.getMinutes();
+    if(seconds > 29) {
+        xdate.setMinutes(minutes+1);
+    }
+    xdate.setSeconds(0);
+    xdate.setMilliseconds(0);
+    return xdate;
+}
+
 // Compute a given date from the rules, if it's not already known
 // (either by being an input date, or by having been computed already.
-function computeDate(now, dates, rules, flags, state, dateName) {
+function computeDate(now, dates, rules, flags, state, suspensions, dateName) {
     if(dateName === "undefined") {
         dates[dateName] = null_date_range();
         return;
@@ -153,21 +169,40 @@ function computeDate(now, dates, rules, flags, state, dateName) {
             // Uhoh!
             dates[dateName] = error_date_range("Missing input date: '" + dateName + "'");
         } else if(ruleKind === "regular") {
-            dates[dateName] = computeRegularDate(now, dates, rules, flags, state, dateName, rule[1]);
+            dates[dateName] = computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, rule[1]);
         } else if(ruleKind === "period") {
-            dates[dateName] = computePeriodDate(now, dates, rules, flags, state, dateName, rule[1], rule[2]);
+            dates[dateName] = computePeriodDate(now, dates, rules, flags, state, suspensions, dateName, rule[1], rule[2]);
         } else {
             dates[dateName] = error_date_range("Malformed rule " + JSON.stringify(rule));
         }
     }
 }
 
-function add_interval(base_date, direction, unit, min_interval, max_interval) {
+function add_interval(base_date, direction, unit, min_interval, max_interval, range_size) {
     debug("Add ", direction, unit, min_interval, max_interval, " to ", base_date);
 
     var earliest = base_date[0].clone();
     var latest = base_date[1].clone();
     var problem = base_date[2];
+
+    switch (range_size) {
+        case "min":
+            // The intervals added to earliest and latest should be the opposite way around from the default 
+            // if we want the smallest possible range, rather than the largest
+            var interval_holder = min_interval;
+            min_interval = max_interval;
+            max_interval = interval_holder;
+            break;
+        case "requiredMin":
+            latest = base_date[0].clone();
+            break;
+        case "requiredMax":
+            earliest = base_date[1].clone();
+            break;
+        default:
+        case "max":
+            break;
+    }
 
     if(unit === "years" || unit === "year") {
         if(direction>0) {
@@ -179,11 +214,11 @@ function add_interval(base_date, direction, unit, min_interval, max_interval) {
         }
     } else if(unit === "months" || unit === "month") {
         if(direction>0) {
-            earliest.addMonths(min_interval);
-            latest.addMonths(max_interval);
+            earliest.addMonths(min_interval, true);
+            latest.addMonths(max_interval, true);
         } else {
-            earliest.addMonths(-max_interval);
-            latest.addMonths(-min_interval);
+            earliest.addMonths(-max_interval, true);
+            latest.addMonths(-min_interval, true);
         }
     } else if(unit === "weeks" || unit === "week") {
         if(direction>0) {
@@ -206,6 +241,15 @@ function add_interval(base_date, direction, unit, min_interval, max_interval) {
     }
 
     debug("Result is", earliest, latest, problem);
+
+    earliest = roundToNearestMinute(earliest);
+    latest = roundToNearestMinute(latest);
+    if(range_size === "min" &&
+        datediff(earliest, latest) > 0) {
+        // If min range is specified, we probably still want the smallest possible range, even if it is negative
+        // To avoid failing when making date range, pass earliest and latest into the opposite parameters
+        return make_date_range(latest, earliest, problem);
+    }
 
     return make_date_range(earliest, latest, problem);
 }
@@ -238,7 +282,7 @@ function union(i1, i2) {
     return make_date_range(earliest, latest, problem);
 }
 
-function computeRegularDate(now, dates, rules, flags, state, dateName, body) {
+function computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, body) {
     debug("Compute Regular Date ", body);
     var nodeKind = body[0];
 
@@ -247,6 +291,7 @@ function computeRegularDate(now, dates, rules, flags, state, dateName, body) {
     var min_interval;
     var max_interval;
     var rule;
+    var range_size;
     var base_date;
     var flag;
     var yay;
@@ -256,62 +301,64 @@ function computeRegularDate(now, dates, rules, flags, state, dateName, body) {
     var idx;
 
     if(nodeKind === "date") { // ["date", dateName]
-        computeDate(now, dates, rules, flags, state, body[1]);
+        computeDate(now, dates, rules, flags, state, suspensions, body[1]);
         return dates[body[1]];
     } else if(nodeKind === "add") { // ["add", interval unit, interval min, interval max, rule]
         unit = body[1];
         min_interval = body[2];
         max_interval = body[3];
         rule = body[4];
-        base_date = computeRegularDate(now, dates, rules, flags, state, dateName, rule);
+        range_size = body[5];
+        base_date = computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, rule);
         if(!base_date[0]) {
             return error_date_range("Not enough inputs to calculate "+dateName);
         }
-        return add_interval(base_date, +1, unit, min_interval, max_interval);
+        return add_interval(base_date, +1, unit, min_interval, max_interval, range_size);
     } else if(nodeKind === "subtract") { // ["subtract", interval unit, interval min, interval max, rule]
         unit = body[1];
         min_interval = body[2];
         max_interval = body[3];
         rule = body[4];
-        base_date = computeRegularDate(now, dates, rules, flags, state, dateName, rule);
+        range_size = body[5];
+        base_date = computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, rule);
         if(!base_date[0]) {
             return error_date_range("Not enough inputs to calculate "+dateName);
         }
-        return add_interval(base_date, -1, unit, min_interval, max_interval);
+        return add_interval(base_date, -1, unit, min_interval, max_interval, range_size);
     } else if(nodeKind === "if") { // ["if", flag, yay rule, nay rule]
         flag = body[1];
         yay = body[2];
         nay = body[3];
         if(flags.indexOf(flag) != -1) {
-            return computeRegularDate(now, dates, rules, flags, state, dateName, yay);
+            return computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, yay);
         } else {
-            return computeRegularDate(now, dates, rules, flags, state, dateName, nay);
+            return computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, nay);
         }
     } else if(nodeKind === "case") { // ["case", [flag, rule], ...]
         var flags_tried = [];
         for(idx = 1; idx < body.length; idx++) {
             flag = body[idx][0];
             yay = body[idx][1];
-            if(flags === "ELSE" || flags.indexOf(flag) != -1) {
-                return computeRegularDate(now, dates, rules, flags, state, dateName, yay);
+            if(flag === "ELSE" || flags.indexOf(flag) != -1) {
+                return computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, yay);
             }
             flags_tried.push(flag);
         }
         return error_date_range("None of these cases match a flag: " + JSON.stringify(flags_tried) + " (current flags are " + JSON.stringify(flags) + ")");
     } else if(nodeKind === "and") { // ["and", rule, ...]
-        result = computeRegularDate(now, dates, rules, flags, state, dateName, body[1]); // First rule
+        result = computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, body[1]); // First rule
         debug("AND input", result);
         for(idx = 2; idx < body.length; idx++) {
-            next = computeRegularDate(now, dates, rules, flags, state, dateName, body[idx]);
+            next = computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, body[idx]);
             debug("AND input", next);
             result = intersection(result, next);
         }
         return result;
     } else if(nodeKind === "or") { // ["or", rule, ...]
-        result = computeRegularDate(now, dates, rules, flags, state, dateName, body[1]); // First rule
+        result = computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, body[1]); // First rule
         debug("OR input", result);
         for(idx = 2; idx < body.length; idx++) {
-            next = computeRegularDate(now, dates, rules, flags, state, dateName, body[idx]);
+            next = computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, body[idx]);
             debug("OR input", next);
             result = union(result, next);
         }
@@ -321,13 +368,13 @@ function computeRegularDate(now, dates, rules, flags, state, dateName, body) {
     }
 }
 
-function computePeriodDate(now, dates, rules, flags, state, dateName, periodOrigin, body) {
+function computePeriodDate(now, dates, rules, flags, state, suspensions, dateName, periodOrigin, body) {
     debug("Compute Period Date ", body, " from ", periodOrigin);
     var problem = false;
 
     // Compute current startpoint
     debug("Compute Period Date startpoint");
-    computeDate(now, dates, rules, flags, state, periodOrigin);
+    computeDate(now, dates, rules, flags, state, suspensions, periodOrigin);
     problem = dates[periodOrigin][2] || problem;
 
     // Compute current endpoints
@@ -335,22 +382,27 @@ function computePeriodDate(now, dates, rules, flags, state, dateName, periodOrig
     debug("Compute Period Date endpoint");
     if(!dates[periodOrigin][0]) {
         debug("Period start input not defined");
-        return;
+        return error_date_range("Period start input not defined - "+dateName);
     }
     var periodStart = midpoint(dates[periodOrigin]);
     if(dates[periodOrigin][0].diffDays(dates[periodOrigin][1]) !== 0) {
         problem = "Start date is not definite, so period end is approximate";
     }
-    var periodEndRange = computeRegularDate(now, dates, rules, flags, state, dateName, body);
+    var periodEndRange = computeRegularDate(now, dates, rules, flags, state, suspensions, dateName, body);
     problem = periodEndRange[2] || problem;
 
     debug("Period is now from ", periodStart, " to ", periodEndRange);
 
+    if(!periodEndRange[0] || !periodEndRange[1]) {
+        return null_date_range();
+    }
+
     // Set up state, if none already exists
     if(!state[dateName]) {
+        debug("No previous state exists - setting up state");
         state[dateName] = {
-            periodStart: periodStart,
-            periodEnd: periodEndRange,
+            periodLengthLeast: periodStart.diffDays(periodEndRange[0]),
+            periodLengthMost: periodStart.diffDays(periodEndRange[1]),
             periodFractionLeast: 0.0,
             periodFractionMost: 0.0,
             periodLastUpdated: periodStart
@@ -359,20 +411,23 @@ function computePeriodDate(now, dates, rules, flags, state, dateName, periodOrig
 
     var s = state[dateName];
 
-    debug("Previous period details:", s.periodStart, "-", s.periodEnd, " = ", s.periodFractionLeast, s.periodFractionMost);
-    // Compute time used on PREVIOUS period:
-
-    // This is what the duration of the period was
-    var previousDurationLeast = s.periodStart.diffDays(s.periodEnd[0]);
-    var previousDurationMost = s.periodStart.diffDays(s.periodEnd[1]);
-    debug("Duration of period was ", previousDurationLeast, "-", previousDurationMost);
+    debug("Duration of period was ", s.periodLengthLeast, "-", s.periodLengthMost, "Fraction used:", s.periodFractionLeast, s.periodFractionMost);
 
     // This is how much time has elapsed since the last update
     var timeElapsed = s.periodLastUpdated.diffDays(now);
-    debug("Time elapsed since period start was ", timeElapsed);
+    debug("Time elapsed since last update is ", timeElapsed);
 
-    var fractionElapsedLeast = timeElapsed / previousDurationLeast;
-    var fractionElapsedMost = timeElapsed / previousDurationMost;
+    // Remove any parts of the elapsed period that overlap with a suspension
+    _.each(suspensions, (suspension) => {
+        var suspendedPeriod = intersection(suspension, [s.periodLastUpdated, now]);
+        var difference = suspendedPeriod[0].diffDays(suspendedPeriod[1]);
+        if(!suspendedPeriod[2]) {
+            timeElapsed = timeElapsed - difference;
+        }
+    });
+
+    var fractionElapsedLeast = timeElapsed / s.periodLengthLeast;
+    var fractionElapsedMost = timeElapsed / s.periodLengthMost;
 
     debug("Period fraction elapsed since last update = ", fractionElapsedLeast, "-", fractionElapsedMost);
 
@@ -389,6 +444,9 @@ function computePeriodDate(now, dates, rules, flags, state, dateName, periodOrig
     // Update state with elapsed time
     s.periodFractionLeast = s.periodFractionLeast + fractionElapsedLeast;
     s.periodFractionMost = s.periodFractionMost + fractionElapsedMost;
+
+    var activeElapsedLeast = s.periodLengthLeast * s.periodFractionLeast;
+    var activeElapsedMost = s.periodLengthMost * s.periodFractionMost;
 
     // Sanity check
     if(s.periodFractionLeast < 0.0) {
@@ -419,6 +477,7 @@ function computePeriodDate(now, dates, rules, flags, state, dateName, periodOrig
     var newEndLeast = (timeRemainingLeast>0) ?
         now.clone().addDays(timeRemainingLeast) :
         periodEndRange[0];
+    s.periodLengthLeast = activeElapsedLeast + timeRemainingLeast;
 
     debug("Earliest end: duration = ", newDurationLeast, "(", periodStart, "-", periodEndRange[0], "), time remaining = ", timeRemainingLeast, " new end = ", newEndLeast);
 
@@ -427,6 +486,7 @@ function computePeriodDate(now, dates, rules, flags, state, dateName, periodOrig
     var newEndMost = (timeRemainingMost>0) ?
         now.clone().addDays(timeRemainingMost) :
         periodEndRange[1];
+    s.periodLengthMost = activeElapsedMost + timeRemainingMost;
 
     debug("Latest end: duration = ", newDurationMost, "(", periodStart, "-", periodEndRange[1], "), time remaining = ", timeRemainingMost, " new end = ", newEndMost);
 
@@ -439,6 +499,31 @@ function computePeriodDate(now, dates, rules, flags, state, dateName, periodOrig
     newEndMost = datemax(newEndLeast, newEndMost);
     newEndLeast = temp1;
 
+    newEndLeast = roundToNearestMinute(newEndLeast);
+    newEndMost = roundToNearestMinute(newEndMost);
+
+    _.each(suspensions, (suspension) => {
+        //Length of time from start of suspension to end
+        var suspensionLength = suspension[0].diffDays(suspension[1]);
+        //If suspension ends after now
+        if(now.diffDays(suspension[1]) > 0) {
+            // if suspension starts before now
+            if(now.diffDays(suspension[0]) < 0) {
+                // suspensions length is from now to the end of suspension
+                suspensionLength = now.diffDays(suspension[1]);
+            }
+            debug("Adding suspension with length", suspensionLength, "days. Starts:", suspension[0], "Ends:", suspension[0]);
+            // if most recently calculated end least is after (or the same day as) the start of the suspension
+            if(newEndLeast.diffDays(suspension[0]) <= 0) {
+                newEndLeast.addDays(suspensionLength);
+            }
+            // if most recently calculated end most is after (or the same day as) the start of the suspension
+            if(newEndMost.diffDays(suspension[0]) <= 0) {
+                newEndMost.addDays(suspensionLength);
+            }
+        }
+    });
+
     var newEnd;
     if(problem) {
         newEnd = [newEndLeast,newEndMost,problem];
@@ -449,8 +534,6 @@ function computePeriodDate(now, dates, rules, flags, state, dateName, periodOrig
     debug("Period new endpoint = ", newEnd);
 
     // Update state with metadata
-    s.periodStart = periodStart;
-    s.periodEnd = newEnd;
     s.periodLastUpdated = now;
 
     return newEnd;
@@ -478,10 +561,10 @@ function compileRule(rule) {
         return ["date", rule];
     } else if(typeof rule === "object") {
         if(rule.add && rule.to) {
-            return ["add", rule.add[0], rule.add[1], rule.add[2], compileRule(rule.to)];
+            return ["add", rule.add[0], rule.add[1], rule.add[2], compileRule(rule.to), rule.range_size || null];
         }
         else if(rule.subtract && rule.from) {
-            return ["subtract", rule.subtract[0], rule.subtract[1], rule.subtract[2], compileRule(rule.from)];
+            return ["subtract", rule.subtract[0], rule.subtract[1], rule.subtract[2], compileRule(rule.from), rule.range_size || null];
         }
         else if(rule["if"] && rule.then && rule["else"]) {
             return ["if", rule["if"], compileRule(rule["then"]), compileRule(rule["else"])];
@@ -594,7 +677,8 @@ function getRuleset(setName) {
     }
 }
 
-P.implementService("haplo:date_rule_engine:compute_dates", function(inputDates, rulesetName, flags, object) {
+var computeDatesForRuleset = function(inputDates, rulesetName, flags, state, suspensions) {
+    debug("Input dates: ", inputDates);
     var rules = getRuleset(rulesetName);
     var now = new XDate();
 
@@ -609,17 +693,36 @@ P.implementService("haplo:date_rule_engine:compute_dates", function(inputDates, 
             massagedInputDates[name][i] = (dates[i] ? new XDate(dates[i]) : undefined);
         }
     });
-    var state = {};
-    var entry = P.db.state.select().where("object", "=", object).where("rulesetName", "=", rulesetName);
-    if(entry.length) {
-        state = deserialiseState(entry[0].state);
+
+    //Clean up the suspensions
+    suspensions = _.chain(suspensions).
+                    map((s) => [new XDate(s[0]), new XDate(s[1])]).
+                    map((s) => s[0].diffDays(s[1]) < 0 ? [s[1], s[0]] : s).
+                    sortBy((s) => s[0]).
+                    value();
+
+    var groupedSuspensions = [];
+    for(var i = 0; i < suspensions.length; i++) {
+        var suspension = suspensions[i];
+        if(groupedSuspensions.length > 0) {
+            var latestSuspension = groupedSuspensions[groupedSuspensions.length - 1];
+            if(latestSuspension[1].diffDays(suspension[0]) <= 0) {
+                var newSuspensionPeriod = union(latestSuspension, suspension);
+                groupedSuspensions.pop();
+                suspension = newSuspensionPeriod;
+            }
+        }
+        groupedSuspensions.push(suspension);
     }
 
-    var result = computeDates(now, massagedInputDates, rules, flags, state);
+    return computeDates(now, massagedInputDates, rules, flags, state, groupedSuspensions);
+};
 
-    if(entry.length) {
-        entry[0].state = result.state;
-        entry[0].save();
+var getOutputDates = function(inputDates, inputState, rulesetName, object, flags, existingState, suspensions) {
+    var result = computeDatesForRuleset(inputDates, rulesetName, flags, inputState, suspensions);
+    if(existingState) {
+        existingState.state = result.state;
+        existingState.save();
     } else {
         P.db.state.create({
             rulesetName: rulesetName,
@@ -627,8 +730,39 @@ P.implementService("haplo:date_rule_engine:compute_dates", function(inputDates, 
             state: result.state
         }).save();
     }
-
     return result.outputDates;
+};
+
+//Update dates claculates the new dates, and saves the new state. Compute dates calculates the new dates, but leaves the state untouched.
+
+P.implementService("haplo:date_rule_engine:update_dates", function(inputDates, rulesetName, flags, suspensions, object) {
+    var state = {};
+    var stateQuery = P.db.state.select().where("object", "=", object).where("rulesetName", "=", rulesetName);
+    if(stateQuery.length) {
+        state = deserialiseState(stateQuery[0].state);
+    }
+    return getOutputDates(inputDates, state, rulesetName, object, flags, stateQuery[0], suspensions);
+});
+
+P.implementService("haplo:date_rule_engine:compute_dates", function(inputDates, rulesetName, flags, suspensions, object) {
+    var state = {};
+    var stateQuery = P.db.state.select().where("object", "=", object).where("rulesetName", "=", rulesetName);
+    if(stateQuery.length) {
+        state = deserialiseState(stateQuery[0].state);
+    }
+    return computeDatesForRuleset(inputDates, rulesetName, flags, state, suspensions).outputDates;
+});
+
+// Use WITH CAUTION to correct calculations for periodEndRules
+// Ignores previous state for this calculation. This allows data to be corrected, but
+// also wipes previous state information (which may not be desired)
+P.implementService("haplo:date_rule_engine:update_dates_ignoring_previous_state", function(inputDates, rulesetName, flags, suspensions, object) {
+    var stateQuery = P.db.state.select().where("object", "=", object).where("rulesetName", "=", rulesetName);
+    return getOutputDates(inputDates, {}, rulesetName, object, flags, stateQuery[0], suspensions);
+});
+
+P.implementService("haplo:date_rule_engine:compute_dates_ignoring_previous_state", function(inputDates, rulesetName, flags, suspensions, object) {
+    return computeDatesForRuleset(inputDates, rulesetName, flags, {}, suspensions).outputDates;
 });
 
 // ----------------------------------------------------------------------
@@ -647,6 +781,8 @@ var deserialiseState = function(serialised) {
             switch(key) {
                 case "periodFractionLeast":
                 case "periodFractionMost":
+                case "periodLengthLeast":
+                case "periodLengthMost":
                     deserialised[dateName][key] = value;
                     break;
                 case "periodStart":
@@ -660,7 +796,16 @@ var deserialiseState = function(serialised) {
                     throw new Error("Unexpected key in state object: "+key);
             }
         });
+        if(!deserialised[dateName].periodLengthLeast && "periodStart" in deserialised[dateName] && "periodEnd" in deserialised[dateName]) {
+            if(!("periodLengthLeast" in deserialised[dateName])) {
+                deserialised[dateName].periodLengthLeast = deserialised[dateName].periodStart.diffDays(deserialised[dateName].periodEnd[0]);
+            }
+            if(!("periodLengthMost" in deserialised[dateName])) {
+                deserialised[dateName].periodLengthMost = deserialised[dateName].periodStart.diffDays(deserialised[dateName].periodEnd[1]);
+            }
+        }
     });
+    debug("Deserialised state: ",deserialised);
     return deserialised;
 };
 

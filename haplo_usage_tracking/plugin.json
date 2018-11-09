@@ -1,0 +1,16 @@
+{
+  "pluginName": "haplo_usage_tracking",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Usage Tracking",
+  "displayDescription": "Tracks usage statistics for Haplo applications",
+  "installSecret": "1f7115f0d10b98d5c12366cce4a75bba1d73cf66",
+  "apiVersion": 4,
+  "privilegesRequired": ["pDatabase", "pReportHealthEvent"],
+  "depend": [
+      "haplo_info_geoip"
+    ],
+  "load": [
+      "js/haplo_usage_tracking.js"
+    ]
+}

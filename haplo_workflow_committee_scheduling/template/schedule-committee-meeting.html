@@ -11,6 +11,4 @@
   <p>There are no meetings scheduled for {{committeeName}}.</p>
 {{/if}}
 
-<p><a href="/do/haplo-committee-support/new-committee-meeting/{{committeeRef}}?back={{thisPagePath}}">Schedule another meeting for {{committeeName}}</a></p>
-
-{{#if onlineDecisionUrl}}<p><a href="{{onlineDecisionUrl}}">Begin the {{onlineDecisionName}} process for {{committeeName}}</a></p>{{/if}}
+<p><a href="/do/haplo-committee-support/new-committee-meeting/{{committeeRef}}?back={{thisPagePath}}">Schedule {{#if haveMeetings}}another{{else}}a{{/if}} meeting for {{committeeName}}</a></p>

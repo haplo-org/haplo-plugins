@@ -1,3 +1,5 @@
+feature std:configuration-data
+    FORCE-REMOVE property: {"haplo_committee_scheduling:patch_version": "vAPR2018"}
 
 # -------- Attributes -----------------------------
 
@@ -9,6 +11,8 @@ attribute haplo:attribute:committee-representative as CommitteeRepresentative
 attribute haplo:attribute:chair as Chair
 attribute haplo:attribute:deputy-chair as DeputyChair
 attribute haplo:attribute:committee-meeting as CommitteeMeeting
+attribute std:attribute:attendee as Attendee
+attribute std:attribute:notes as Notes
 
 # -------- Types -----------------------------------
 

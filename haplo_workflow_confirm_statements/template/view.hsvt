@@ -1,0 +1,14 @@
+pageTitle("Statements: " M.title)
+backLink(M.url)
+
+<p> <b> entry.user.name </b> " confirmed on " std:date:time(entry.datetime) ":" </p>
+
+if(text.singleStatement) {
+  <p> "&#10003; &nbsp; " text.singleStatement </p>
+  if(text.footer) {
+    std:text:paragraph(text.footer)
+  }
+} else {
+  template:text()
+  <p> "&#10003; &nbsp; " text.label </p>
+}

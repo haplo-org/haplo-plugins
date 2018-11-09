@@ -4,45 +4,72 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
+/*HaploDoc
+node: /haplo_workflow_committee_scheduling
+title: Haplo Committee Scheduling
+sort: 45
+--
 
-/*
- *  Committee scheduling workflow feature
- *
- *  Adds committee scheduling states and entities to workflows, where a committee rep can:
- *  schedule a meeting (either attaching the workflow/application to an existing meeting
- *  or scheduling a completely new meeting), forward to chair, forward to the deputy chair,
- *  and progress to the next stage of the workflow.
- *
- *  use by calling .use("haplo:committee_scheduling", spec) on a std:workflow object
- *  where spec is a JS object defining:
- *
- *      path: the path of your plugin, or where you want to have request handlers built
- *      scheduleInfo: a list of committee scheduling sections to be constructed/handled by the plugin
- *
- *  scheduleInfo should be a list of 1 or more JS objects defining:
- *      
- *      state: the name of the state for internal usage
- *      exitStates: an array of states that are potential exits for the committee phase,
- *          if this has more than one element, use resolveTransitionDestination to decide
- *          where to transition to
- *      committeeEntityName: the name for the committee in the entities system
- *      
- *  optionally you may define:
- *
- *      additionalTransitions: a list of additional transitions defined as they would be in a state machine,
- *          that users are able to use instead of progressing eg:
- *              ["return_to_researcher", "wait_researcher"]
- *      onlineDecision: an object that enables/defines online voting/discussion for the phase
- *          requires a "choices" property that is a list of form choices, eg:
- *              {choices: [["choice", "Descriptive name of choice"], ...]}
- *          choices may be a function(M) to allow per-workflow choices
- *
- *  By default, the committee rep state is only actionable by the first Committee rep on
- *  the committee object. Set the config data:
- *      "haplo_committee_scheduling:enable_committee_rep_takeover": true
- *  to enable other Committee reps to takeover being the rep/handling the scheduling/decision
- *  for all committee scheduling states in all workflows.
- *
+Adds committee scheduling states and entities to workflows, where a committee rep can:
+
+* schedule a meeting (either attaching the workflow/application to an existing meeting or scheduling a completely new meeting),
+* forward to chair/deputy chair,
+* and progress to the next stage of the workflow.
+
+h3(feature). .use("haplo:committee_scheduling", spec)
+
+Call this on a std:workflow object where spec is a JS object defining:
+
+h3(property). path
+
+the path of your plugin, or where you want to have request handlers built
+
+h3(property). scheduleInfo
+
+a list of committee scheduling sections to be constructed/handled by the plugin
+
+h3(property). disablePreMeetingReviews
+
+boolean for whether the in-built committee request review feature
+ 
+h3(property). scheduleInfo
+
+should be a list of 1 or more JS objects defining:
+
+| state | string | the name of the state for internal usage |
+| exitStates | array | states that are potential exits for the committee phase, if this has more than one element use resolveTransitionDestination to decide where to transition to |
+| committeeEntityName | string | the name for the committee in the entities system |
+
+optionally you may define:
+
+| additionalTransitions | list | a list of additional transitions defined as they would be in a state machine, that users are able to use instead of progressing eg: ["return_to_researcher", "wait_researcher"] |
+| onlineDecision | object | an object that enables/defines online voting/discussion for the phase. Requires a "choices" property that is a list of form choices, eg: {choices: [["choice", "Descriptive name of choice"], ...]} choices may be a function(M) to allow per-workflow choices. Set enableDocStorePanel to true if participants should see the online decision link from the form viewer when enableSidebarPanel is set for the form definition. |
+ 
+By default, the committee rep state is only actionable by the first Committee rep on the committee object. Set the config data:
+<pre>"haplo_committee_scheduling:enable_committee_rep_takeover": true</pre>
+to enable other Committee reps to takeover being the rep/handling the scheduling/decision for all committee scheduling states in all workflows.
+
+h2. Actions taken
+
+By default, an "Actions taken" link is added to in person meeting records. This directs to a page with a summary of the meeting and a list of all the items on the agenda and the actions taken \
+during the committee state in which the meeting took place. 
+
+h3(config). "haplo_committee_scheduling:disable_minutes"
+
+If you would like to disable the minutes feature, add this to your system's config data and set it to true.
+
+h3(service). "haplo_committee_scheduling:actions_for_meeting"
+
+This workflow service is added to all workflows which use the committee scheduling feature. You can add to the list of timeline entries to display by implementing this feature on your workflow. \
+As well as M, the implementation takes an object @spec@ which contains:
+
+| meeting | StoreObject | The StoreObject of the meeting. meeting.first(A.Date) will always return a date, because minutes are not available to meetings without dates. |
+| actions | Array | An array of timeline entries to display. |
+
+Note: the default implementation determines which entries to display by taking the meeting start date, determining the current state of the agena item, and showing all the entries that happened \
+during that state, as well as the entries transitioning into the state to give context, and the entry transitioning out of the state to display the final decision taken by the committee. \
+If the transition in/out entry doesn't have a deferredRender, then the page displays the next one that does.
+
  */
 
 var TEXT = {
@@ -65,7 +92,7 @@ var TEXT = {
     "transition-indicator:return_to_rep": "secondary",
     "transition-confirm:return_to_rep": "You have chosen to return the application to the committee representative.",
 
-    "timeline-entry:progress_application": "Progressed the application",
+    "timeline-entry:progress_application": "progressed the application",
     "timeline-entry:send_to_chair": "forwarded application to committee Chair",
     "timeline-entry:send_to_dep_chair": "forwarded application to committee Deputy Chair",
     "timeline-entry:return_to_rep": "returned application to committee representative"
@@ -73,8 +100,12 @@ var TEXT = {
 
 var TRANSITION_BUTTON_PRIORITIES = {
     "send_to_chair": 110,
-    "send_to_dep_chair": 120
+    "send_to_dep_chair": 120,
+    "return_to_rep": 130
 };
+
+var COMMITTEE_ACTION_PANEL_PRIORITY = P.COMMITTEE_ACTION_PANEL_PRIORITY = 110;
+P.COMMITTEE_PANEL_PRIORITY = 250;
 
 var getScheduledMeetingForWorkflow = function(M) {
     return M.workUnit.data.currentCommitteeMeeting ? O.ref(M.workUnit.data.currentCommitteeMeeting) : undefined;
@@ -145,8 +176,12 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             } else { 
                 committeeEntities[committeeEntityName+"Rep"] = [committeeEntityName, A.CommitteeRepresentative];
             }
-            committeeEntities[committeeEntityName+"Chair"] = [committeeEntityName, A.Chair];
             committeeEntities[committeeEntityName+"DepChair"] = [committeeEntityName, A.DeputyChair];
+            committeeEntities[committeeEntityName+"Chair"] = function() {
+                if(this[committeeEntityName+"_maybe"]) {
+                    return this[committeeEntityName].every(A.Chair).concat(this[committeeEntityName+"DepChair_refList"]);
+                }
+            };
             committeeEntities[committeeEntityName+"Member"] = [committeeEntityName, A.CommitteeMember];
             workflow.use("std:entities:add_entities", committeeEntities);
 
@@ -199,7 +234,8 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             workflow.actionPanelTransitionUI({flags:["directToTransitionsCommitteeSchedule"+stateInfo.state]}, function(M, builder) {
                 if(M.workUnit.isActionableBy(O.currentUser)) {
                     _.each(M.transitions.list, function(t) {
-                        builder.link(TRANSITION_BUTTON_PRIORITIES[t.name] || 150,
+                        var panel = TRANSITION_BUTTON_PRIORITIES[t.name] ? builder.panel(COMMITTEE_ACTION_PANEL_PRIORITY) : builder;
+                        panel.link(TRANSITION_BUTTON_PRIORITIES[t.name] || 150,
                             // Extra transitions appear after feature's own transitions
                             // Other things i.e. forms must appear between "forward to chair"
                             // and "forward to dep chair" options so "forward to chair" is more
@@ -213,8 +249,8 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
 
             workflow.filterTransition({state:stateInfo.state}, function(M, name) {
                 if(name in TRANSITION_TO_ENTITY) {
-                    var entitityName = TRANSITION_TO_ENTITY[name];
-                    if(!M.entities[entitityName+'_refMaybe']) {
+                    var entityName = TRANSITION_TO_ENTITY[name];
+                    if(!M.entities[entityName+'_refMaybe']) {
                         return false;
                     }
                 }
@@ -241,17 +277,18 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                 if(M.workUnit.isActionableBy(O.currentUser)) {
                     var app = M.entities.object;
                     var dateSet = M.workUnit.data.currentCommitteeMeeting ? O.ref(M.workUnit.data.currentCommitteeMeeting) : undefined;
+                    var panel = builder.panel(COMMITTEE_ACTION_PANEL_PRIORITY);
                     if(dateSet) {
-                        builder.link(50, spec.path+"/reschedule-form-meeting/"+
+                        panel.link(50, spec.path+"/reschedule-form-meeting/"+
                             M.workUnit.id, "Reschedule meeting", "secondary");
                         var date = dateSet.load().first(A.Date);
                         if(date) {
-                            builder.element(1000, {
+                            panel.element(1, {
                                 label: "Scheduled for "+date.toString()
                             });
                         }
                     } else {
-                        builder.link(50, spec.path+"/schedule-for-meeting/"+
+                        panel.link(50, spec.path+"/schedule-for-meeting/"+
                             M.workUnit.id, "Schedule meeting", "primary");
                     }
                 }
@@ -372,12 +409,6 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                     sortBy("date_asc").
                     execute();
 
-                var onlineDecisionUrl;
-                if(stateInfo.onlineDecision) {
-                    onlineDecisionUrl = P.showOnlineDecisionCreationLink(workflow, app) ? 
-                        spec.path+"/start-online-decision/"+workUnit.id : undefined;
-                }
-
                 E.render({
                     pageTitle: humanReadableVerb+" committee meeting",
                     backLink: app.url(),
@@ -385,8 +416,6 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                     thisPagePath: E.request.path,
                     committeeName: committee.title,
                     committeeRef: committee.ref,
-                    onlineDecisionName: NAME("Online decision"),
-                    onlineDecisionUrl: onlineDecisionUrl,
                     haveMeetings: !!meetings.length,
                     meetings: _.map(meetings, function(meeting) {
                         var datetime = meeting.first(A.Date);
@@ -410,7 +439,9 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
         }
 
         // Pre meeting review functionality
-        P.committeePreMeetingReview(workflow, spec);
+        if(!spec.disablePreMeetingReviews) {
+            P.committeePreMeetingReview(workflow, spec);
+        }
 
         plugin.implementService("haplo_committee_support:chairs_actions", function(apps, startRange, endRange, committeeRef) {
             var wus = O.work.query(workflow.fullName).isEitherOpenOrClosed();
@@ -437,5 +468,41 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             });
         });
 
+        if(!O.application.config["haplo_committee_scheduling:disable_minutes"]) {
+            workflow.implementWorkflowService("haplo_committee_scheduling:actions_for_meeting", function(M, spec) {
+                const meeting = spec.meeting;
+                const meetingDate = meeting.first(A.Date);
+                const meetingStart = meetingDate.start;
+                const actionsBeforeMeeting = M.timelineSelect().where("datetime", "<", meetingStart).
+                    order("datetime", true); // ordered by time descending
+                const actionsAfterMeeting = M.timelineSelect().where("datetime", ">", meetingStart).
+                    order("datetime"); // ordered by time ascending
+                // Assumption: the state at the time the meeting starts is the state that
+                // is relevant to this committee meeting's actions, because even when transitioning in,
+                // the state is the current one
+                const meetingState = actionsBeforeMeeting[0].state;
+                // Assumption: the target appropriate for the state at the time of the meeting is the
+                // one that is in the first action after the meeting starts, because even when transitioning
+                // out, the target is the current one
+                _.each([actionsBeforeMeeting, actionsAfterMeeting], (actions) => {
+                    let breakAfterNextExistingRender; // some actions don't have renders, but want to have
+                    // context for state, so find the first one that does
+                    _.some(actions, (action) => {
+                        const inState = action.state === meetingState;
+                        const stateChange = action.previousState;
+                        if(!(inState || stateChange)) {
+                            return true;
+                        }
+                        const entryDeferredRender = M.timelineEntryDeferredRender(action);
+                        if(entryDeferredRender) {
+                            spec.actions.push(action);
+                            return stateChange || breakAfterNextExistingRender;
+                        } else {
+                            breakAfterNextExistingRender = true;
+                        }
+                    });
+                });
+            });
+        }
     }
 );

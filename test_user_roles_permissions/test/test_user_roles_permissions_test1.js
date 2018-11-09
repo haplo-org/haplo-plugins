@@ -38,11 +38,20 @@ t.test(function() {
     var patientUser = O.setup.createUser({email:"patient@example.com",nameFirst:"PATIENT",nameLast:"Smith",ref:patient.ref,groups:[Group.Admins]});
     t.assert(patientUser.ref.toString() === patient.ref.toString());
 
+    var patient2 = O.object();
+    patient2.appendType(T.Person);
+    patient2.appendTitle("PATIENT");
+    patient2.save();
+
+    var patient2User = O.setup.createUser({email:"patient2@example.com",nameFirst:"PATIENT",nameLast:"Doe",ref:patient2.ref,groups:[Group.Admins]});
+    t.assert(patient2User.ref.toString() === patient2.ref.toString());
+
     var meeting = O.object();
     meeting.appendType(T.Meeting);
     meeting.appendTitle("Plan for a brain transplant");
     meeting.append(surgeon, A.Surgeon);
     meeting.append(patient, A.Patient);
+    meeting.append(patient2, A.Patient);
     meeting.save();
 
     var operation = O.object();
@@ -97,6 +106,18 @@ t.test(function() {
         });
     };
 
+    const assertHasRole = function(user, role, label) {
+        const roles = O.service("haplo:permissions:user_roles", user);
+        let result = "none";
+        if(roles.hasRole(role, label.ref)) {
+            result = "success";
+        } else {
+            console.log("Unexpected error: user "+user.ref+" does not have role "+role+" at label "+label.ref);
+            result = "failure";
+        }
+        t.assert(result === "success");
+    };
+
     /*
       It can be useful to uncomment this if you get a permission
       exception quoting the labels on an object; then you have some
@@ -114,6 +135,8 @@ t.test(function() {
     // Check user roles
     var surgeonRoles = O.service("haplo:permissions:user_roles", surgeonUser);
     console.log("Surgeon roles", surgeonUser.ref, surgeonRoles);
+    assertHasRole(surgeonUser, "Surgeon", patient);
+    assertHasRole(surgeonUser, "Surgeon", patient2);
 
     // Check attribute roles
     assertCanRead(surgeonUser, meeting);

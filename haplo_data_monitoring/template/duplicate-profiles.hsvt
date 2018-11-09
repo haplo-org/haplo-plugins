@@ -4,9 +4,10 @@ std:layout:wide()
 pageTitle("Duplicate profiles dashboard")
 
 <div>
+  <i> "found " count " potential duplicates (in " generated "s)" </i>
   <table class="tablesort">
     <thead>
-      <tr><th>Researcher</th><th>Duplicate</th><th>Identical email</th><th>Merge</th><th>Remove from list</th></tr>
+      <tr><th>"Researcher"</th><th>"Duplicate"</th><th>"Identical email"</th><th>"Merge"</th><th>"Remove from list"</th></tr>
     </thead>
     <tbody>
       each(duplicates) {
@@ -30,7 +31,6 @@ pageTitle("Duplicate profiles dashboard")
       }
     </tbody>
   </table>
-  <i> "found " count " potential duplicates (in " generated "s)" </i>
   if(ignoring) {
     <h3> "Ignoring" </h3>
     <p> "Ignoring the following profiles as not duplicates:" </p>
