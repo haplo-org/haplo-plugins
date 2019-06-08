@@ -1,0 +1,10 @@
+
+group haplo:group:data-import-api:service as RESTAPIImport
+    title: REST API data import
+
+service-user haplo:service-user:data-import-api:access
+    title: REST API data import access
+    group haplo:group:data-import-api:service
+
+
+

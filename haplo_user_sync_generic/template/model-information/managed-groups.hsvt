@@ -1,0 +1,25 @@
+<h3> "Managed groups" </h3>
+
+<p> "The " <tt> "groups" </tt> " name of the " <b> "user" </b> " destination should be set with zero or more of these managed group codes." </p>
+
+if(groups) {
+  <table>
+    <tr>
+      <th> "Code" </th>
+      <th> "Name" </th>
+      <th> "Profile type" </th>
+      <th> "Profile past type" </th>
+    </tr>
+    each(groups) {
+      <tr>
+        <td> <tt> code </tt> </td>
+        <td> name </td>
+        <td> typeActive </td>
+        <td> typePast </td>
+      </tr>
+    }
+  </table>
+} else {
+  <p> <i> "There are no managed groups in this application." </i> </p>
+
+}

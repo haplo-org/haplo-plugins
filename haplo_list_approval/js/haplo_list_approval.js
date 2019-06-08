@@ -4,11 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-// TODO: Docs
-
 var createNewApprovalLookup = function(allApprovers) {
     var lookup = O.refdict();
-    // Skip users without acounts
+    // Skip users without accounts
     _.each(allApprovers, function(approverRef) {
         var user = O.user(approverRef);
         if(!user || !user.isActive) { lookup.set(approverRef, true); }
@@ -20,21 +18,28 @@ P.workflow.registerWorkflowFeature("haplo:list_approval",
     function(workflow, spec) {
 
         var createLookup = function(M) {
-            var timeline = M.timelineSelect().where("previousState","=",spec.state).
-                where("action","=",spec.forwardTransition).order("datetime");
+            var timeline = M.timelineSelect().where("previousState","=",spec.state).order("datetime");
+            if(!spec.resetTransition) {
+                timeline.where("action","=",spec.forwardTransition);
+            } else {
+                timeline.or(function(select) {
+                    select.where("action","=",spec.forwardTransition).
+                        where("action","=",spec.resetTransition);
+                });
+            }
             var allApprovers = M.entities[spec.listEntity+"_refList"];
             var approvedLookup = createNewApprovalLookup(allApprovers);
-            // TODO skip users without accounts until we sort out workflow fallbacks properly
-            // _.each(allApprovers, function(approverRef) {
-            //     var user = O.user(approverRef);
-            //     if(!user || !user.isActive) { approvedLookup.set(approverRef, true); }
-            // });
             _.each(timeline, function(e) {
                 var userRef = e.user.ref;
                 if(userRef) { approvedLookup.set(userRef, true); }
-                if(approvedLookup.length === allApprovers.length) {
+                if(
+                    approvedLookup.length === allApprovers.length ||
+                    (spec.resetTransition && spec.resetTransition === e.action)
+                ) {
                     // This means all users have previously approved but this is running
-                    // therefore we've entered this state again so reset
+                    // therefore we've entered this state again so reset or it means
+                    // some people may have approved already but we need new approval
+                    // from everyone so reset.
                     approvedLookup = createNewApprovalLookup(allApprovers);
                 }
             });

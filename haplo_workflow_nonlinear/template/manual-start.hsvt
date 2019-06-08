@@ -1,0 +1,9 @@
+
+pageTitle(parentM.title)
+backLink(parentM.url) { backLinkText }
+
+std:object(object "linkedheading")
+
+<p> "&nbsp;" </p>
+
+within(confirm) { template:std:ui:confirm() }

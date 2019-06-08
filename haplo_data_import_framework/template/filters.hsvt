@@ -1,0 +1,18 @@
+pageTitle("Value filters")
+backLink("/do/haplo-data-import/admin")
+
+<p> "The following value filters are available in this application:" </p>
+
+each(filters) {
+  <h2> <tt> name </tt> </h2>
+  std:text:paragraph(info.description)
+  if(info.documentationURL) {
+    <p style="padding-left:16px"> haplo:data-import-framework:documentation(info.documentationURL concat("Documentation: " name)) </p>
+  }
+}
+
+<p> "&nbsp;" </p>
+<hr>
+<p>
+  haplo:data-import-framework:documentation("/import/control/value-conversion/filters" "Value filter documentation")
+</p>

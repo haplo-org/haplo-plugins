@@ -1,0 +1,39 @@
+{
+    "specificationVersion": 0,
+    "formId": "config",
+    "formTitle": "User sync config",
+    "elements": [
+        {
+            "type": "boolean",
+            "path": "autoApply",
+            "label": "Automatically apply uploaded sync files"
+        },
+        {
+            "type": "boolean",
+            "path": "updateAll",
+            "label": "Force update of all records"
+        },
+        {
+            "type": "static",
+            "html": "<p><b>Warning:</b> This will update all records, regardless of whether there have been any changes to the data. This will make syncs significantly slower, and is not necessary in the vast majority of cases. <b>Only use if you're sure it's necessary</b>"
+        },
+        {
+            "type": "text",
+            "path": "email",
+            "label": "Emails to receive sync reports",
+            "explanation": "Separate multiple email addresses with commas."
+        },
+        {
+            "type": "static",
+            "inForm": false,
+            "inDocument": {
+                "operation": "OR",
+                "statements": [
+                    {"path":"email", "operation":"==", "value":""},
+                    {"path":"email", "operation":"not-defined"}
+                ]
+            },
+            "html": "<i>Sync reports will not be emailed. Click 'Edit configuration...' to set email addresses.</i>"
+        }
+    ]
+}

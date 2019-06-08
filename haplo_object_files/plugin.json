@@ -1,0 +1,13 @@
+{
+  "pluginName": "haplo_object_files",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Object Files",
+  "displayDescription": "Allow attaching of specified file types to a particular type of object",
+  "installSecret": "51971cab13a6b19d2b47c3312d885a94405ee13e",
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_object_files.js"
+    ],
+  "respond": ["/do/haplo-object-files"]
+}

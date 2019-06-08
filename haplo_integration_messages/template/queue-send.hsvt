@@ -1,0 +1,9 @@
+pageTitle("Send outstanding messages: " group.title)
+backLink("/do/haplo-integration-messages/queue/" group.group)
+
+if(sent) {
+  <p> "Messages have been queued for delivery." </p>
+  <p> std:ui:button-link("/do/haplo-integration-messages/queue/" group.group) { "Back to queue information" } </p>
+} else {
+  template:std:ui:confirm()
+}

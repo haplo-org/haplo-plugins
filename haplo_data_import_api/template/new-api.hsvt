@@ -1,0 +1,8 @@
+pageTitle("Create new REST API")
+backLink("/do/haplo-data-import-api/admin") { "Cancel" }
+std:plugin:resources("rest-api.css")
+
+<form method="POST"> std:form:token()
+  std:form(form)
+  <p> <input type="submit" value="New REST API"> </p>
+</form>

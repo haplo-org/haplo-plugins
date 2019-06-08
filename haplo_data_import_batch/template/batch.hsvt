@@ -1,0 +1,59 @@
+pageTitle("Batch import: " batch.comment)
+backLink("/do/haplo-data-import-batch/batches")
+
+<table>
+  <tr>
+    <th> "Identifier" </th>
+    <td> batch.identifier </td>
+  </tr>
+  <tr>
+    <th> "Control file" </th>
+    <td>
+      <a href=["/do/haplo-data-import-batch/control-file/" batch.control.id]>
+        batch.control.digest
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <th> "Created" </th>
+    <td> std:date:time(batch.created) </td>
+  </tr>
+  <tr>
+    <th> "Comment" </th>
+    <td> batch.comment </td>
+  </tr>
+  <tr>
+    <th> "State" </th>
+    <td>
+      batch.state
+      ifAny(state-complete state-dry-run) {
+        " &nbsp; " <a href="#import-log"> "view log below..." </a>
+      }
+    </td>
+  </tr>
+  <tr>
+    <th> "Errors" </th>
+    <td> batch.errors </td>
+  </tr>
+</table>
+
+if(state-dry-run) {
+  std:ui:notice("Dry run only: This application has not been updated with imported data.")
+  <p>
+    std:ui:button-link("/do/haplo-data-import-batch/copy-batch/" batch.id) { "Copy as new batch..." }
+  </p>
+}
+
+if(state-ready) {
+  <p>
+    std:ui:button-link("/do/haplo-data-import-batch/schedule-batch/dry-run/" batch.id) { "Dry run..." }
+    std:ui:button-link("/do/haplo-data-import-batch/schedule-batch/import/" batch.id)  { "Import data..." }
+  </p>
+}
+
+std:document(files)
+
+if(batch.log) {
+  <h2 id="import-log"> "Log" </h2>
+  <pre> batch.log </pre>
+}

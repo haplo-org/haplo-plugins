@@ -1,0 +1,7 @@
+
+group haplo:group:data-import-batch:service as BatchDataImport
+    title: Batch data import
+
+service-user haplo:service-user:data-import-batch:access
+    title: Batch data import access
+    group haplo:group:data-import-batch:service

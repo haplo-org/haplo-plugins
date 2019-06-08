@@ -1,0 +1,19 @@
+pageTitle("Add manual message: " group.title)
+backLink("/do/haplo-integration-messages/queue/" group.group)
+
+<p> "When adding a message manually, ensure that the JSON representation matches the expected message format for this queue." </p>
+<p> "Warning: Adding messages with incomplete data may cause errors, depending on the configuration of this application." </p>
+
+if(error) {
+  std:ui:notice("JSON is badly formatted.")
+}
+
+<form method="POST"> std:form:token()
+  <p>
+    "JSON representation of message" <br>
+    <textarea name="message" style="width:98%" rows="8">
+      message
+    </textarea>
+  </p>
+  <p> <input type="submit" value="Add message"> </p>
+</form>

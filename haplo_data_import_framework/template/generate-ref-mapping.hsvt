@@ -1,0 +1,24 @@
+pageTitle("Generate mapping for " model.name " / " destination.destinationName " / " name.name)
+backLink("/do/haplo-data-import/model" ? model=model.name)
+
+<p> <tt> name.name </tt> " is a ref value which links to the following types:" </p>
+<ul>
+  each(typeInfo) { <li> name </li> }
+</ul>
+
+if(tooManyObjects) {
+  std:ui:notice("There are too many objects of these types in this application to generate a mapping. Mappings are only intended for a small number of classification objects which describe other objects.")
+} else {
+
+  <h2> "Mapping for control file" </h2>
+  <p> "The JSON below shows an example field instruction and mapping definition." </p>
+  <p> "The " <tt> "TODO-Vx" </tt> " values in the mapping should be replaced by the values in the input data." </p>
+
+  unless(usingCodes) {
+    <p> <b> "Warning: " </b> "This mapping does not use behaviour codes. This means the mapping is fragile and may break if objects are edited." </p>
+  }
+
+  <textarea style="width:98%" rows="80">
+    control
+  </textarea>
+}

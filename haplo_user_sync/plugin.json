@@ -11,6 +11,7 @@
         "pDatabase",
         "pSendEmail",
         "pBackgroundProcessing",
+        "pUserCreateAPIKey",
         "pCreateUser",
         "pUserSetDetails",
         "pSetupSystem",

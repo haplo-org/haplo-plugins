@@ -1,0 +1,24 @@
+{
+  "pluginName": "haplo_data_import_batch",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Data Import Batch",
+  "displayDescription": "Management of data import batches using the data import framework",
+  "apiVersion": 4,
+  "privilegesRequired": [
+      "pDatabase",
+      "pUserCreateAPIKey",
+      "pBackgroundProcessing"
+    ],
+  "depend": [
+      "haplo_data_import_framework"
+    ],
+  "load": [
+      "js/haplo_data_import_batch.js",
+      "js/haplo_data_import_batch_ui.js"
+    ],
+  "respond": [
+      "/do/haplo-data-import-batch",
+      "/api/haplo-data-import-batch"
+    ]
+}

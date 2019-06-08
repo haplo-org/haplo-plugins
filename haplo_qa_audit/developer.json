@@ -1,0 +1,6 @@
+{
+  "syntaxCheckGlobalsServer": [
+    "$registry",
+    "$Plugin"
+  ]
+}

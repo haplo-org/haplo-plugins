@@ -1,0 +1,37 @@
+pageTitle("Error " error.id)
+backLink("/do/haplo-integration/errors")
+
+<table>
+  <tr>
+    <th> "Message" </th>
+    <td> <b> error.message </b> </td>
+  </tr>
+  <tr>
+    <th> "Date and time" </th>
+    <td> std:date:time(error.datetime) </td>
+  </tr>
+  <tr>
+    <th> "ID" </th>
+    <td> error.id </td>
+  </tr>
+  <tr>
+    <th> "Source" </th>
+    <td> error.source </td>
+  </tr>
+  <tr>
+    <th> "Acknowledged?" </th>
+    <td>
+      if(error.acknowledged) {
+        std:date:time(error.acknowledged) " by " error.acknowledgedBy.name
+      } else {
+        <form method="POST" action=["/do/haplo-integration/error-acknowledge/" error.id]> std:form:token()
+          <input type="submit" value="Acknowledge"> " this error to remove from current error list"
+        </form>
+      }
+    </td>
+  </tr>
+</table>
+
+<h2> "Details" </h2>
+
+std:text:paragraph(error.details)

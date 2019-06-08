@@ -1,0 +1,26 @@
+pageTitle("Batch import control files")
+backLink("/do/haplo-data-import-batch/admin")
+
+<p> "Control files: " controlFiles.length </p>
+
+<p> std:ui:button-link("/do/haplo-data-import-batch/new-control-file") { "Upload new control file..." } </p>
+<p> "&nbsp;" </p>
+
+<table>
+  <tr>
+    <th> "Digest" </th>
+    <th> "Created" </th>
+    <th> "Comment" </th>
+  </tr>
+  each(controlFiles) {
+    <tr>
+      <td>
+        <a href=["/do/haplo-data-import-batch/control-file/" row.id]>
+          digestTruncated "..."
+        </a>
+      </td>
+      <td> std:date:time(row.created) </td>
+      <td> row.comment </td>
+    </tr>
+  }
+</table>

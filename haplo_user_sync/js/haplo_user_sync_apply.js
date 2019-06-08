@@ -61,6 +61,11 @@ P.doSyncApply = function(sync) {
 
     var postPhase = false, usernameToRef = {};
 
+    // managed groups may be a list, or a function to call to get the list
+    var managedGroups = (typeof(impl.managedGroups) === "function") ?
+        impl.managedGroups() :
+        impl.managedGroups;
+
     var engine = {
         log: log,
         error: error,
@@ -71,8 +76,17 @@ P.doSyncApply = function(sync) {
         //    groups (array of groups for membership)
         // If user is known to be incorrect, set errorState=true
         // Returns boolean of whether data was examined and changes potentially made.
-        user: function(details, errorState) {
-            var username = details.username.toLowerCase();
+        user: function(detailsFull, errorState, implData) {
+            // Implementation may want to extract the username, rather than using default properties
+            var username;
+            if(impl.extractUsername) {
+                username = impl.extractUsername(detailsFull, implData);
+            } else {
+                username = detailsFull.username;
+            }
+            if(username) {
+                username = username.toLowerCase();
+            }
             applyUsername = username;
             errorForUsername = undefined;
             if(errorState) {
@@ -81,7 +95,7 @@ P.doSyncApply = function(sync) {
             }
             try {
                 // Use a digest of the details to change for changes to the underlying data
-                var dataDigest = O.security.digest.hexDigestOfString("SHA1",JSON.stringify(details));
+                var dataDigest = O.security.digest.hexDigestOfString("SHA1",JSON.stringify(detailsFull));
 
                 var row, uq = P.db.users.select().where("username","=",username).limit(1);
                 if(uq.length === 1) {
@@ -108,18 +122,33 @@ P.doSyncApply = function(sync) {
 
                 var profileObject, updatedProfileObject, user = (row.userId ? O.user(row.userId) : undefined);
 
-                // Profile
+                // Create / read profile object
                 if(user && user.ref) {
                     profileObject = user.ref.load();
                     updatedProfileObject = profileObject.mutableCopy();
                 } else {
                     var labels;
                     if(impl.labelsForNewProfileObject) {
-                        labels = impl.labelsForNewProfileObject(this, updatedProfileObject, details);
+                        labels = impl.labelsForNewProfileObject(this, updatedProfileObject, detailsFull, implData);
                     }
                     updatedProfileObject = labels ? O.object(labels) : O.object();
                 }
-                impl.updateProfileObject(this, updatedProfileObject, details);
+
+                // Implementation may want to prepare record for sync, returning the core properties for the sync
+                // This must happen before anything else is done with the data.
+                //
+                // 'detailsFull' is the data returned from the implementation for this record. If it has the required
+                // properties ('username', 'nameFirst', etc), then it can be used directly. However, the implementation
+                // may want to use different names for the properties, perhaps to match an external data source.
+                // In this case, it'll implement a function which returns the 'details', which is just the core
+                // user details required by this plugin.
+                let details = detailsFull;
+                if(impl.prepareForRecordAndExtractDetails) {
+                    details = impl.prepareForRecordAndExtractDetails(this, detailsFull, updatedProfileObject, implData);
+                }
+
+                // Implementation updates profile object
+                impl.updateProfileObject(this, updatedProfileObject, detailsFull, implData);
                 if(!(updatedProfileObject.firstType())) { updatedProfileObject.appendType(T.Person); }
                 updatedProfileObject.remove(A.Title);
                 updatedProfileObject.appendTitle(O.text(O.T_TEXT_PERSON_NAME, {
@@ -127,7 +156,7 @@ P.doSyncApply = function(sync) {
                     first: details.nameFirst,
                     last: details.nameLast
                 }));
-                updatedProfileObject.remove(ATTR["std:attribute:email"]);
+                updatedProfileObject.remove(A.EmailAddress);
                 updatedProfileObject.append(O.text(O.T_IDENTIFIER_EMAIL_ADDRESS, details.email), A.EmailAddress);
 
                 if(!(profileObject && profileObject.valuesEqual(updatedProfileObject))) {
@@ -143,6 +172,9 @@ P.doSyncApply = function(sync) {
                     nameFirst: details.nameFirst,
                     nameLast: details.nameLast
                 };
+                var groups = _.map(details.groups||[], (g) => {
+                    return (typeof(g) === "string") ? Group[g] : g;
+                });
                 if(user) {
                     if(!user.isActive) {
                         log("reactivate "+username);
@@ -151,15 +183,15 @@ P.doSyncApply = function(sync) {
                     user.setDetails(userDetails);   // Won't modify user if nothing changed
                     // Preserve any groups to which the user has been added manually
                     var existingUnmanagedGroups = _.filter(user.directGroupIds, function(gid) {
-                        return (-1 === impl.managedGroups.indexOf(gid));
+                        return (-1 === managedGroups.indexOf(gid));
                     });
-                    user.setGroupMemberships(existingUnmanagedGroups.concat(details.groups));
+                    user.setGroupMemberships(existingUnmanagedGroups.concat(groups));
                     if(!user.ref) {
                         log("Creating store object for user: "+username);
                         user.ref = updatedProfileObject.ref;
                     }
                 } else {
-                    userDetails.groups = details.groups;
+                    userDetails.groups = groups;
                     userDetails.ref = updatedProfileObject.ref;
                     user = O.setup.createUser(userDetails);
                     row.userId = user.id;
@@ -179,9 +211,9 @@ P.doSyncApply = function(sync) {
                 // TODO: Database API doesn't let this be done in a nicer way yet
                 var lastUserDataQ = P.db.lastUserData.select().where("userId","=",user.id).limit(1);
                 if(lastUserDataQ.length === 0) {
-                    P.db.lastUserData.create({userId:user.id,json:JSON.stringify(details)}).save();
+                    P.db.lastUserData.create({userId:user.id,json:JSON.stringify(detailsFull)}).save();
                 } else {
-                    lastUserDataQ[0].json = JSON.stringify(details);
+                    lastUserDataQ[0].json = JSON.stringify(detailsFull);
                     lastUserDataQ[0].save();
                 }
 

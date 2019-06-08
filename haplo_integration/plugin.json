@@ -1,0 +1,14 @@
+{
+  "pluginName": "haplo_integration",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Integration",
+  "displayDescription": "Admin tools for managing integrations with external systems",
+  "installSecret": "6c667a424146cffa9d5facf175771ae65670f145",
+  "apiVersion": 4,
+  "privilegesRequired": ["pDatabase"],
+  "load": [
+      "js/haplo_integration.js"
+    ],
+  "respond": ["/do/haplo-integration"]
+}

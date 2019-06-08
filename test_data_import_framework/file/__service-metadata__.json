@@ -1,0 +1,50 @@
+{
+    "haplo:data-import-framework:setup-model:test:one": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:setup-model"
+        ],
+        "metadata": {
+            "name": "test:one",
+            "title": "Test Model One",
+            "description": "Test model."
+        }
+    },
+    "haplo:data-import-framework:setup-model:test:two": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:setup-model"
+        ],
+        "metadata": {
+            "name": "test:two",
+            "title": "Test Model Two",
+            "description": "Test model."
+        }
+    },
+    "haplo:data-import-framework:setup-model:test:three": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:setup-model"
+        ],
+        "metadata": {
+            "name": "test:three",
+            "title": "Test Model Three",
+            "description": "Test model."
+        }
+    },
+    "haplo:data-import-framework:filter:test:order-1": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "test:order-1",
+            "description": "Order 1."
+        }
+    },
+    "haplo:data-import-framework:filter:test:order-2": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "test:order-2",
+            "description": "Order 2."
+        }
+    }
+}

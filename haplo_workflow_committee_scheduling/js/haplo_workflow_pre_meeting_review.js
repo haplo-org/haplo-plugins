@@ -63,7 +63,8 @@ P.committeePreMeetingReview = function(workflow, spec) {
                     "\"> here</a>.</p>"
             }, "std:ui:notice");
         }
-        var committee = M.entities[stateInfo.committeeEntityName];
+        var committee = M.entities[stateInfo.committeeEntityName+"_maybe"];
+        if(!committee) { O.stop("Cannot find committee"); }
         if(!committee.first(A.CommitteeMember)) {
             return P.noCommitteeMembersFoundNotice(M, E);
         }
@@ -135,10 +136,10 @@ P.committeePreMeetingReview = function(workflow, spec) {
             return si.state === M.state;
         });
         if(!stateInfo) { O.stop("Invalid state"); }
-        var committee = M.entities[stateInfo.committeeEntityName];
+        if(!M.entities[stateInfo.committeeEntityName+"_refMaybe"]) { O.stop("Cannot find committee"); }
         var query = P.db.preMeetingReviews.select().
             where("application","=",app.ref).
-            where("committee","=",committee.ref);
+            where("committee","=",M.entities[stateInfo.committeeEntityName+"_ref"]);
         if(!query.length) { O.stop("Not permitted"); }
         var entry = query[0];
         var document = _.clone(entry.document);
@@ -177,11 +178,13 @@ P.committeePreMeetingReview = function(workflow, spec) {
                     "Request review", "primary");
             }
 
-            var app = M.entities.object;
-            var committee = M.entities[stateInfo.committeeEntityName];
+            if(!M.entities[stateInfo.committeeEntityName+"_refMaybe"]) {
+                return;
+            }
+
             var query = P.db.preMeetingReviews.select().
-                where("application","=",app.ref).
-                where("committee","=",committee.ref);
+                where("application","=",M.entities.object_ref).
+                where("committee","=",M.entities[stateInfo.committeeEntityName+"_ref"]);
             if(query.length > 0) {
                 var entry = query[0];
                 var document = _.clone(entry.document);
@@ -206,7 +209,7 @@ P.committeePreMeetingReview = function(workflow, spec) {
                     });
                 }
                 if(currentUserIsReviewer) {
-                    builder.link(1200, spec.path+"/reject-review/"+app.ref,
+                    builder.link(1200, spec.path+"/reject-review/"+M.entities.object_ref,
                         "Reject review request", "terminal");
                 }
             }

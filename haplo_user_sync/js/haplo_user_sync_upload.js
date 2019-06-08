@@ -8,10 +8,22 @@
 var findOrCreateSyncGroup = P.findOrCreateSyncGroup = function() {
     var sync, syncQuery = P.db.sync.select().order("created",true).limit(1).stableOrder().limit(1);
     if(syncQuery.length === 0 || syncQuery[0].status >= P.SYNC_STATUS.complete) {
+        var impl = P.getImplementation();
+        var defaultFiles = {};
+        if(impl.setDefaultFiles) {
+            impl.setDefaultFiles((name,file) => {
+                defaultFiles[name] = {
+                    digest: file.digest,
+                    fileSize: file.fileSize,
+                    filename: file.filename,
+                    replaceable: true
+                };
+            });
+        }
         sync = P.db.sync.create({
             status: P.SYNC_STATUS.uploading,
             created: new Date(),
-            filesJSON: "{}"
+            filesJSON: JSON.stringify(defaultFiles)
         });
     } else {
         sync = syncQuery[0];
@@ -25,18 +37,31 @@ P.respond("POST", "/api/haplo-user-sync/upload-file", [
     {parameter: "rdr", as:"string", optional:true}
 ], function(E, name, uploadedFile, rdr) {
     var impl = P.getImplementation();
+
+    var errorResponse = (message) => {
+        E.response.kind = 'text';
+        E.response.body = message;
+        E.response.statusCode = HTTP.BAD_REQUEST;
+    };
+
+    // Implementation can observe uploaded files, and return error messages if it's invalid
+    if(impl.observeUploadedFile) {
+        var implError = impl.observeUploadedFile(name, uploadedFile);
+        if(implError) { return errorResponse(implError); }
+    }
+
     // Find or create a new sync group
     var sync = findOrCreateSyncGroup();
     if(sync.status !== P.SYNC_STATUS.uploading) {
-        E.response.kind = 'text';
-        E.response.body = 'Sync in unexpected state -- use admin interface to resolve.';
-        E.response.statusCode = HTTP.BAD_REQUEST;
-        return;
+        return errorResponse('Sync in unexpected state -- use admin interface to resolve.');
     }
 
     // Store file and file info
     var file = O.file(uploadedFile);
     var files = sync.files;
+    if((name in files) && !(files[name].replaceable)) {
+        return errorResponse('File '+name+' has already been uploaded for this sync run.');
+    }
     files[name] = {
         digest: file.digest,
         fileSize: file.fileSize,
@@ -46,8 +71,8 @@ P.respond("POST", "/api/haplo-user-sync/upload-file", [
     if(impl.allFilesUploaded(files)) { sync.status = P.SYNC_STATUS.ready; }
     sync.save();
     if(rdr) { // Allow UI to use endpoint but redirect to somewhere more sensible
-        rdr = decodeURIComponent(rdr);
-        if(0 === rdr.indexOf("/")) { return E.response.redirect(rdr); }
+        rdr = O.checkedSafeRedirectURLPath(decodeURIComponent(rdr));
+        if(rdr) { return E.response.redirect(rdr); }
     }
     E.response.kind = 'json';
     E.response.body = JSON.stringify(sync.files[name], undefined, 2);
@@ -138,7 +163,7 @@ var unsafeFileSizeDifference = function(current, previous) {
 };
 
 var STATUS_REPORT_TEXT = {
-    "ok:": 'OK. Sync queued.',
+    "ok": 'OK. Sync queued.',
     "disabled": 'OK: Auto apply disabled; must apply manually.',
     "unready": 'Last sync is not ready. Upload all the required files.',
     "unsafe": 'OK: Files uploaded are too different to previous sync; must apply manually.'
@@ -173,13 +198,41 @@ P.implementService("haplo_user_sync:start_sync", function() {
 });
 
 P.respond("POST", "/api/haplo-user-sync/start-sync", [
-], function(E) {
+    {pathElement:0, as:"string", optional: true}
+], function(E, responseKind) {
     var startStatus = startSync();
-    E.response.kind = 'text';
-    E.response.body = STATUS_REPORT_TEXT[startStatus];
-    if(startStatus === "unready") { E.response.statusCode = HTTP.BAD_REQUEST; }
+    var error = (startStatus === "unready") || !(startStatus in STATUS_REPORT_TEXT);
+    var statusMessage = STATUS_REPORT_TEXT[startStatus] || "Error: sync start signal returned unknown status.";
+    var statusType = "admin-intervention-required";
+    if(startStatus === "ok") {
+        statusType = "queued-for-apply";
+    } else if(startStatus === "unready") {
+        statusType = "missing-files";
+    }
+    if(responseKind === "json") {
+        E.response.kind = 'json';
+        E.response.body = JSON.stringify({
+            "status": statusType,
+            "error": error,
+            "message": statusMessage
+        });
+    } else if(responseKind === "xml") {
+        E.response.kind = 'xml';
+        var xml = O.xml.document();
+        var cursor = xml.cursor();
+        cursor.
+            element("response").
+            element("sync").
+            attribute("status", statusType).
+            attribute("error", error).
+            text(statusMessage);
+        E.response.body = xml;
+    } else  {
+        E.response.kind = 'text';
+        E.response.body = statusMessage;
+        if(startStatus === "unready") { E.response.statusCode = HTTP.BAD_REQUEST; }
+    }
     if(!(startStatus in STATUS_REPORT_TEXT)) {
-        E.response.body = "Error: sync start signal returned unknown status.";
         E.response.statusCode = HTTP.INTERNAL_SERVER_ERROR;
     }
 });

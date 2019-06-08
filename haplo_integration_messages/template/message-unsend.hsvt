@@ -1,0 +1,4 @@
+pageTitle("Unsend message " message.id " in " group.title "?")
+backLink("/do/haplo-integration-messages/message/" group.group "/" message.id)
+
+template:std:ui:confirm()

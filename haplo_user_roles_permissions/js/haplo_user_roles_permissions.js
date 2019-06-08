@@ -45,7 +45,7 @@ var groupPermissions = {},
 
 // --------------------------------------------------------------------------
 
-P.implementService("__qa__:haplo_user_roles_permissions:internals", function() {
+P.__getInternals = function() {
     ensureSetup();
     return {
         groupPermissions: groupPermissions,
@@ -57,7 +57,9 @@ P.implementService("__qa__:haplo_user_roles_permissions:internals", function() {
         roles: roles,
         relevantTypes: relevantTypes
     };
-});
+};
+
+P.implementService("__qa__:haplo_user_roles_permissions:internals", P.__getInternals);
 
 // --------------------------------------------------------------------------
 

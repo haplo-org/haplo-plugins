@@ -1,0 +1,25 @@
+{
+    "specificationVersion": 0,
+    "formId": "new-control-file",
+    "formTitle": "New control file",
+    "elements": [
+        {
+            "type": "file",
+            "path": "file",
+            "name": "file",
+            "label": "Control file",
+            "required": true,
+            "validationCustom": {
+                "name": "haplo:data-import-framework:control-file"
+            }
+        },
+        {
+            "type": "text",
+            "path": "comment",
+            "name": "comment",
+            "label": "Comment",
+            "explanation": "A short description of the purpose of this control file.\nFor example, 'Project data exported from Database X'.",
+            "required": true
+        }
+    ]
+}

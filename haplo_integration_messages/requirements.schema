@@ -1,0 +1,10 @@
+
+group haplo:group:integration-message-queue-poll:service as MessageQueuePollAPI
+    title: Integration Message Queue Poll
+
+service-user haplo:service-user:integration-message-queue-poll:access
+    title: Integration Message Queue Poll access
+    group haplo:group:integration-message-queue-poll:service
+
+
+

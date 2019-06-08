@@ -1,0 +1,62 @@
+{
+    "haplo:data-import-framework:setup-model:haplo:person": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:setup-model"
+        ],
+        "metadata": {
+            "name": "haplo:person",
+            "title": "People and associated information",
+            "description": "Information about people and information about things associated with people."
+        }
+    },
+    "haplo:data-import-framework:filter:haplo:string-to-ref": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "haplo:string-to-ref",
+            "description": "Convert string representation of Haplo Ref to Ref value.",
+            "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/string-to-ref"
+        }
+    },
+    "haplo:data-import-framework:filter:haplo:code-to-ref": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "haplo:code-to-ref",
+            "description": "Convert behaviour code to Ref value.",
+            "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/code-to-ref"
+        }
+    },
+    "haplo:data-import-framework:filter:haplo:fix-up-url": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "haplo:fix-up-url",
+            "description": "Attempt to fix URLs missing the scheme (eg bare domains).",
+            "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/fix-up-url"
+        }
+    },
+    "haplo:data-import-framework:filter:haplo:to-lower-case": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "haplo:to-lower-case",
+            "description": "Convert a string to lower case.",
+            "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/to-lower-case"
+        }
+    },
+    "haplo:data-import-framework:filter:haplo:to-upper-case": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "haplo:to-upper-case",
+            "description": "Convert a string to upper case.",
+            "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/to-upper-case"
+        }
+    }
+}

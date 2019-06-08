@@ -1,0 +1,7 @@
+<span>
+  std:icon:description("E202,1,f E415,1,f" "micro")
+  " "
+  <a href=href target="_blank" rel="noopener">
+    text
+  </a>
+</span>

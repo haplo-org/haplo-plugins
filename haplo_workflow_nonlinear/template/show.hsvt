@@ -1,0 +1,9 @@
+
+pageTitle(M.title)
+backLink(parentM.url) { backLinkText }
+
+if(object) {
+    std:object(object)
+}
+
+render(timeline)

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<root>
+  <row>
+    <id>X1</id>
+    <value>example chars with different encoding than unicode: ƒŸ‡</value>
+  </row>
+</root>

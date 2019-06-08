@@ -1,0 +1,4 @@
+pageTitle("Data import models")
+backLink("/do/haplo-data-import/admin")
+
+template:std:ui:choose()

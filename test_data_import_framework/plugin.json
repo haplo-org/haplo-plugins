@@ -1,0 +1,12 @@
+{
+  "pluginName": "test_data_import_framework",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Test Data Import Framework",
+  "displayDescription": "Tests for haplo_data_import_framework plugin which require additional schema and models which cannot be included in the main plugin.",
+  "installSecret": "20125da6fc1f843c571fba54af2375a2cfc53851",
+  "apiVersion": 4,
+  "load": [
+      "js/test_data_import_framework.js"
+    ]
+}

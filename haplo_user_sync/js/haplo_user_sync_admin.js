@@ -11,6 +11,16 @@ P.hook('hGetReportsList', function(response) {
     }
 });
 
+// If the haplo_integration plugin is installed, add a link to the user sync admin to the list of integrations
+P.implementService("haplo:integration:admin-ui:add-options", function(options) {
+    options.push({
+        action: "/do/haplo-user-sync/admin",
+        label: "User sync",
+        notes: "Configure user sync and view sync logs.",
+        indicator: "standard"
+    });
+});
+
 // --------------------------------------------------------------------------------------------------
 
 // Add UI to user page in system management to prevent 'accidental' modifications
@@ -26,26 +36,22 @@ P.hook('hUserAdminUserInterface', function(response, user) {
     if(O.currentUser.allowed(P.canUserAdministrateSync)) {
         response.information.push(["/do/haplo-user-sync/admin/user-info?lookup="+info.username, "View sync status..."]);
     }
-    response.showEditAccessControl = false;
+    // Prevent everyone other than SUPPORT from using the admin UI 
+    if(!O.currentUser.isSuperUser) {
+        response.showEditAccessControl = false;
+    }
 });
 
 // --------------------------------------------------------------------------------------------------
 
-var configForm = P.form({
-    "specificationVersion": 0,
-    "formId": "config",
-    "formTitle": "User sync config",
-    "elements": [
-        {type:"boolean", path:"autoApply", label:"Automatically apply uploaded sync files"},
-        {type:"boolean", path:"updateAll", label:"Force update of all records"},
-        {type:"static", html:"<p><b>Warning:</b> This will update all records, regardless of whether there have been any changes to the data. This will make syncs significantly slower, and is not necessary in the vast majority of cases. <b>Only use if you're sure it's necessary</b>"},
-        {type:"text", path:"email", label:"Emails to receive sync reports (comma separated)"}
-    ]
-});
+var configForm = P.form("config", "form/config.json");
 
 P.onLoad = function() {
     if(!P.data.config) {
-        P.data.config = {autoApply: true};
+        P.data.config = {
+            autoApply: true,
+            updateAll: false
+        };
     }
 };
 
@@ -68,6 +74,7 @@ P.respond("GET", "/do/haplo-user-sync/admin", [
         }),
         implAdminUIHTML: impl.adminUI(),
         config: configForm.instance(P.data.config || {}),
+        haveMappings: P.haveMappings(),
         lastSyncTime: (syncs.length > 0) ? (syncs[syncs.length - 1].created.getTime()) : 0,
         overridesEnabled: O.application.config['haplo_user_sync:enable_detail_override']
     });
@@ -84,10 +91,25 @@ P.respond("GET,POST", "/do/haplo-user-sync/admin/config", [
         E.response.redirect("/do/haplo-user-sync/admin");
     } else {
         E.render({
-            backLink: "/do/haplo-user-sync/admin",
             form: form
         });
     }
+});
+
+// --------------------------------------------------------------------------------------------------
+
+P.respond("GET,POST", "/do/haplo-user-sync/admin/create-api-key", [
+], function(E) {
+    if(E.request.method === "POST") {
+        return E.render({
+            key: O.serviceUser("haplo:service-user:user-sync:access").
+                    createAPIKey("User Sync", "/api/haplo-user-sync/")
+        });
+    }
+    E.render({
+        text: "Create new API key for user sync file uploader scripts?",
+        options: [{label:"Create API key"}]
+    });
 });
 
 // --------------------------------------------------------------------------------------------------
@@ -189,21 +211,7 @@ P.respond("POST", "/do/haplo-user-sync/set-user-to-error-state", [
 
 // --------------------------------------------------------------------------------------------------
 
-var displayFileForm = P.form({
-    "specificationVersion": 0,
-    "formId": "file",
-    "formTitle": "Sync files",
-    "elements": [
-        {
-            type: "repeating-section",
-            path: "files",
-            elements: [
-                { type:"text", path:"name", name:"name" },
-                { type:"file", path:"file", name:"file" }
-            ]
-        }
-    ]
-});
+var displayFileForm = P.form("file", "form/file.json");
 
 P.respond("GET", "/do/haplo-user-sync/admin/sync-info", [
     {pathElement:0, as:"db", table:"sync"}

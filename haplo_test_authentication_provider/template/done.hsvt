@@ -1,0 +1,8 @@
+pageTitle("Authentication result")
+
+<p> "Identifier: " result.identifier </p>
+
+<p> "Date and time: " std:date:time(result.datetime) </p>
+
+<p> "Authentication information" </p>
+<pre> info </pre>

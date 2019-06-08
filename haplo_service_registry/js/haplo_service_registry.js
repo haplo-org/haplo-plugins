@@ -19,7 +19,7 @@ P.implementService("haplo:service-registry:query", function(statements) {
 
 // --------------------------------------------------------------------------
 /*HaploDoc
-node: /haplo_service_registry/service_metadata
+node: /haplo-plugins/haplo_service_registry/service_metadata
 title: ServiceMetadata
 sort: 1
 --
@@ -58,37 +58,37 @@ ServiceMetadata.prototype._matchesStatements = function(statements) {
 // --------------------------------------------------------------------------
 
 /*HaploDoc
-node: /haplo_service_registry/service_list
+node: /haplo-plugins/haplo_service_registry/service_list
 title: ServiceList
 sort: 1
 --
 
-The @ServiceList@ interface represents a list of [node:/haplo_service_registry/service_metadata] \
+The @ServiceList@ interface represents a list of [node:haplo-plugins/haplo_service_registry/service_metadata] \
 objects. This is the object returned when querying the service registry.
 
 h3(key). services
 
-An array of [node:/haplo_service_registry/service_metadata] objects.
+An array of [node:haplo-plugins/haplo_service_registry/service_metadata] objects.
 */
 var ServiceList = function(services) {
     this.services = services;
 };
 
 /*HaploDoc
-node: /haplo_service_registry/service_list
+node: /haplo-plugins/haplo_service_registry/service_list
 sort: 4
 --
 
 h3(key). isEmpty
 
-Returns true if this @ServiceList@ contains no [node:/haplo_service_registry/service_metadata] objects.
+Returns true if this @ServiceList@ contains no [node:haplo-plugins/haplo_service_registry/service_metadata] objects.
 */
 ServiceList.prototype.__defineGetter__("isEmpty", function() {
     return this.services.length === 0;
 });
 
 /*HaploDoc
-node: /haplo_service_registry/service_list
+node: /haplo-plugins/haplo_service_registry/service_list
 sort: 7
 --
 

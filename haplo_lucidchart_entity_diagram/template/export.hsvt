@@ -1,0 +1,21 @@
+pageTitle("Export schema to LucidChart")
+
+<p> "Generate a file for importing into LucidChart:" </p>
+
+<form method="POST"> std:form:token()
+  <p> <input type="submit" value="Export..."> </p>
+</form>
+
+<h2> "Instructions" </h2>
+
+<ul>
+  <li> "Create a blank document in LucidChart" </li>
+  <li> "From the menus: File / Import Data / Entity Relationship / SQL import" </li>
+  <li> "Choose PostgreSQL" </li>
+  <li> "Click Next" </li>
+  <li> "Upload the file you generated" </li>
+  <li> "In the 'ERD Import' panel, drag the type names onto the page. Lines will be drawn between them automatically." </li>
+</ul>
+
+<p> <a href="https://lucidchart.zendesk.com/hc/en-us/articles/207299756-Entity-Relationship-Diagrams"> "LucidChart's documentation" </a> </p>
+

@@ -39,13 +39,13 @@ h3(service). P.implementService("haplo:editable_notification:template_definition
 
 where @TEMPLATE_NAME@ is the name of the template, returned from @getNotificationTemplateName()@.
 
-However, you'll probaly just want to use the default template name, which is @PLUGIN_NAME:WORKFLOW_NAME:NOTIFICATION_NAME@, eg. "example_plugin:approval:accepted".
+However, you'll probably just want to use the default template name, which is @PLUGIN_NAME:WORKFLOW_NAME:NOTIFICATION_NAME@, eg. "example_plugin:approval:accepted".
 
 Your service should return an object with these properties:
 
 | plugin | plugin which implements this |
 | sections | array of @[sort, name, xml file, displayName]@ |
-| @buildTextForEditing(M,builder)@ | function to build text (optional) |
+| @buildTextForEditing(M, builder)@ | function to build text (optional) |
 
 This separation of notifications and templates is intended to give you more flexibility
 in how templates are created. For example, this mechanism allows you to have pluggable
@@ -82,7 +82,7 @@ where @config@ has properties:
 
 */
 
-var DEFAULT_NOTIFICATION_LIST_SORT = 1480;   // can be overriden with config.panel
+var DEFAULT_NOTIFICATION_LIST_SORT = 1480;   // can be overridden with config.panel
 
 // --------------------------------------------------------------------------
 
@@ -142,7 +142,7 @@ P.workflow.registerWorkflowFeature("haplo:editable_notification",
         workflowNotifications[spec.name] = {workflow:workflow, spec:spec};
 
         var state = spec.state;
-        if(!state) { throw new Error("No state specificed"); }
+        if(!state) { throw new Error("No state specified"); }
 
         // ------------------------------------------------------------------
         // Common functionality for workflow
@@ -157,10 +157,14 @@ P.workflow.registerWorkflowFeature("haplo:editable_notification",
         // Add links to notification editor
         workflow.actionPanelTransitionUI(SELECTOR, function(M, builder) {
             if(M.workUnit.isActionableBy(O.currentUser)) {
+                var hasPendingNotification = getPendingNotification(M, spec.name);
+                var primaryText = M.getTextMaybe("transition:"+spec.transition) || "Notify: "+O.interpolateNAMEinString(spec.displayName);
+                var defaultText = "Edit: "+O.interpolateNAMEinString(spec.displayName);
+                var indicator = hasPendingNotification ? "standard" : (M.getTextMaybe("transition-indicator:"+spec.transition) || "primary");
                 builder.link("default",
                     "/do/workflow-notifications/write/"+spec.name+"/"+M.workUnit.id,
-                    M.getTextMaybe("transition:"+spec.transition) || "Notify: "+O.interpolateNAMEinString(spec.displayName),
-                    getPendingNotification(M, spec.name) ? "standard" : M.getTextMaybe("transition-indicator:"+spec.transition) || "primary");
+                    hasPendingNotification ? defaultText : primaryText,
+                    indicator);
             }
         });
 

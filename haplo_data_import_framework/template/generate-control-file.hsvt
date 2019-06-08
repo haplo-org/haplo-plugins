@@ -1,0 +1,40 @@
+pageTitle("Generate control file for " model.name)
+backLink("/do/haplo-data-import/model" ? model=model.name)
+
+if(control) {
+  std:ui:notice("This control file cannot be used as is. You must review every single instruction before use, and fill in all the placeholders marked TODO.")
+  <p> haplo:data-import-framework:documentation("/import/control" "Control file documentation") </p>
+  unless(isUserSync) {
+    <p> <b> "Important:" </b> " The " <tt> "new" </tt> " instructions in this file may need to be replaced by " <a href="https://docs.haplo.org/import/control/instruction/load" target="_blank" rel="noopener"> <tt> "load" </tt> </a> " instructions." </p>
+  }
+  <textarea style="width:98%" rows="80">
+    control
+  </textarea>
+
+} else {
+  <p> "Which names should be included in the control file?" </p>
+
+  <form method="POST"> std:form:token()
+    <input type="hidden" name="model" value=model.name>
+    each(destinations) {
+      <h2> title </h2>
+      each(_namesList) {
+        <p>
+          <b> properties.description </b> <br>
+          <label>
+            <input type="checkbox" name=concat("in`" ^{destinationName} "^" name)>
+            <tt> name </tt>
+          </label>
+          if(properties.multivalue) {
+            " "
+            <label>
+              <input type="checkbox" name=concat("mv`" ^{destinationName} "^" name)>
+              "multivalue"
+            </label>
+          }
+        </p>
+      }
+    }
+    <p> <input type="submit" value="Generate control file"> </p>
+  </form>
+}

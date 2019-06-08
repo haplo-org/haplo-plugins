@@ -1,0 +1,26 @@
+{
+  "pluginName": "haplo_data_import_framework",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Data Import Framework",
+  "displayDescription": "Extensible framework for managing the mapping and import of data",
+  "apiVersion": 4,
+  "depend": [
+      "haplo_service_registry"
+    ],
+  "load": [
+      "js/haplo_data_import_framework.js",
+      "js/data_import_admin_ui.js",
+      "js/data_import_control_file.js",
+      "js/data_import_instructions.js",
+      "js/data_import_value_transformation.js",
+      "js/data_import_value_structured.js",
+      "js/data_import_model.js",
+      "js/data_import_readers.js",
+      "js/data_import_filters.js",
+      "js/data_import_standard_model.js"
+    ],
+  "respond": [
+      "/do/haplo-data-import"
+    ]
+}

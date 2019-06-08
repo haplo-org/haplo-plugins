@@ -1,0 +1,12 @@
+{
+    "haplo:data-import-framework:setup-model:haplo:user-sync": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:setup-model"
+        ],
+        "metadata": {
+            "name": "haplo:user-sync",
+            "title": "Generic user sync",
+            "description": "Data for user sync feed, applied to the application as a scheduled batch file upload."
+        }
+    }
+}

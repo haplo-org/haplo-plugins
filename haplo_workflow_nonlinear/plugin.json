@@ -1,0 +1,19 @@
+{
+  "pluginName": "haplo_workflow_nonlinear",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Workflow (Nonlinear)",
+  "displayDescription": "Support for nonlinear workflows",
+  "apiVersion": 4,
+  "loadPriority": 1002,
+  "depend": ["std_workflow"],
+  "use": ["std:workflow"],
+  "load": [
+      "js/haplo_workflow_nonlinear.js",
+      "js/haplo_workflow_nonlinear_shape.js",
+      "js/haplo_workflow_nonlinear_ui.js"
+    ],
+  "respond": [
+    "/do/subworkflow"
+  ]
+}

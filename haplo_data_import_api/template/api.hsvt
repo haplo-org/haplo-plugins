@@ -1,0 +1,32 @@
+pageTitle("REST API: " api.url)
+backLink("/do/haplo-data-import-api/admin")
+
+<table>
+  <tr>
+    <th> "URL" </th>
+    <td> urlBase "/api/push-data/" api.url </td>
+  </tr>
+  <tr>
+    <th> "Description" </th>
+    <td> api.description </td>
+  </tr>
+  <tr>
+    <th> "Enabled?" </th>
+    <td> if(api.enabled) { "Yes" } else { "No" } </td>
+  </tr>
+  <tr>
+    <th> "Response format" </th>
+    <td> api.response </td>
+  </tr>
+</table>
+
+<p>
+  std:ui:button-link("/do/haplo-data-import-api/edit-api/" api.id) { "Edit..." }
+  std:ui:button-link("/do/haplo-data-import-api/create-api-key/" api.id) { "Create API key..." }
+</p>
+
+<h2> "Control file" </h2>
+
+<pre>
+  control
+</pre>

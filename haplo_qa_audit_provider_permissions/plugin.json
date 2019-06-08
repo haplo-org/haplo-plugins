@@ -1,0 +1,13 @@
+{
+  "pluginName": "haplo_qa_audit_provider_permissions",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "QA Audit Provider: Permissions",
+  "displayDescription": "Provide information about permissions to QA audit framework",
+  "installSecret": "cafeafc5868562cbb6906ac834b81477b11523bc",
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_qa_audit_provider_permissions.js"
+    ],
+  "respond": ["/do/haplo-qa-audit-provider-permissions"]
+}

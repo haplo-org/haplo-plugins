@@ -1,0 +1,17 @@
+{
+  "pluginName": "haplo_user_sync_generic",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo User Sync (Generic)",
+  "displayDescription": "Generic user sync implementation which uses the data import framework to transform the data.",
+  "apiVersion": 4,
+  "depend": [
+      "haplo_user_sync",
+      "haplo_data_import_framework"
+    ],
+  "load": [
+      "js/haplo_user_sync_generic.js",
+      "js/usg_model.js"
+    ],
+  "respond": ["/do/haplo-user-sync-generic"]
+}

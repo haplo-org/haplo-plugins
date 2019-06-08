@@ -10,12 +10,14 @@ attribute std:attribute:email as EmailAddress
 # ------ Groups ------
 
 group haplo:group:user-system-admin as UserSystemAdmin
-    title: User System Administration
-    member haplo:group:it-support
-    REMOVE member phd:group:graduate-school-registry
+    title: User Sync Administration
 
 group haplo:group:external-systems-user-feed as Uploader
     title: External Systems: User Feed
+
+service-user haplo:service-user:user-sync:access
+    title: User sync file upload
+    group haplo:group:external-systems-user-feed
 
 group std:group:administrators as Administrators
 

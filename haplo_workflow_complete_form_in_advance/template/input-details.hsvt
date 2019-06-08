@@ -1,0 +1,14 @@
+pageTitle("Enter details")
+backLink(std:object:url(project))
+if(overlay) {
+    std:layout:minimal()
+}
+
+if(showConfirmation) {
+    std:ui:notice("Saved")
+}
+
+<form method="POST"> std:form:token()
+    std:form(form)
+    <input type="submit" value="Save">
+</form>

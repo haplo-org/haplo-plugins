@@ -1,0 +1,15 @@
+{
+  "pluginName": "haplo_alternative_versions",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Alternative Versions",
+  "displayDescription": "Provides infrastructure for there being several versions of object within Haplo applications",
+  "installSecret": "3078d7a14ff350d95a2ea0a70cbbf405ea45ddb5",
+  "apiVersion": 4,
+  "privilegesRequired": ["pDatabase"],
+  "load": [
+      "js/haplo_alternative_versions.js",
+      "js/av_ui.js"
+    ],
+  "respond": ["/do/haplo-alternative-versions"]
+}

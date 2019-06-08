@@ -1,0 +1,32 @@
+pageTitle("Instructions")
+backLink("/do/haplo-qa-audit/menu")
+
+<h1> "Issues" </h1>
+
+<p> "All issues must be resolved before an application can be pushed to production." </p>
+
+<p> "Ideally an issue is resolved by changing the code so the issue isn't reported." </p>
+
+<p> "Sometimes you do actually know better than these automated checks, and in this case, you can " <i> "suppress" </i> " the issue. If you do this, you must give a good reason for doing so, which can then be reviewed in the suppressed issues list." </p>
+
+<p> "You might also need to provide more information in your " <tt> "__qa__.json" </tt> " file which explains what you're doing." </p>
+
+<h1> "Suppressing an issue" </h1>
+
+<p> "To suppress an issue, you add an entry to the appropriate plugin's " <tt> "file/__qa__.json" </tt> ", like this:" </p>
+
+<pre>
+"{
+    \"suppress\": {
+        \"issue-type/specific-instance\": \"Customer has an unusual requirement, X.\"
+    }
+}"
+</pre>
+
+<p> "Do not be lazy about describing why you are suppressing the issue, as this is the documentation for what you have done." </p>
+
+<h1> "Providing information for issue detection" </h1>
+
+<p> "The top level \"information\" property in your " <tt> "__qa__.json" </tt> " file is gathered into the " <tt> "qa" </tt> " information." </p>
+
+<p> "All properties must be objects (dictionaries) and they're merged by copying all the properties into a single object." </p>

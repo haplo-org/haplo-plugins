@@ -1,0 +1,15 @@
+pageTitle("Previous authentication results")
+
+<h2> "Test URL" </h2>
+
+<p> "This test URL does not need authentication, and is suitable for giving to clients to use for testing." </p>
+
+<p> <tt style="font-size:10px"> appurl "/do/test-authentication-provider/start" </tt> </p>
+
+<h2> "Previous authentications" </h2>
+
+each(results) {
+  <p> std:date:time(row.datetime) " &mdash; " row.identifier </p>
+  <pre> info </pre>
+  <hr>
+}

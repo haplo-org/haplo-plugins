@@ -117,6 +117,7 @@ P.implementService("haplo:committee_scheduling:workflow_is_scheduled", function(
 P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
     function(workflow, spec) {
         var plugin = workflow.plugin;
+        var committeeEntityNames = [];
 
         // TODO changed so there's a specific one for each state with a specific flag
         // however lots of using plugins seem to rely on this so remove this once
@@ -144,46 +145,7 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             var siFlagsUnsetOnEnter = stateInfo.flagsUnsetOnEnter || [];
             var siFlagsUnsetOnExit = stateInfo.flagsUnsetOnExit || [];
 
-            workflow.use("hres:schema:workflow:required_entities:add", [committeeEntityName]);
-            workflow.use("hres:schema:workflow:required_entities:remove",
-                [committeeEntityName+"Chair", committeeEntityName+"DepChair"]);
-
-            var committeeEntities = {};
-            if(O.application.config["haplo_committee_scheduling:enable_committee_rep_takeover"]) {
-                committeeEntities[committeeEntityName+"Rep"] = function(context) {
-                    var repRefs = [], M;
-                    if("$M" in this) { M = this.$M; }
-                    var committee = this[committeeEntityName+"_maybe"];
-                    if(M && committee) { 
-                        // look for repTakeovers stored in the workUnit data
-                        var repTakeovers = M.workUnit.data.repTakeovers;
-                        if(repTakeovers) {
-                            var repRefStr = repTakeovers[committee.ref.toString()];
-                            // if we have one, then put it at the start of our committee rep refs
-                            // so that this user will be the default actionableBy for rep actions
-                            if(repRefStr) {
-                                repRefs.push(O.ref(repRefStr));
-                            }
-                        }
-                    }
-                    if(committee) {
-                        committee.every(A.CommitteeRepresentative, function(rep) {
-                            repRefs.push(rep);
-                        });
-                    }
-                    return (context === "list") ? repRefs : repRefs[0];
-                };
-            } else { 
-                committeeEntities[committeeEntityName+"Rep"] = [committeeEntityName, A.CommitteeRepresentative];
-            }
-            committeeEntities[committeeEntityName+"DepChair"] = [committeeEntityName, A.DeputyChair];
-            committeeEntities[committeeEntityName+"Chair"] = function() {
-                if(this[committeeEntityName+"_maybe"]) {
-                    return this[committeeEntityName].every(A.Chair).concat(this[committeeEntityName+"DepChair_refList"]);
-                }
-            };
-            committeeEntities[committeeEntityName+"Member"] = [committeeEntityName, A.CommitteeMember];
-            workflow.use("std:entities:add_entities", committeeEntities);
+            committeeEntityNames.push(committeeEntityName);
 
             var states = {};
             var committeeStateFlags = siFlags.concat(["directToTransitionsCommitteeSchedule"+stateInfo.state, "scheduleWorkflowExit"]);
@@ -297,6 +259,8 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             // Option for all committee reps to receive email notifications at committee scheduling state
             if(O.application.config["haplo_committee_scheduling:enable_committee_rep_takeover"]) {
                 workflow.observeEnter({state:stateInfo.state}, function(M) {
+                    var committee = M.entities[committeeEntityName+"_maybe"];
+                    if(!committee) { return; }
                     var template = P.template("email/notify_committee_reps");
                     var title = M.entities.object.title;
                     var view = {
@@ -306,7 +270,6 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                         appProgress: "Progress application",
                         body: M.getTextMaybe("status:"+stateInfo.state) || "Awaiting committee meeting"
                     };
-                    var committee = M.entities[committeeEntityName];
                     var firstRep = committee.first(A.CommitteeRepresentative);
                     committee.every(A.CommitteeRepresentative, function(rep) {
                         // first rep on committee will already have recieved a notification
@@ -321,14 +284,58 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                     });
                 });
                 workflow.actionPanel({state:stateInfo.state}, function(M, builder) {
-                    var committee = M.entities[committeeEntityName];
-                    if(!committee.has(O.currentUser.ref, A.CommitteeRepresentative)) { return; }
+                    var committee = M.entities[committeeEntityName+"_maybe"];
+                    if(!committee || !committee.has(O.currentUser.ref, A.CommitteeRepresentative)) { return; }
                     if(!M.workUnit.isActionableBy(O.currentUser)) {
                         builder.link(50, spec.path+"/takeover/"+M.workUnit.id,
                             "Takeover as committee representative", "primary");
                     }
                 });
             }
+        });
+
+        committeeEntityNames = _.uniq(committeeEntityNames);
+        _.each(committeeEntityNames, function(committeeEntityName) {
+            workflow.use("hres:schema:workflow:required_entities:add", [committeeEntityName]);
+            workflow.use("hres:schema:workflow:required_entities:remove",
+                [committeeEntityName+"Chair", committeeEntityName+"DepChair"]);
+
+            var committeeEntities = {};
+            if(O.application.config["haplo_committee_scheduling:enable_committee_rep_takeover"]) {
+                committeeEntities[committeeEntityName+"Rep"] = function(context) {
+                    var repRefs = [], M;
+                    if("$M" in this) { M = this.$M; }
+                    var committee = this[committeeEntityName+"_maybe"];
+                    if(M && committee) { 
+                        // look for repTakeovers stored in the workUnit data
+                        var repTakeovers = M.workUnit.data.repTakeovers;
+                        if(repTakeovers) {
+                            var repRefStr = repTakeovers[committee.ref.toString()];
+                            // if we have one, then put it at the start of our committee rep refs
+                            // so that this user will be the default actionableBy for rep actions
+                            if(repRefStr) {
+                                repRefs.push(O.ref(repRefStr));
+                            }
+                        }
+                    }
+                    if(committee) {
+                        committee.every(A.CommitteeRepresentative, function(rep) {
+                            repRefs.push(rep);
+                        });
+                    }
+                    return (context === "list") ? repRefs : repRefs[0];
+                };
+            } else { 
+                committeeEntities[committeeEntityName+"Rep"] = [committeeEntityName, A.CommitteeRepresentative];
+            }
+            committeeEntities[committeeEntityName+"DepChair"] = [committeeEntityName, A.DeputyChair];
+            committeeEntities[committeeEntityName+"Chair"] = function() {
+                if(this[committeeEntityName+"_maybe"]) {
+                    return this[committeeEntityName].every(A.Chair).concat(this[committeeEntityName+"DepChair_refList"]);
+                }
+            };
+            committeeEntities[committeeEntityName+"Member"] = [committeeEntityName, A.CommitteeMember];
+            workflow.use("std:entities:add_entities", committeeEntities);
         });
 
         if(O.application.config["haplo_committee_scheduling:enable_committee_rep_takeover"]) {
@@ -342,7 +349,7 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                     return si.state === M.state;
                 });
                 if(!stateInfo) { O.stop("Invalid state"); }
-                var committee = M.entities[stateInfo.committeeEntityName];
+                var committee = M.entities[stateInfo.committeeEntityName+"_maybe"];
                 if(!committee) { O.stop("Cannot find committee"); }
                 if(!committee.has(O.currentUser.ref, A.CommitteeRepresentative)) { O.stop("Not permitted"); }
                 if(E.request.method === "POST") {
@@ -378,7 +385,7 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                     return si.state === M.state;
                 });
                 if(!stateInfo) { O.stop("Invalid state"); }
-                var committee = M.entities[stateInfo.committeeEntityName];
+                var committee = M.entities[stateInfo.committeeEntityName+"_maybe"];
                 if(!committee) { O.stop("Cannot find committee"); }
                 if(E.request.method === "POST" && meeting) {
                     if(!(meeting.isKindOf(T.CommitteeMeeting))) {

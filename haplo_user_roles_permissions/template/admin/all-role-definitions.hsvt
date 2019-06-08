@@ -1,0 +1,63 @@
+pageTitle("Role definitions")
+std:layout:wide()
+
+<h2> "Roles" </h2>
+
+<table>
+  <tr>
+    <th> "Role name" </th>
+    <th> "Defined by" </th>
+    <th> "Granting access to" </th>
+  </tr>
+  each(roles) {
+    <tr>
+      <td> role </td>
+      <td>
+        each(info.definedBy) {
+          descName
+          if(qualName) { " / " qualName }
+          <i>" on "</i>
+          typeName
+          if(objectAttr) { <i>" using "</i> objectAttr }
+          <br>
+        }
+        each(info.groups) {
+          <i> "Group: "</i> . <i>" (using self)"</i>
+          <br>
+        }
+      </td>
+      <td>
+        each(info.permissions) {
+          label <i> " (" perms ")"</i>
+          <br>
+        }
+      </td>
+    </tr>
+  }
+</table>
+
+<h2> "Groups" </h2>
+
+<table>
+  <tr>
+    <th> "Group name" </th>
+    <th> "Granting access to" </th>
+    <th> "Lift restrictions" </th>
+  </tr>
+  each(groups) {
+    <tr>
+      <td> group </td>
+      <td>
+        each(info.permissions) {
+          label <i> " (" perms ")"</i>
+          <br>
+        }
+      </td>
+      <td>
+        each(info.liftRestrictions) {
+          . <br>
+        }
+      </td>
+    </tr>
+  }
+</table>

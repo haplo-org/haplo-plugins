@@ -1,0 +1,15 @@
+pageTitle(
+    if(showSuppressed) { "Suppressed issues: " } else { "Issues requiring resolution: " }
+    issues.length
+)
+backLink("/do/haplo-qa-audit/menu")
+
+each(issues) {
+    <h2> description </h2>
+    <p> <tt> code </tt> </p>
+    std:text:paragraph(explanation)
+    each(suppression) {
+        <p> <b> "Suppressed: " </b> . </p>
+    }
+    <hr>
+}

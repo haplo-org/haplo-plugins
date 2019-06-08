@@ -1,0 +1,34 @@
+{
+    "url": "test-auto-create",
+    "description": "Test auto-created API",
+    "enabled": true,
+    "response": "JSON",
+    "control": {
+        "dataImportControlFileVersion": 0,
+        "model": "haplo:person",
+        "files": {
+            "DEFAULT": {
+                "read": "json",
+                "singleRecord": true
+            }
+        },
+        "instructions": [
+            {
+                "source": "username",
+                "destination": "load:by-ref",
+                "name": "ref",
+                "filters": ["haplo:username-to-ref"]
+            },
+            {
+                "action": "load",
+                "destination": "profile",
+                "using": "load:by-ref"
+            },
+            {
+                "source": "title",
+                "destination": "phd:project",
+                "name": "dc:attribute:title"
+            }
+        ]
+    }
+}

@@ -1,0 +1,28 @@
+pageTitle("Errors from integrations")
+backLink("/do/haplo-integration/admin")
+
+if(currentErrors.length) {
+  <h2> "Current error messages" </h2>
+  <p> <i> "Click to view full details and acknowledge error." </i> </p>
+  each(currentErrors) {
+    <p>
+      std:date:time(datetime) " "
+      <a href=["/do/haplo-integration/error/" id]>
+        message
+      </a>
+    </p>
+  }
+}
+
+<h2> "Acknowledged error messages" </h2>
+each(oldErrors) {
+  <p>
+    std:date:time(datetime) " "
+    <a href=["/do/haplo-integration/error/" id]>
+      message
+    </a>
+  </p>
+}
+if(lastDisplayId) {
+    <p> <a href=[? last=lastDisplayId]> <i> "Previous" </i> </a> </p>
+}

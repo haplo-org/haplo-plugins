@@ -50,3 +50,108 @@ P.respond("GET,POST", "/do/haplo-user-roles-permissions/roles", [
         roles: roles.length ? roles : undefined
     }, "admin/roles");
 });
+
+// --------------------------------------------------------------------------
+
+var PERMS = [
+    ["read", O.PERM_READ],
+    ["create", O.PERM_CREATE],
+    ["update", O.PERM_UPDATE]
+];
+
+// Display list of all defined roles
+P.respond("GET,POST", "/do/haplo-user-roles-permissions/all-role-definitions", [
+], function(E, object) {
+    CanSeeRoles.enforce();
+    var internals = P.__getInternals();
+
+    var roleInfo = {};
+    var getRoleInfo = function(role) {
+        if(!(role in roleInfo)) {
+            roleInfo[role] = {
+                definedBy: [],
+                permissions: [],
+                groups: []
+            };
+        }
+        return roleInfo[role];
+    };
+
+    var groupInfo = {};
+    var getGroupInfo = function(group) {
+        if(!(group in groupInfo)) {
+            groupInfo[group] = {
+                permissions: [],
+                liftRestrictions: []
+            };
+        }
+        return groupInfo[group];
+    };
+
+    var makeLabelPermissions = function(labels, permissions) {
+        labels.each((label,perms) => {
+            var plist = [];
+            PERMS.forEach((x) => {
+                let [name, mask] = x;
+                if((perms & mask) === mask) {
+                    plist.push(name);
+                }
+            });
+            permissions.push({
+                label: label.load().title,
+                perms: plist.join(',')
+            });
+        });
+    };
+
+    // How do users get roles from objects?
+    internals.roles.each((type, info) => {
+        var typeName = SCHEMA.getTypeInfo(type).name;
+        _.each(info, (roles, dq) => {
+            let [desc, qual] = dq.split('.').map((x) => 1*x);
+            var descName = SCHEMA.getAttributeInfo(desc).name;
+            var qualName = qual ? SCHEMA.getQualifierInfo(qual).name : undefined;
+            roles.forEach((props) => {
+                var ri = getRoleInfo(props.role);
+                ri.definedBy.push({
+                    typeName: typeName,
+                    descName: descName,
+                    qualName: qualName,
+                    objectAttr: props.objectAttr ? SCHEMA.getAttributeInfo(props.objectAttr).name : undefined
+                });
+            });
+        });
+    });
+
+    // How do users get roles from groups?
+    _.each(internals.groupPersonalRoles, (roles,group) => {
+        roles.forEach((role) => {
+            var ri = getRoleInfo(role);
+            ri.groups.push(O.group(1*group).name);
+        });
+    });
+
+    // What does this grant them?
+    _.each(internals.rolePermissions, (labels, role) => {
+        let ri = getRoleInfo(role);
+        makeLabelPermissions(labels, ri.permissions);
+    });
+
+    // What permissions do being part of a group give you?
+    _.each(internals.groupPermissions, (labels,group) => {
+        let gi = getGroupInfo(O.group(1*group).name);
+        makeLabelPermissions(labels, gi.permissions);
+    });
+
+    // What restrictions does it lift?
+    _.each(internals.groupRestrictionLabels, (labelList,group) => {
+        let gi = getGroupInfo(O.group(1*group).name);
+        _.map(labelList, (ref) => ref.load().title).sort().forEach((n) => gi.liftRestrictions.push(n));
+    });
+
+    E.render({
+        roles: _.keys(roleInfo).sort().map((r) => {return {role:r, info:roleInfo[r]};}),
+        groups: _.keys(groupInfo).sort().map((g) => {return {group:g, info:groupInfo[g]};})
+    }, "admin/all-role-definitions");
+});
+

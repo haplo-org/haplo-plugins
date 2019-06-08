@@ -252,6 +252,10 @@ In this service you can specify any number of @FormDescription@ object sets usin
             
             populateDynamicChoices(f.specification.elements);
 
+            if(form.externalData) {
+                formInstance.externalData(form.externalData);
+            }
+
             return {
                 form: f,
                 instance: formInstance

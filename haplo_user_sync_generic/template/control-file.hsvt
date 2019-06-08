@@ -1,0 +1,26 @@
+pageTitle("Current user sync control file")
+backLink("/do/haplo-user-sync/admin")
+
+<h2> "Control file" </h2>
+
+<p>
+  haplo:data-import-framework:documentation("/import/control" "Control file documentation")
+</p>
+
+
+<h3> "Required files for sync run" </h3>
+
+<ul>
+  each(files) {
+    <li> . </li>
+  }
+</ul>
+
+<h3> "JSON" </h3>
+
+<p> "This is the latest control file uploaded. View the files at the bottom of the sync run log to find the control file used for a specific sync run." </p>
+
+<pre>
+  json
+</pre>
+

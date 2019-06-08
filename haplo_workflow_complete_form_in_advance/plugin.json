@@ -1,0 +1,23 @@
+{
+  "pluginName": "haplo_workflow_complete_form_in_advance",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Workflow Complete Form In Advance",
+  "displayDescription": "Workflow feature for allowing users to enter some forms ahead of a workflow being started",
+  "installSecret": "5bd55ac3ec2a7f43814313c25ece2ecc5d58b69b",
+  "apiVersion": 4,
+  "loadPriority": 2000,
+  "privilegesRequired": ["pDatabase"],
+  "depend": [
+      "std_workflow",
+      "std_document_store"
+    ],
+  "use": [
+    "std:workflow",
+    "std:document_store"
+  ],
+  "load": [
+      "js/haplo_workflow_complete_form_in_advance.js"
+    ],
+  "respond": ["/do/haplo-workflow-complete-form-in-advance"]
+}

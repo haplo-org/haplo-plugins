@@ -1,0 +1,23 @@
+{
+  "pluginName": "haplo_data_import_api",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Data Import REST API",
+  "displayDescription": "Create APIs for pushing data into Haplo applications based on the Data Import Framework",
+  "apiVersion": 4,
+  "depend": [
+      "haplo_data_import_framework"
+    ],
+  "privilegesRequired": [
+      "pDatabase",
+      "pUserCreateAPIKey"
+    ],
+  "load": [
+      "js/haplo_data_import_api.js",
+      "js/haplo_data_import_api_ui.js"
+    ],
+  "respond": [
+      "/do/haplo-data-import-api",
+      "/api/push-data"
+    ]
+}

@@ -1,0 +1,4 @@
+attribute dc:attribute:author as Author
+attribute dc:attribute:date as Date
+
+

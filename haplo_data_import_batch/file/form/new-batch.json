@@ -1,0 +1,38 @@
+{
+    "specificationVersion": 0,
+    "formId": "new-batch",
+    "formTitle": "New form",
+    "elements": [
+        {
+            "type": "text",
+            "label": "Comment",
+            "path": "comment",
+            "name": "comment",
+            "explanation": "A short description to identify this batch import, which will clearly identify the purpose when reviewed in the future.\nFor example, 'Import project data from legacy Database X'.",
+            "required": true
+        },
+        {
+            "type": "file-repeating-section",
+            "heading": "Files",
+            "path": "files",
+            "allowAdd": false,
+            "elements": [
+                {
+                    "type": "text",
+                    "label": "Name",
+                    "path": "name",
+                    "name": "text",
+                    "explanation": "Unique name to identify this file in the batch.",
+                    "required": true
+                },
+                {
+                    "type": "file",
+                    "label": "File",
+                    "path": "file",
+                    "name": "file",
+                    "required": true
+                }
+            ]
+        }
+    ]
+}

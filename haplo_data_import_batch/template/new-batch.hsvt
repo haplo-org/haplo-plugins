@@ -1,0 +1,11 @@
+pageTitle("Upload new batch")
+backLink("/do/haplo-data-import-batch/control-file/" control.id) { "Cancel" }
+
+if(duplicates) {
+  std:ui:notice(duplicates)
+}
+
+<form method="POST"> std:form:token()
+  std:form(form)
+  <p> <input type="submit" value="New batch"> </p>
+</form>

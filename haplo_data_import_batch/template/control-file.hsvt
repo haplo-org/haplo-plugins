@@ -1,0 +1,23 @@
+pageTitle("Batch import control file: " control.comment)
+backLink("/do/haplo-data-import-batch/control-files")
+
+<table>
+  <tr>
+    <th> "Digest" </th>
+    <td> control.digest </td>
+  </tr>
+  <tr>
+    <th> "Created" </th>
+    <td> std:date:time(control.created) </td>
+  </tr>
+  <tr>
+    <th> "Comment" </th>
+    <td> control.comment </td>
+  </tr>
+</table>
+
+<p> std:ui:button-link("/do/haplo-data-import-batch/new-batch/for-control/" control.id) { "New batch..." } </p>
+
+<pre>
+  json
+</pre>

@@ -1,0 +1,11 @@
+
+<p> "&nbsp;" </p>
+<p>
+  haplo:data-import-framework:documentation("/import/user-sync" "User sync documentation")
+</p>
+
+<h2> "Data import control file" </h2>
+
+<p>
+  std:ui:button-link("/do/haplo-user-sync-generic/control-file") { "View current control file..." }
+</p>

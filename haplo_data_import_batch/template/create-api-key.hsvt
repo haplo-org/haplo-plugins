@@ -1,0 +1,17 @@
+pageTitle("Create API key for batch import upload scripts")
+backLink("/do/haplo-data-import-batch/admin")
+
+if(key) {
+  <p> "An API key was created for batch import:" </p>
+  <p> <tt> key </tt> </p>
+  <p> "This is the only time it can be displayed." </p>
+  <p> std:ui:button-link("/do/haplo-data-import-batch/admin") { "I've stored the key securely" } </p>
+  <p> "&nbsp;" </p>
+  <p> "Batch import API keys can be managed in" <br> "System management &raquo; Users &raquo; SRV &raquo; Batch data import access" </p>
+
+} else {
+  <p> "API keys authenticate your file upload scripts with this Haplo application. They must be managed securely." </p>
+  <p> "After you click the 'Create API key' button, the new key will be displayed. This is the only time it can be displayed. Ensure no one can observe your screen." </p>
+  template:std:ui:confirm()
+
+}

@@ -1,0 +1,13 @@
+pageTitle("Upload new control file")
+backLink("/do/haplo-data-import-batch/control-files") { "Cancel" }
+
+<form method="POST"> std:form:token()
+  std:form(form)
+  <p> <input type="submit" value="New control file"> </p>
+</form>
+
+<p>
+  "Are you doing this over and over again while testing an import? "
+  <br>
+  haplo:data-import-framework:documentation("/import/batch/api/example-script" "Automate with a script")
+</p>

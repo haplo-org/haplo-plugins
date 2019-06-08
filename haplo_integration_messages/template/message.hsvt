@@ -1,0 +1,40 @@
+pageTitle("Message " message.id " in " group.title)
+backLink("/do/haplo-integration-messages/queue/" group.group)
+
+<table>
+  <tr>
+    <th> "ID" </th>
+    <td> message.id </td>
+  </tr>
+  <tr>
+    <th> "Created" </th>
+    <td> std:date:time(message.creationDate) </td>
+  </tr>
+  <tr>
+    <th> "Sent" </th>
+    <td>
+      if(message.sentDate) {
+        std:date:time(message.sentDate)
+      } else {
+        <i> "waiting" </i>
+      }
+    </td>
+  </tr>
+</table>
+
+if(message.manualCreationBy) {
+  std:ui:notice(concat("This message was manually created by " message.manualCreationBy.name))
+}
+
+if(message.sentDate) {
+  <p> std:ui:button-link("/do/haplo-integration-messages/message-unsend/" group.group "/" message.id) {
+    "Mark message as unsent..."
+  } </p>
+}
+
+<h2> "Data formatted for integration" </h2>
+<p> <i> "MIME type: " formattedMimeType </i> </p>
+<pre style="word-wrap:break-word; overflow-wrap:break-word; word-break: break-all;"> formatted </pre>
+
+<h2> "Stored data (JSON)" </h2>
+<pre> json </pre>

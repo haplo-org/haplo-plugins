@@ -28,16 +28,21 @@ if(lastSyncTime) {
     <p> <a href=[? s=lastSyncTime]> "Previous" </a> </p>
 }
 <h2> "Configuration" </h2>
-<p> <a href="/do/haplo-user-sync/admin/config"> "Edit configuration..." </a> </p>
 std:document(config)
+<p>
+  std:ui:button-link("/do/haplo-user-sync/admin/config") { "Edit configuration..." }
+  std:ui:button-link("/do/haplo-user-sync/admin/create-api-key") { "Create API key..." }
+</p>
 
 if(overridesEnabled) {
-    <p> <a href="/do/haplo-user-sync/admin/override"> "Edit user detail overrides..." </a> </p>
+  <p> std:ui:button-link("/do/haplo-user-sync/admin/override") { "Edit user detail overrides..." } </p>
 }
 
 render(implAdminUIHTML)
 
-<h2> "Testing" </h2>
+<h2 style="margin-top:64px"> "Testing" </h2>
 <p> <a href="/do/haplo-user-sync/test/upload-file"> "Upload a file..." </a> </p>
 <p> <a href="/do/haplo-user-sync/test/fetch-files"> "Fetch files..." </a> </p>
-<p> <a href="/do/haplo-user-sync/test/get-mappings-for-application-move"> "Get mappings documents..." </a> </p>
+if(haveMappings) {
+  <p> <a href="/do/haplo-user-sync/test/get-mappings-for-application-move"> "Get mappings documents..." </a> </p>
+}

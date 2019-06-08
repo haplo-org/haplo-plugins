@@ -1,0 +1,15 @@
+{
+    "specificationVersion": 0,
+    "formId": "file",
+    "formTitle": "Sync files",
+    "elements": [
+        {
+            "type": "repeating-section",
+            "path": "files",
+            "elements": [
+                { "type":"text", "path":"name", "name":"name" },
+                { "type":"file", "path":"file", "name":"file" }
+            ]
+        }
+    ]
+}

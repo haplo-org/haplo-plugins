@@ -1,0 +1,6 @@
+each(items) {
+    <p><b>name " ("count")"</b></p>
+    each(files) {
+        std:object(. "searchresultmini")
+    }
+}

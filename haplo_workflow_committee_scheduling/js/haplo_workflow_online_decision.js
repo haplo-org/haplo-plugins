@@ -281,7 +281,7 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
             return si.state === M.state;
         });
         if(!stateInfo || !stateInfo.onlineDecision) { O.stop("Invalid state"); }
-        var committee = M.entities[stateInfo.committeeEntityName];
+        var committee = M.entities[stateInfo.committeeEntityName+"_maybe"];
         if(!committee) { O.stop("Cannot find committee"); }
         var people = getCommitteeMembersList(committee);
         if(people.length === 0) {

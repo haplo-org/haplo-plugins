@@ -52,7 +52,7 @@ P.sendSyncReport = function() {
         lastErrors = sync[1].errors;
     }
     var errorDelta = sync[0].errors - lastErrors;
-    var subject = "User feed report - " + errorDelta + ' - ' + O.application.hostname;
+    var subject = "User feed report / " + errorDelta + ' / ' + O.application.hostname;
     var view = {
         syncTime: sync[0].created.toString(),
         errorDelta: errorDelta,
@@ -113,6 +113,13 @@ P.implementService("haplo_user_sync:ref_to_username", function(ref) {
     return q.length ? q[0].username : undefined;
 });
 
+P.implementService("haplo:data-import-framework:filter:haplo:username-to-ref", function() {
+    return function(username) {
+        var user = O.service("haplo_user_sync:username_to_user", username);
+        return user ? (user.ref||undefined) : undefined;
+    };
+});
+
 // --------------------------------------------------------------------------------------------------
 
 // This service is provided for cases where the raw data is needed, but it's not desirable to
@@ -141,6 +148,15 @@ P.implementService("haplo_user_sync:set_all_active_users_to_error_state", functi
 P.implementService("haplo_user_sync:set_user_to_error_state_by_username", function(username) {
     _.each(P.db.users.select().where("username","=",username.toLowerCase()), function(row) {
         row.error = true;
+        row.save();
+    });
+});
+
+// --------------------------------------------------------------------------------------------------
+
+P.implementService("haplo_user_sync:update_user_row_by_username", function(currentUsername, newUsername) {
+    _.each(P.db.users.select().where("username","=",currentUsername.toLowerCase()), function(row) {
+        row.username = newUsername;
         row.save();
     });
 });

@@ -1,0 +1,30 @@
+pageTitle("Batch import jobs")
+backLink("/do/haplo-data-import-batch/admin")
+
+<p> "Batches: " batches.length </p>
+
+<table>
+  <tr>
+    <th> "Identifier" </th>
+    <th> "State" </th>
+    <th> "Errors" </th>
+    <th> "Created" </th>
+    <th> "Comment" </th>
+  </tr>
+  each(batches) {
+    <tr>
+      <td>
+        <a href=["/do/haplo-data-import-batch/batch/" row.id]>
+          identifierTruncated "..."
+        </a>
+      </td>
+      <td> row.state </td>
+      <td> row.errors </td>
+      <td> std:date:time(row.created) </td>
+      <td> row.comment </td>
+    </tr>
+  }
+</table>
+
+<p> "&nbsp;" </p>
+<p> "To create a new batch, select a " <a href="/do/haplo-data-import-batch/control-files"> "control file" </a> " and click 'New batch...'" </p>

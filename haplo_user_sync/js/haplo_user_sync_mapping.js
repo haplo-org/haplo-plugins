@@ -22,6 +22,10 @@ P.getMappings = function() {
     return mappingStore.instance(DOCSTORE_KEY).lastCommittedDocument;
 };
 
+P.haveMappings = function() {
+    return !!mappingStore.instance(DOCSTORE_KEY).committedVersionNumber;
+};
+
 P.implementService("haplo_user_sync:get_mappings", function() {
     return P.getMappings();
 });

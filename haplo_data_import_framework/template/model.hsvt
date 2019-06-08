@@ -1,0 +1,66 @@
+std:plugin:resources("admin.css")
+
+pageTitle(model.name " (" model.properties.title ")")
+backLink("/do/haplo-data-import/models")
+std:layout:wide()
+
+<p id="data-import-framework-buttons">
+  std:ui:button-link("/do/haplo-data-import/generate-control-file" ? model=model.name) { "Generate control file..." }
+</p>
+
+each(destinations) {
+  <h2> title </h2>
+  <div> <tt> "{\"destination\": \"" destinationName "\"}" </tt> </div>
+  ifAny(_depends delegate.optional _isPseudoDestination) {
+    <div class="data-import-framework-model-properties">
+      if(_depends) { <span> "Depends on " <b> _depends </b> </span> }
+      if(delegate.optional) { <span> "Optional" </span> }
+      if(_isPseudoDestination) { <span> "Pseudo destination" </span> }
+    </div>
+  }
+  <table class="data-import-framework-model-destination">
+    <tr>
+      <th> "Name" </th>
+      <th> "Type" </th>
+      <th> <a href="#data-import-framework-explainer"> "MV?" </a> </th>
+      <th> <a href="#data-import-framework-explainer"> "Req?" </a> </th>
+      <th> "Description" </th>
+      <th> </th>
+    </tr>
+    each(_namesList) {
+      <tr>
+        <td> <tt> name </tt> </td>
+        <td>
+          properties.type
+          " "
+          <a class="data-import-framework-type-info"
+              href=["https://docs.haplo.org/import/control/value-conversion/data-type/" properties.type]
+              target="_blank" rel="noopener">
+            "(i)"
+          </a>
+        </td>
+        <td> if(properties.multivalue) { "&#10003;" }</td>
+        <td> if(properties.required) { "&#10003;" }</td>
+        <td> properties.description </td>
+        <td>
+          if(properties.refTypes) {
+            <a href=["/do/haplo-data-import/generate-ref-mapping" ? model=^^{model.name} destination=^{destinationName} name=name]> "Map" </a>
+          }
+        </td>
+      </tr>
+    }
+  </table>
+}
+
+if(additionalInformation) {
+  <h2 class="data-import-framework-additional-info"> "Additional information" </h2>
+  each(additionalInformation) {
+    render(.)
+  }
+}
+
+<div id="data-import-framework-explainer">
+  <h2> "Key" </h2>
+  <p> "MV? - is this a multi-value?" </p>
+  <p> "Req? - is this a required value?" </p>
+</div>

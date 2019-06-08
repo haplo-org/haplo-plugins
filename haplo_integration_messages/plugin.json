@@ -1,0 +1,22 @@
+{
+  "pluginName": "haplo_integration_messages",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Integration Messages",
+  "displayDescription": "Interface for sending messages in batches to external systems",
+  "installSecret": "95ccdd0b440ea8036820a2a6e9184b6d9071bf72",
+  "apiVersion": 4,
+  "depend": [
+      "haplo_integration"
+    ],
+  "privilegesRequired": ["pBackgroundProcessing", "pHTTPClient", "pDatabase", "pUserCreateAPIKey"],
+  "load": [
+      "js/haplo_integration_messages.js",
+      "js/haplo_integration_messages_poll_api.js",
+      "js/haplo_integration_messages_admin.js"
+    ],
+  "respond": [
+      "/do/haplo-integration-messages",
+      "/api/haplo-integration-messages"
+    ]
+}

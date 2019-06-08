@@ -1,0 +1,16 @@
+{
+  "pluginName": "haplo_multi_workflow_document_store",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Multi Workflow Document Store",
+  "displayDescription": "Provides a feature allowing a single document store to be used in multiple workflows",
+  "installSecret": "4414435330d6b01fa64d3f68f47372e5ec2ccb51",
+  "apiVersion": 4,
+  "use": [
+      "std:workflow"
+    ],
+  "load": [
+      "js/haplo_multi_workflow_document_store.js"
+    ],
+  "respond": ["/do/haplo-multi-workflow-document-store"]
+}

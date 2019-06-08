@@ -1,0 +1,24 @@
+
+label std:label:archived as ARCHIVED
+
+# Saving objects with this label adds the alternative/authoritative version features in this plugin
+label haplo:label:alternative-version as AlternativeVersion
+    title: Alternative version of object
+    category: Version
+
+label haplo:label:lift-authoritative-version-restriction
+    title Lift authoritative version restriction
+    category Restriction
+
+# Do not add to any object type in schema
+attribute haplo:attribute:authoritative-version as AuthoritativeVersion
+    title: Authoritative version
+    search-name authoritative-version
+    qualifier std:qualifier:null
+    data-type link
+
+restriction haplo:restriction:authoritative-version
+    title: Authoritative version attribute
+    restrict-if-label haplo:label:alternative-version
+    label-unrestricted haplo:label:lift-authoritative-version-restriction
+    attribute-restricted haplo:attribute:authoritative-version

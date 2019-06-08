@@ -1,0 +1,4 @@
+template:std:resource:plugin_adaptor()
+std:plugin:resources("overlay.js")
+
+<a class="_cfiaow_edit" href=["/do/haplo-workflow-complete-form-in-advance/input-details/" projectRef "/" specName "/overlay"]> "Edit..." </a>

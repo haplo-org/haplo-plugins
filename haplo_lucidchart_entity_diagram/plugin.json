@@ -1,0 +1,12 @@
+{
+  "pluginName": "haplo_lucidchart_entity_diagram",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Lucidchart Entity Diagram",
+  "displayDescription": "Export Haplo schema into a entity file which can be imported into LucidChart",
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_lucidchart_entity_diagram.js"
+    ],
+  "respond": ["/do/haplo-lucidchart-entity-diagram"]
+}

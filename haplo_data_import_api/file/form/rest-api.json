@@ -1,0 +1,67 @@
+{
+    "specificationVersion": 0,
+    "formId": "rest-api",
+    "formTitle": "REST API",
+    "elements": [
+        {
+            "type": "text",
+            "path": "url",
+            "label": "URL",
+            "explanation": "URL names must contain a-z 0-9 and - characters only. These cannot be changed after the API is created.",
+            "htmlPrefix": "/api/push-data/",
+            "class": "rest-api-name",
+            "required": true,
+            "validationRegExp": "^[a-z0-9-]+$",
+            "validationCustom": {
+                "name": "haplo:data-import-api:url-not-in-use"
+            },
+            "include": {
+                "externalData": "editing",
+                "operation": "!==",
+                "value": true
+            }
+        },
+        {
+            "type": "text",
+            "label": "Description",
+            "path": "description",
+            "required": true
+        },
+        {
+            "type": "boolean",
+            "label": "Enabled?",
+            "path": "enabled",
+            "defaultValue": true,
+            "required": true
+        },
+        {
+            "type": "choice",
+            "label": "Response",
+            "path": "response",
+            "explanation": "How should the response be formatted?",
+            "style": "radio",
+            "choices": [
+                [
+                    "JSON",
+                    "JSON"
+                ],
+                [
+                    "XML",
+                    "XML"
+                ]
+            ],
+            "required": true
+        },
+        {
+            "type": "paragraph",
+            "label": "Control file",
+            "explanation": "Copy and paste your JSON control file.",
+            "path": "controlJSON",
+            "rows": 16,
+            "required": true,
+            "validationCustom": {
+                "name": "haplo:data-import-framework:control-json"
+            }
+        }
+    ]
+}

@@ -71,8 +71,7 @@ P.workflow.registerWorkflowFeature("haplo:download_pdf",
                     M, name, O.currentUser, 'viewDraft');
                 return (instance.hasCommittedDocument || canViewDraft);
             });
-
-            if(canDownload) {
+            if(canDownload || spec.pluginDocstore) {
                 builder.panel(1498).link("default", "/do/haplo-workflow-download-pdf/download/"+M.workUnit.ref+"/"+M.workUnit.id, "Download printable PDF...");
             }
         });
@@ -201,9 +200,10 @@ P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
                 }
                 if(section.deferred) {
                     sections.push(section);
-                }
-                if(attachingFiles) {
-                    searchForFilesInDocument((section.isDraft ? instance.currentDocument : instance.lastCommittedDocument), 256);
+                    if(attachingFiles) {
+                        let document = (!section.isDraft) ? instance.lastCommittedDocument : instance.currentDocument;
+                        searchForFilesInDocument(document, 256);
+                    }
                 }
             });
         }

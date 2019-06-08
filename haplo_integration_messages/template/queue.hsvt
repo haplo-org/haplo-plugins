@@ -1,0 +1,60 @@
+pageTitle(group.title)
+backLink("/do/haplo-integration-messages/queues")
+
+if(showSendButton) {
+  <p> std:ui:button-link("/do/haplo-integration-messages/queue-send/" group.group) { "Send outstanding messages..." } </p>
+  <p> "&nbsp;" </p>
+}
+
+<table>
+  <tr>
+    <th> "ID" </th>
+    <th> "Created" </th>
+    <th> "Sent" </th>
+    <th></th>
+  </tr>
+  each(messages) {
+    <tr>
+      <td> id </td>
+      <td>
+        std:date:time(creationDate)
+        if(manualCreationBy) {
+          " *"
+        }
+      </td>
+      <td>
+        if(sentDate) {
+          std:date:time(sentDate)
+        } else {
+          <i> "waiting" </i>
+        }
+      </td>
+      <td> <a href=["/do/haplo-integration-messages/message/" ^{group.group} "/" id]> "Info..." </a> </td>
+    </tr>
+  }
+</table>
+if(lastDisplayId) {
+    <p> <a href=[? last=lastDisplayId]> "Previous" </a> </p>
+}
+
+<p> "&nbsp;" </p>
+<p> std:ui:button-link("/do/haplo-integration-messages/queue-add-message/" group.group) { "Add message manually..." } </p>
+
+if(pollUrl) {
+  <p> "&nbsp;" </p>
+  <h2> "Poll API" </h2>
+  <table>
+    <tr>
+      <th> "Poll URL" </th>
+      <td> pollUrl </td>
+    </tr>
+    <tr>
+      <th> "Mark URL" </th>
+      <td> markUrl </td>
+    </tr>
+  </table>
+}
+
+<p>
+  std:ui:button-link("/do/haplo-integration-messages/poll-create-api-key/" group.group) { "Create API key..." }
+</p>

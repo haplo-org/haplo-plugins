@@ -1,0 +1,11 @@
+{
+  "pluginName": "haplo_qa_audit_provider_ui",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "QA Audit Provider: UI",
+  "displayDescription": "Provide information about user interface plugins",
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_qa_audit_provider_ui.js"
+    ]
+}

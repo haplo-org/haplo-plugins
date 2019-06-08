@@ -1,0 +1,17 @@
+pageTitle("Create API key for User Sync")
+backLink("/do/haplo-user-sync/admin")
+
+if(key) {
+  <p> "An API key was created for the user sync:" </p>
+  <p> <tt> key </tt> </p>
+  <p> "This is the only time it can be displayed." </p>
+  <p> std:ui:button-link("/do/haplo-user-sync/admin") { "I've stored the key securely" } </p>
+  <p> "&nbsp;" </p>
+  <p> "User sync API keys can be managed in" <br> "System management &raquo; Users &raquo; SRV &raquo; User sync access" </p>
+
+} else {
+  <p> "API keys authenticate your file upload scripts with this Haplo application. They must be managed securely." </p>
+  <p> "After you click the 'Create API key' button, the new key will be displayed. This is the only time it can be displayed. Ensure no one can observe your screen." </p>
+  template:std:ui:confirm()
+
+}

@@ -4,57 +4,71 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-/*
-    Guidance notes are snippets of text which can be edited by admin users,
-    intended as introductory text for a function.
+/*HaploDoc
+node: /haplo_activity_guidance_notes
+title: Haplo activity guidance notes
+sort: 40
+--
 
-    They are grouped by activity (as in haplo_activity_navigation), and
-    the notes are editable by users permitted to edit the activity.
+Guidance notes are snippets of text which can be edited by admin users, \
+intended as introductory text for a function.
 
-    In your plugin.json,
-    
-        "depend": ["haplo_activity_guidance_notes"],
-        "use": ["haplo:activity_guidance_notes"]
-    
-    Then define the note:
+They are grouped by activity (as in @haplo_activity_navigation@), and \
+the notes are editable by users permitted to edit the activity.
 
-        var exampleNote = P.guidanceNote("activity-name", "example", "Example Note", "guidance/example.xml");
+In your plugin.json,
 
-    Argments are:
-        Activity name
-        Note name (as an URL path component)
-        Note title, for display in editing UI and default page title
-        Name of file containing default text, in 'guidance/' folder by convention
+<pre>
+    "depend": ["haplo_activity_guidance_notes"],
+    "use": ["haplo:activity_guidance_notes"]
+</pre>
 
-    Create a file/guidance/example.xml file containing the default text, in the
-    normal document format:
+Then define the note:
 
-        <doc>
-            <h1>Heading</h1>
-            <p>Paragraph text</p>
-        </doc>
+<pre>language=javascript
+    var exampleNote = P.guidanceNote("activity-name", "example", "Example Note", "guidance/example.xml");
+</pre>
 
-    Then to use it...
+Arguments are:
 
-    1) call deferredRender() on the note object to get a deferred render you can
-    use in your views.
+* Activity name
+* Note name (as an URL path component)
+* Note title, for display in editing UI and default page title
+* Name of file containing default text, in @'guidance/'@ folder by convention
 
-    2) call respondIntroductionPage() on the note object.
+Create a file/guidance/example.xml file containing the default text, in the \
+normal document format:
 
-        P.respond("GET", "/do/example/start-something", [
-        ], function(E) {
-            // Check permissions, setup, etc
-            exampleNote.respondIntroductionPage(E, {
-                continueLink: "/do/example/actually/start"
-            });
+<pre>
+    <doc>
+        <h1>Heading</h1>
+        <p>Paragraph text</p>
+    </doc>
+</pre>
+
+Then to use it...
+
+1) call @deferredRender()@ on the note object to get a deferred render you can \
+use in your views.
+
+2) call @respondIntroductionPage()@ on the note object.
+
+<pre>language=javascript
+    P.respond("GET", "/do/example/start-something", [
+    ], function(E) {
+        // Check permissions, setup, etc
+        exampleNote.respondIntroductionPage(E, {
+            continueLink: "/do/example/actually/start"
         });
+    });
+</pre>
 
-    respondIntroductionPage takes an Exchange object and a view. All
-    keys are optional:
+@respondIntroductionPage@ takes an Exchange object and a view. All \
+keys are optional:
 
-        pageTitle, backLink -- as normal
-        continueLink -- link to the next label
-        continueLabel -- text for the continue button
+* pageTitle, backLink -- as normal
+* continueLink -- link to the next label
+* continueLabel -- text for the continue button
 
 */
 

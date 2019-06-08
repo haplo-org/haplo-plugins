@@ -1,0 +1,18 @@
+pageTitle("Create API key for " api.url)
+backLink("/do/haplo-data-import-api/api/" api.id) { "Cancel" }
+
+if(key) {
+  <p> "An API key was created for the " <b> api.description </b> " REST API." </p>
+  <p> <tt> key </tt> </p>
+  <p> "This is the only time it can be displayed." </p>
+  <p> std:ui:button-link("/do/haplo-data-import-api/api/" api.id) { "I've stored the key securely" } </p>
+  <p> "&nbsp;" </p>
+  <p> "API keys for the REST APIs can be managed in" <br> "System management &raquo; Users &raquo; SRV &raquo; REST API data import access" </p>
+
+} else {
+  <p> "API keys authenticate access to APIs for this Haplo application. They must be managed securely." </p>
+  <p> "This will create a key which only allows access to this REST API, " <b> api.description </b> " with URL path " <tt> "/api/push-data/" api.url </tt> "." </p>
+  <p> "After you click the 'Create API key' button, the new key will be displayed. This is the only time it can be displayed. Ensure no one can observe your screen." </p>
+  template:std:ui:confirm()
+
+}

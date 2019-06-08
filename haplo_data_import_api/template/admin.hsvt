@@ -1,0 +1,31 @@
+pageTitle("REST APIs")
+backLink("/do/haplo-data-import/admin")
+
+<p> "REST APIs defined: " apis.length </p>
+
+<p> std:ui:button-link("/do/haplo-data-import-api/new-api") { "New REST API..." } </p>
+<p style="margin:24px 0">
+  haplo:data-import-framework:documentation("/import/rest-api" "REST API documentation")
+</p>
+
+<table>
+  <tr>
+    <th> "URL name" </th>
+    <th> "Description" </th>
+    <th> "Response" </th>
+  </tr>
+  each(apis) {
+    <tr>
+      <td>
+        <a href=["/do/haplo-data-import-api/api/" id]>
+          url
+        </a>
+        unless(enabled) {
+          " (disabled)"
+        }
+      </td>
+      <td> description </td>
+      <td> response </td>
+    </tr>
+  }
+</table>

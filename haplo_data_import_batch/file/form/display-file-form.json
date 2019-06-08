@@ -1,0 +1,16 @@
+{
+    "specificationVersion": 0,
+    "formId": "display-file-form",
+    "formTitle": "Batch files",
+    "elements": [
+        {
+            "type": "repeating-section",
+            "path": "files",
+            "elements": [
+                { "type":"text", "path":"name", "name":"name", "label":"Name" },
+                { "type":"text", "path":"file.digest", "name":"digest", "label":"Digest" },
+                { "type":"file", "path":"file", "name":"file" }
+            ]
+        }
+    ]
+}

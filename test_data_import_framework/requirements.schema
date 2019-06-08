@@ -1,0 +1,19 @@
+
+attribute test:attribute:data-import-framework-test-multiline as TestMultiline
+    title: Test Multiline
+    search-name: 
+    qualifier std:qualifier:null
+    data-type text-multiline
+
+type test:type:data-import-framework-test-attributes as TestAttributes
+    title: Test Attributes
+    search-name: test attributes
+    attribute dc:attribute:title
+    attribute std:attribute:configured-behaviour
+    attribute std:attribute:notes
+    attribute test:attribute:data-import-framework-test-multiline
+    render-category 0
+    label-applicable std:label:common
+    label-default std:label:common
+    default-subtype test:type:data-import-framework-test-attributes
+    create-position normal

@@ -164,3 +164,5 @@ Then, calculate how far through the period we are now. If there is no state save
 We calculate how much of the time since the last updated date as been active (i.e. not overlapping a suspension). We find the proportion of the full previous length of the period that this active time since last updated represents, and add this to the previous fraction. We then add the new length of the period multipled by 1 minus the total fraction of active time elapsed.
 
 This gives us a provisional end date. To this, we add any suspensions between now and the provisional end date, in order, so that if the end date moves, any suspensions that become relevant are added.
+
+Warning about calculations including suspensions: Any new suspensions that start before the current time and also before a previous calculation of the dates will not have the time between the start of the suspension and the last recalculation included as suspension when calculating.

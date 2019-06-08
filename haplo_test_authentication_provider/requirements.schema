@@ -1,0 +1,5 @@
+
+feature std:configuration-data
+    property: {"haplo:test-authentication-provider:keychain-credential-name":"login"}
+
+group std:group:administrators as Administrators

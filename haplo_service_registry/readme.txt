@@ -25,7 +25,7 @@ h2. Service metadata
 }
 </pre>
 
-Services are described in a @__service-metadata__.json@ file in your plugin's root directory. Each service to be added to the service registry is listed, and described with keys.
+Services are described in a @__service-metadata__.json@ file in your plugin's file directory. Each service to be added to the service registry is listed, and described with keys.
 
 h3(key). statements
 
@@ -44,4 +44,4 @@ h2. Using the registry
 
 h3(service). "haplo:service-registry:query"
 
-The registry is accessed by calling this query service, passing in a @statements@ array. The service returns a [node:/haplo_service_registry/service_list] object, containing only the services registered that match all the requested statements.
+The registry is accessed by calling this query service, passing in a @statements@ array. The service returns a Service List object, containing only the services registered that match all the requested statements.

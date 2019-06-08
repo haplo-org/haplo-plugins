@@ -1,0 +1,15 @@
+{
+  "pluginName": "haplo_qa_audit",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "QA Audit",
+  "displayDescription": "Framework for automated QA audits",
+  "installSecret": "b5ea8fc826c3e39d9dfb7a2e137037f0ee69ab02",
+  "loadPriority": 10,
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_qa_audit.js",
+      "js/haplo_qa_audit_common_providers.js"
+    ],
+  "respond": ["/do/haplo-qa-audit"]
+}

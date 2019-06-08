@@ -6,11 +6,14 @@
   "displayDescription": "Tracks usage statistics for Haplo applications",
   "installSecret": "1f7115f0d10b98d5c12366cce4a75bba1d73cf66",
   "apiVersion": 4,
-  "privilegesRequired": ["pDatabase", "pReportHealthEvent"],
+  "privilegesRequired": ["pDatabase", "pReportHealthEvent", "pBackgroundProcessing"],
   "depend": [
       "haplo_info_geoip"
     ],
   "load": [
-      "js/haplo_usage_tracking.js"
-    ]
+      "js/haplo_usage_tracking.js",
+      "js/haplo_usage_tracking_statistics.js",
+      "js/haplo_usage_tracking_filtering.js"
+    ],
+  "respond": ["/do/haplo-usage-tracking"]
 }

@@ -1,5 +1,5 @@
-
 pageTitle("Edit User Sync Configuration")
+backLink("/do/haplo-user-sync/admin")
 
 <form method="POST">std:form:token()
     std:form(form)

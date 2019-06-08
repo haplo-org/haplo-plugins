@@ -1,0 +1,6 @@
+pageTitle("Information: " information.name)
+backLink("/do/haplo-qa-audit/menu")
+
+<pre>
+  json
+</pre>

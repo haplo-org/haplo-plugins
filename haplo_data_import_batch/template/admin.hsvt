@@ -1,0 +1,4 @@
+pageTitle("Batch import")
+backLink("/do/haplo-data-import/admin")
+
+template:std:ui:choose()

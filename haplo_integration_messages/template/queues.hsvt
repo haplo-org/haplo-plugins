@@ -1,0 +1,4 @@
+pageTitle("Integration message queues")
+backLink("/do/haplo-integration/admin")
+
+template:std:ui:choose()
