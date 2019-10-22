@@ -4,42 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-
-/*
-    Haplo Group Notification Queue Plugin
-    
-    Add simple tasks to system-wide queues that are assigned to a particular group.
-    Members of the group have a central page where all outstanding/done tasks are listed,
-    with any queue with outstanding tasks having an open work unit associated with said queue.
-
-    O.service("haplo:group_notification_queue:task_definition:TASK_TYPE")
-        with args
-            ref - ref of the object linked to the task
-        should return an object with properties:
-            description - description of the task itself
-
-    O.service("haplo:group_notification_queue:push", spec);
-        where spec has properties:
-            group - group for which queue the task is added to
-            type - type of the task (must be defined using service above)
-            ref - ref to specify the source of the task to allow link back
-        and optional properties:
-            deduplicateOnRef - if truthy, don't create a new task if there is
-                an open task with the same group, type and ref.
-
-    O.service("haplo:group_notification_queue:queue_definition:GROUP_ID")
-        (where GROUP_ID is the id property of the group object)
-        should return an object with properties:
-            pageTitle - defines a custom page title for the queue
-            workUnitTitle - defines a custom title for queue work units
-            workUnitMessage - defines a custom message for queue work units
-
-    O.service("haplo:group_notification_queue:url:action_page", GROUP_API_CODE)
-        will return a link to the queue for a given group,
-        if no outstanding tasks, link will direct to completed.
-
-*/
-
 // --------------------------------------------------------------------------
 // Tables
 
@@ -96,17 +60,23 @@ var newWorkUnit = function(group) {
 };
 
 var currentWorkUnit = function(group) {
-    return O.work.query("haplo_group_notification_queue:queue").
-        actionableBy(O.group(group)).
-        latest();
+    var workUnits = O.work.query("haplo_group_notification_queue:queue").
+        actionableBy(O.group(group));
+    // Lookup the actionable by ID for current the work unit as Groups can
+    // sometimes share tasks because they are members of each other.
+    return _.find(workUnits, function(workUnit) {
+        return workUnit.actionableBy.id === group;
+    });
 };
 
 var updateWorkUnitForQueue = function(group) {
     // create/delete work units based on remaining tasks
-    if(remainingTasks(group).count()) {
-        if(!currentWorkUnit(group)) { newWorkUnit(group); }
-    } else {
-        currentWorkUnit(group).deleteObject();
+    var workUnit = currentWorkUnit(group);
+    var remainingTasksCount = remainingTasks(group).count();
+    if(remainingTasksCount && !workUnit) {
+        newWorkUnit(group);
+    } else if(!remainingTasksCount && workUnit) {
+        workUnit.deleteObject();
     }
 };
 
@@ -163,7 +133,7 @@ P.getCustomViewText = function(group) {
         group, count) || {};
     if(!text.pageTitle) { text.pageTitle = "Updates ("+O.group(group).name+")"; }
     if(!text.workUnitTitle) { text.workUnitTitle = "Outstanding updates to complete"; }
-    if(!text.workUnitMessage) { text.workUnitMessage = count+" update(s) to complete."; }
+    if(!text.workUnitMessage) { text.workUnitMessage = count+" update"+((count > 1) ? "s" : "")+" to complete."; }
     return text;
 };
 

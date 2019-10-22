@@ -1,8 +1,14 @@
 
 each(documents) {
-  <div id=unsafeAttributeValue(unsafeAnchor) style="padding:8px 16px;background:#eee">
-    <h1 style="margin:0;padding:0"> title </h1>
-  </div>
+
+  switch(^{documents.length})
+      {
+        <div id=unsafeAttributeValue(unsafeAnchor) style="padding:8px 16px;background:#eee">
+          <h1 style="margin:0;padding:0"> title </h1>
+        </div>
+      }
+    1 { } // suppress title when just one document
+
   render(deferred)
   <p> "&nbsp;" </p>
 }

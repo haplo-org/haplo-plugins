@@ -12,6 +12,8 @@
  *
  */
 
+const NEW_TRANSITION_UI = !!O.application.config["std_workflow:new_transition_ui"];
+
 const TEXT_DEFAULT_HEADER = "Please confirm you agree with the following statements:";
 const TEXT_DEFAULT_LABEL = "I confirm I have read and agree with all the statements above.";
 const TEXT_DEFAULT_REQUIRED_NOTICE = "You must confirm you have read and agree with all the statements.";
@@ -45,6 +47,7 @@ P.workflow.registerWorkflowFeature("haplo:confirm-statements", function(workflow
         // Only display the UI if there are statements to confirm
         if(text) {
             ui.addFormDeferred("top", P.template("statements").deferredRender({
+                NEW_TRANSITION_UI: NEW_TRANSITION_UI,
                 requiredNotice: (E.request.method === "POST") ?
                     getText(M, M.state, ui.requestedTransition, "required-notice",
                         (text.singleStatement ? TEXT_DEFAULT_REQUIRED_NOTICE_SINGLE : TEXT_DEFAULT_REQUIRED_NOTICE)) : undefined,
@@ -102,7 +105,7 @@ var getTextForCurrentStateWorkflowUI = function(M, spec, ui) {
         text = spec.alterStatements(M, text, ui.requestedTransition, state);
     }
 
-    let deferred = spec.deferredRenderStatements ? spec.deferredRenderStatements(M) : undefined;
+    let deferred = spec.deferredRenderStatements ? spec.deferredRenderStatements(M, ui.requestedTransition, state) : undefined;
     if(deferred) {
         text.unsafeHTML = P.template("std:render").render(deferred);
         // Header and footer are removed so deferred replaces everything (otherwise there couldn't be a default for the header)

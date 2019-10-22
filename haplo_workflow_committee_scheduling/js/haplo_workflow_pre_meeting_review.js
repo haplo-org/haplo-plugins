@@ -126,7 +126,8 @@ P.committeePreMeetingReview = function(workflow, spec) {
             return E.render({
                 pageTitle: "Reject review request",
                 backLink: app.url(),
-                message: "Notification has been sent to the committee representative",
+                message: "Notification has been sent to the "+
+                    NAME("haplo:workflow_committee_scheduling:committee-representative:lc", "committee representative"),
                 dismissLink: app.url(),
                 dismissText: "OK"
             }, "std:ui:notice");

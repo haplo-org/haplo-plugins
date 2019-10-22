@@ -11,7 +11,7 @@ P.setupNonlinearWorkflowUI = function(workflow) {
         var shape = new P.Shape(M);
         builder.panel(110).style("special").element(1, {
             deferred: P.template("sidebar/subworkflows").deferredRender({
-                shape: shape,
+                existingVisibleSubworkflows: shape.existingVisibleSubworkflowsForUser(O.currentUser),
                 manualStart: _.map(shape.manuallyStartableSubworkflowsForUser(O.currentUser), function(subs) {
                     return subs[0];
                 })
@@ -23,9 +23,8 @@ P.setupNonlinearWorkflowUI = function(workflow) {
     workflow.renderWork({}, function(M, W) {
         var instances = [M];
         var shape = new P.Shape(M);
-        _.each(shape.existingSubworkflows, function(s) {
-            var subM = s.M;
-            if(subM) { instances.push(subM); }
+        _.each(shape.existingVisibleSubworkflowsForUser(O.currentUser), function(subworkflowInfo) {
+            instances.push(subworkflowInfo.M);
         });
         W.render(O.service("std:workflow:deferred_render_combined_timeline", instances), "std:render");
         return true;
@@ -34,25 +33,41 @@ P.setupNonlinearWorkflowUI = function(workflow) {
 };
 
 // -------------------------------------------------------------------------
-// UI properties for using the info object in a view
+// UI properties
 
 P.SubworkflowInfo.prototype.__defineGetter__("displayableSubworkflowName", function() {
     return this.spec._workflow.getWorkflowProcessName();
 });
+
+P.SubworkflowInfo.prototype.getBackLinkTextForObject = function(object) {
+    var backLinkText = "Back";
+    if(this.spec.backLinkText) {
+        backLinkText = this.spec.backLinkText;
+    } else if(object) {
+        // Sensible back link text
+        backLinkText = SCHEMA.getTypeInfo(object.first(A.Type)).name;
+    }
+    return backLinkText;
+};
 
 P.SubworkflowInfo.prototype.__defineGetter__("checklistState", function() {
     if(!this.workUnit) { return "notStarted"; }
     return this.closed ? "closed" : "open";
 });
 
-P.SubworkflowInfo.prototype.__defineGetter__("customTaskTitle", function() {
-    if(this.workUnit) {
-        return O.ref(this.workUnit.tags.submitter).load().title;
-    }
-});
-
 // -------------------------------------------------------------------------
 // UI properties when a sub-workflow exists
+
+P.SubworkflowInfo.prototype.__defineGetter__("subworkflowSubmitterNameToShow", function() {
+    if(
+        !("$subworkflowSubmitterNameToShow" in this) &&
+        this.spec.addSubmitterNameToWorkflowTitles &&
+        this.M
+    ) {
+        this.$subworkflowSubmitterNameToShow = this.M.getActionableBy("submitter").name;
+    }
+    return this.$subworkflowSubmitterNameToShow;
+});
 
 P.SubworkflowInfo.prototype.__defineGetter__("displayableStatus", function() {
     return this.M.getDisplayableStatus();
@@ -74,16 +89,21 @@ P.respond("GET", "/do/subworkflow/show", [
     // Load object, acting as security check where the workflow is associated with an object
     var object = workUnit.ref ? workUnit.ref.load() : undefined;
 
-    var M = O.service("std:workflow:definition_for_name", workUnit.workType).instance(workUnit);
+    var parentM = P.subworkflowWorkUnitToParentInstance(workUnit);
+    var info = P.subworkflows[workUnit.workType];
+    var subworkflowInfo = (parentM && info) ? new P.SubworkflowInfo(parentM, info.spec, workUnit) : undefined;
+    if(!subworkflowInfo || !subworkflowInfo.userCanView(O.currentUser)) {
+        O.stop("Not permitted");
+    }
+    var M = subworkflowInfo.M;
 
     var builder = O.ui.panel();
     M.fillActionPanel(builder);
     E.renderIntoSidebar(builder.deferredRender(), "std:render");
     E.render({
         M: M,
-        parentM: P.getParentWorkflowOfSubworkflow(M),
-        // Use Type info to set a sensible backLinkText. TODO: could be defined in spec instead
-        backLinkText: object ? SCHEMA.getTypeInfo(object.first(A.Type)).name : "Back",
+        parentM: parentM,
+        backLinkText: subworkflowInfo.getBackLinkTextForObject(object),
         object: object,
         // TODO: fix rendering to be more in style with workflow workUnit render
         timeline: M.renderTimelineDeferred()
@@ -101,25 +121,25 @@ P.respond("GET,POST", "/do/subworkflow/manual-start", [
 
     var parentM = O.service("std:workflow:definition_for_name", workUnit.workType).instance(workUnit);
     var shape = new P.Shape(parentM);
-    var wus = _.find(shape.subworkflows, function(wus) {
-        return wus.length &&
-            (wus[0].spec.name === subworkflowType) &&
-            wus[0].canStartManuallyByUser(O.currentUser);
+    var subs = _.find(shape.manuallyStartableSubworkflowsForUser(O.currentUser), function(subs) {
+        return subs[0].spec.name === subworkflowType;
     });
-    if(!wus) { O.stop("Not allowed to start"); }
+    if(!subs) {
+        O.stop("Not permitted");
+    }
+    var subworkflowToStart = subs[0];
 
     if(E.request.method === "POST") {
-        var M = wus[0].startWorkflow();
+        var M = subworkflowToStart.start({});
         return E.response.redirect(M.url);
     }
 
     E.render({
         parentM: parentM,
-        // Use Type info to set a sensible backLinkText. TODO: could be defined in spec instead
-        backLinkText: object ? SCHEMA.getTypeInfo(object.first(A.Type)).name : "Back",
+        backLinkText: subworkflowToStart.getBackLinkTextForObject(object),
         object: object,
         confirm: {
-            text: "Would you like to start the "+wus[0].displayableSubworkflowName+"?",
+            text: "Would you like to start the "+subworkflowToStart.displayableSubworkflowName+"?",
             options: [{label:"Start"}],
             backLink: parentM.url,
             backLinkText: "Cancel"

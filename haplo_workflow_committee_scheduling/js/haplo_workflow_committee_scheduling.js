@@ -70,6 +70,12 @@ Note: the default implementation determines which entries to display by taking t
 during that state, as well as the entries transitioning into the state to give context, and the entry transitioning out of the state to display the final decision taken by the committee. \
 If the transition in/out entry doesn't have a deferredRender, then the page displays the next one that does.
 
+h2. NAME
+
+h3(key). haplo:workflow_committee_scheduling:committee-representative:lc
+
+for changing "committee representative" text in UI.
+
  */
 
 var TEXT = {
@@ -88,14 +94,14 @@ var TEXT = {
     "transition-notes:send_to_dep_chair": "Forward application to the committee Deputy Chair",
     "transition-confirm:send_to_dep_chair": "You have chosen to forward the application to the Deputy Chair.",
 
-    "transition:return_to_rep": "Return to committee representative",
+    "transition:return_to_rep": "Return to NAME(haplo:workflow_committee_scheduling:committee-representative:lc|committee representative)",
     "transition-indicator:return_to_rep": "secondary",
-    "transition-confirm:return_to_rep": "You have chosen to return the application to the committee representative.",
+    "transition-confirm:return_to_rep": "You have chosen to return the application to the NAME(haplo:workflow_committee_scheduling:committee-representative:lc|committee representative).",
 
     "timeline-entry:progress_application": "progressed the application",
     "timeline-entry:send_to_chair": "forwarded application to committee Chair",
     "timeline-entry:send_to_dep_chair": "forwarded application to committee Deputy Chair",
-    "timeline-entry:return_to_rep": "returned application to committee representative"
+    "timeline-entry:return_to_rep": "returned application to NAME(haplo:workflow_committee_scheduling:committee-representative:lc|committee representative)"
 };
 
 var TRANSITION_BUTTON_PRIORITIES = {
@@ -363,7 +369,10 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                 E.render({
                     pageTitle: "Take over "+app.title,
                     backLink: app.url(),
-                    text: "As you are an additional committee representative, you can take over this application to be able to apply decisions on behalf of the committee and the primary representative.",
+                    text: "As you are an additional "+
+                        NAME("haplo:workflow_committee_scheduling:committee-representative:lc", "committee representative")+
+                        ", you can take over this application to be able to apply decisions on behalf of the committee and"+
+                        " the primary representative.",
                     options: [
                         {
                             label: "Take over this application"

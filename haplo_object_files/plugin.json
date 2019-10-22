@@ -5,6 +5,7 @@
   "displayName": "Haplo Object Files",
   "displayDescription": "Allow attaching of specified file types to a particular type of object",
   "installSecret": "51971cab13a6b19d2b47c3312d885a94405ee13e",
+  "loadPriority": 3000,
   "apiVersion": 4,
   "load": [
       "js/haplo_object_files.js"

@@ -1,8 +1,10 @@
 
-std:ui:notice("Please review the notification, then click the button below to send it.")
+std:ui:request("Please review the notification, then click the confirm button to send it.")
 
-<p>
+<div style="border:1px dotted #aaa; border-radius: 8px; padding: 16px 20px 8px 20px; margin: 16px 0">
+  std:text:document(notification.text)
+</div>
+
+<p style="text-align:right">
   std:ui:button-link("/do/workflow-notifications/write/" notification.name "/" M.workUnit.id) { "Edit notification" }
 </p>
-
-std:text:document(notification.text)

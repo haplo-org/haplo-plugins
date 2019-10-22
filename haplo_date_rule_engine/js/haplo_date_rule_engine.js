@@ -302,7 +302,11 @@ function computeRegularDate(now, dates, rules, flags, state, suspensions, dateNa
 
     if(nodeKind === "date") { // ["date", dateName]
         computeDate(now, dates, rules, flags, state, suspensions, body[1]);
-        return dates[body[1]];
+        base_date = dates[body[1]];
+        if(!base_date[0]) {
+            return error_date_range("Not enough inputs to calculate "+dateName);
+        }
+        return [base_date[0].clone(), base_date[1].clone()];
     } else if(nodeKind === "add") { // ["add", interval unit, interval min, interval max, rule]
         unit = body[1];
         min_interval = body[2];
@@ -512,7 +516,7 @@ function computePeriodDate(now, dates, rules, flags, state, suspensions, dateNam
                 // suspensions length is from now to the end of suspension
                 suspensionLength = now.diffDays(suspension[1]);
             }
-            debug("Adding suspension with length", suspensionLength, "days. Starts:", suspension[0], "Ends:", suspension[0]);
+            debug("Adding suspension with length", suspensionLength, "days. Starts:", suspension[0], "Ends:", suspension[1]);
             // if most recently calculated end least is after (or the same day as) the start of the suspension
             if(newEndLeast.diffDays(suspension[0]) <= 0) {
                 newEndLeast.addDays(suspensionLength);

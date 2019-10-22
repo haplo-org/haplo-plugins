@@ -20,6 +20,18 @@ Used for automatic transitioning on the day of the interview (possibly - attempt
 
 Can be from many pre-meeting states, but all should have the same transition name.
 
+h3(property). meetingDateDesc
+
+Attribute schema object to use instead of @haplo:attribute:meeting-date@.
+
+Use this property if you need different types of interviews to be used on the workflow object.
+
+h3(property). meetingLocationDesc
+
+Attribute schema object to use instead of @haplo:attribute:meeting-location@.
+
+Use this property if you need different types of interviews to be used on the workflow object.
+
 h3(property). documentStore
 
 *REQUIRED*: a @std:document_store@ specification js object except some keys are in the form of:
@@ -60,12 +72,13 @@ is the string name of Project Date to save interview date to.
 
 h3(service). haplo_meeting_scheduling:meeting_date_passed
 
-is called to update the @projectDate@ if specified and perform the @meetingTransition@ if available at this stage for your workflow.
+is called to update the @projectDate@ if specified and perform the @meetingTransition@ if available at this stage for your workflow on day of the meeting using @hScheduleDailyEarly@.
 
 Call the service with:
 
 * *REQUIRED:* @arg1@ being a js object, possibly implementing the @WorkUnit@ interface.
+* @arg2@ being the result of @SCHEMA.getAttributeInfo()@ for the @meetingDateDesc@ if used otherwise it is assumed that the context is @haplo:attribute:meeting-date@.
 
-If the system was updated with the schedule by this feature you should probably delete the @tag("interviewScheduled", "t")@ before calling this service as it could be repeated in the future since it is internally used. Incidentally this is the tag you can use to find workflow instances with outstanding interviews.
+If the system was updated with the schedule by this feature you should probably delete the @tag("interviewScheduled", "t")@ after calling this service as it could be repeated in the future since it is internally used. Incidentally this is the tag you can use to find workflow instances with outstanding interviews.
 
 Implement this service to listen to when interview dates pass for a potential @WorkUnit@.

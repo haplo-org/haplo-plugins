@@ -5,35 +5,37 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
 
-var subWorkflows = {};
-var subWorkflowsByParent = P.subWorkflowsByParent = {};
+var subworkflowWorkUnitToParentInstance = P.subworkflowWorkUnitToParentInstance = function(workUnit) {
+    var parentTag = workUnit.tags._nonlinearparent;
+    if(!parentTag) { return undefined; }
+    var wu = O.work.load(1*parentTag);
+    return O.service("std:workflow:definition_for_name", wu.workType).instance(wu);
+};
+
+var isSubworkflowWorkUnitSubsequent = P.isSubworkflowWorkUnitSubsequent = function(workUnit) {
+    var workUnits = O.work.query(workUnit.workType).
+        isClosed().
+        tag("_nonlinearparent", workUnit.tags._nonlinearparent);
+    var firstClosedWorkUnit = (workUnits.length > 0) ? workUnits[workUnits.length-1] : undefined;
+    return (firstClosedWorkUnit && (workUnit.id !== firstClosedWorkUnit.id));
+};
+
+var startSubworkflow = function(parentM, workflowDefn, additionalProperties) {
+    var info = subworkflows[workflowDefn.fullName];
+    if(!info) {
+        throw new Error("Trying to start sub-workflow of kind "+workflowDefn.fullName+" but it is not defined as a sub-workflow.");
+    }
+    var subworkflow = new P.SubworkflowInfo(parentM, info.spec);
+    return subworkflow.start(additionalProperties || {});
+};
 
 // --------------------------------------------------------------------------
 
-/*HaploDoc
-node: /haplo_workflow_nonlinear
-title: Haplo Nonlinear Workflows
-sort: 2
---
+var subworkflows = P.subworkflows = {};
+var subworkflowsByParent = P.subworkflowsByParent = {};
 
-Allows plugins to implement workflows that do not have to follow a completely linear path. This could be used to allow \
-branching, or to break up a large and complex process into more manageable sub-workflows.
+// --------------------------------------------------------------------------
 
-The using plugin should define multiple workflows - one to be the "controlling" workflow for this process, and the \
-others as sub-workflows. The UI is neatest if the "controlling" process doesn't have any functionality attached \
-to it, but instead acts as a framework from which to start the sub-workflows (containing all of the forms, etc.).
-
-To facilitate this the plugin adds the "No User" group, for use as the @actionableBy@ in the "controlling" workflow. \
-This should always be an empty group, as the transitions should be entirely system controlled. The "controlling" \
-process will transition automatically once all of the sub-process are complete.
-
-h2. Workflow features
-
-h3(feature). "haplo:nonlinear"
-
-Registers this workflow as the "controlling" workflow for this process, and sets up the workflow UI for display of \
-multiple processes and their statuses. Takes no arguments.
-*/
 P.workflow.registerWorkflowFeature("haplo:nonlinear", function(workflow) {
 
     workflow.observeStart({}, function(M) {
@@ -55,48 +57,43 @@ P.workflow.registerWorkflowFeature("haplo:nonlinear", function(workflow) {
         }
     });
 
+    workflow.implementWorkflowService("haplo:nonlinear:start", function(M, workflowDefn, additionalProperties) {
+        return startSubworkflow(M, workflowDefn, additionalProperties);
+    });
+
 });
 
 // --------------------------------------------------------------------------
 
-/*HaploDoc
-node: /haplo_workflow_nonlinear
-sort: 5
---
-
-h3(feature). "haplo:nonlinear:sub-workflow"
-
-Registers a workflow as a sub-workflow for this process. Takes a single argument, a specification object.
-
-|@name@|The full workType for the sub-workflow|*required*|
-|@start@|A selector. When entering selected parent states, the sub-workflow is automatically started. If more than 1 of a sub-workflow should be needed in the parent workflow use the @shouldRepeatAfter@ property||
-|@preventTransition@|A selector. For selected parent states, transitions are blocked in the parent state while 1 of these workflows is not completed||
-|@canStartManually@|An array of objects, containing @selector@ and @roles@ keys, defining who can start this process manually, and when. A sub-workflow can be started manually only once per parent state. If more than 1 of a sub-workflow should be needed in the parent workflow use the @shouldRepeatAfter@ property||
-|@shouldRepeatAfter@|A selector. When exiting the selected parent states, the sub-workflow is saved as a sub-workflow to 'repeat' if it's ever required by the @start@, @preventTransition@ and @canStartManually@ properties again||
-*/
 P.workflow.registerWorkflowFeature("haplo:nonlinear:sub-workflow", function(workflow, spec) {
-    if(spec.name in subWorkflows) {
+    if(spec.name in subworkflows) {
         throw new Error("Workflow already used as sub-workflow: "+spec.name);
     }
-    subWorkflows[spec.name] = {
+    subworkflows[spec.name] = {
         spec: spec,
         parent: workflow
     };
-    var workflows = subWorkflowsByParent[workflow.fullName];
-    if(!workflows) { subWorkflowsByParent[workflow.fullName] = workflows = []; }
+    var workflows = subworkflowsByParent[workflow.fullName];
+    if(!workflows) { subworkflowsByParent[workflow.fullName] = workflows = []; }
     workflows.push(spec);
 
-    if(spec.shouldRepeatAfter) {
-        workflow.observeExit(spec.shouldRepeatAfter, function(M) {
-            var workUnits = O.work.query(spec.name).
-                isClosed().
-                tag("_nonlinearparent", M.workUnit.id.toString()).
-                tag("haplo_workflow_nonlinear:subworkflow_should_repeat", null);
-            _.each(workUnits, function(workUnit) {
-                workUnit.tags["haplo_workflow_nonlinear:subworkflow_should_repeat"] = "1";
-                workUnit.save();
-            });
+    var setShouldRepeat = function(M) {
+        var workUnits = O.work.query(spec.name).
+            isClosed().
+            tag("_nonlinearparent", M.workUnit.id.toString()).
+            tag("haplo_workflow_nonlinear:subworkflow_should_repeat", null);
+        _.each(workUnits, function(workUnit) {
+            workUnit.tags["haplo_workflow_nonlinear:subworkflow_should_repeat"] = "1";
+            workUnit.save();
         });
+    };
+
+    if(spec.shouldRepeatAfter) {
+        workflow.observeExit(spec.shouldRepeatAfter, setShouldRepeat);
+    }
+
+    if(spec.shouldRepeatOnObserveEnter) {
+        workflow.observeEnter(spec.shouldRepeatOnObserveEnter, setShouldRepeat);
     }
 });
 
@@ -104,7 +101,7 @@ P.workflow.registerWorkflowFeature("haplo:nonlinear:sub-workflow", function(work
 
 // After the fact notifications of state changes in child workflows
 P.implementService("std:workflow:notify:transition", function(M, transition, previousState) {
-    var info = subWorkflows[M.workUnit.workType];
+    var info = subworkflows[M.workUnit.workType];
     if(info) {
         var parentTag = M.workUnit.tags._nonlinearparent;
         if(parentTag) {
@@ -117,7 +114,7 @@ P.implementService("std:workflow:notify:transition", function(M, transition, pre
 
 // --------------------------------------------------------------------------
 
-var setupSubWorkflow = function(subworkflow, info) {
+var setupSubworkflow = function(subworkflow, info) {
 
     info.spec._workflow = subworkflow;
 
@@ -127,6 +124,10 @@ var setupSubWorkflow = function(subworkflow, info) {
             throw new Error("Manual creation of sub-workflow not allowed. Nonlinear sub-workflow must be started by the parent workflow.");
         }
         M.workUnit.tags._nonlinearparent = ''+properties._parentM.workUnit.id;
+        var submitter = properties.submitter;
+        if(info.spec.shouldDefineSubmitterRole && submitter) {
+            M.workUnit.tags.submitter = O.isRef(submitter) ? submitter : submitter.id.toString();
+        }
     });
 
     // Sub-workflows need a special page to display them
@@ -141,46 +142,115 @@ var setupSubWorkflow = function(subworkflow, info) {
             return info.spec.customTaskTitle(M);
         }
         if(M.workUnit.ref) {
-            return M.getWorkflowProcessName() + ': ' + M.workUnit.ref.load().title;
+            var taskTitle = M.getWorkflowProcessName();
+            if(info.spec.subsequentWorkflowTitlePrefix && isSubworkflowWorkUnitSubsequent(M.workUnit)) {
+                taskTitle = info.spec.subsequentWorkflowTitlePrefix+taskTitle;
+            }
+            if(info.spec.addSubmitterNameToWorkflowTitles) {
+                var submitter = M.getActionableBy("submitter");
+                if(submitter) {
+                    taskTitle += ": "+submitter.name;
+                }
+            }
+            taskTitle += ": "+M.workUnit.ref.load().title;
+            return taskTitle;
         }
     });
+
+    if(info.spec.addSubmitterNameToWorkflowTitles) {
+        subworkflow.implementWorkflowService("std:workflow:combined_timeline:title_for_instance", function(M) {
+            var submitter = M.getActionableBy("submitter");
+            return subworkflow.getWorkflowProcessName()+(submitter ? ": "+submitter.name : "");
+        });
+    }
 
     // Hide the timeline for sub-workflows
     subworkflow.renderWork({}, function(M) {
         return true;
     });
 
+    if(info.spec.shouldDefineSubmitterRole) {
+        subworkflow.getActionableBy(function(M, actionableBy) {
+            if(actionableBy === "submitter") {
+                var submitter = M.workUnit.tags.submitter;
+                if(submitter) {
+                    var submitterRef = O.ref(submitter);
+                    return O.user(submitterRef ? submitterRef : parseInt(submitter, 10));
+                }
+            }
+        });
+
+        subworkflow.hasRole(function(M, user, role) {
+            if(role === "submitter") {
+                var submitterUser = M.getActionableBy("submitter");
+                if(submitterUser) {
+                    return user.id === submitterUser.id;
+                }
+            }
+        });
+    }
+
+    if(info.spec.shouldRepeatWhile) {
+        subworkflow.setWorkUnitProperties({}, function(M) {
+            if(M.getStateDefinition(M.state).finish) {
+                var parentM = subworkflowWorkUnitToParentInstance(M.workUnit);
+                if(parentM.selected(info.spec.shouldRepeatWhile)) {
+                    M.workUnit.tags["haplo_workflow_nonlinear:subworkflow_should_repeat"] = "1";
+                }
+            }
+        });
+    }
+
+    if(info.spec.shouldRepeatUntilLastOpen) {
+        subworkflow.setWorkUnitProperties({}, function(M, transition) {
+            if(M.getStateDefinition(M.state).finish) {
+                var openCount = O.work.query(subworkflow.fullName).
+                    tag("_nonlinearparent", M.workUnit.tags._nonlinearparent).
+                    count();
+                if(openCount > 1) {
+                    M.workUnit.tags["haplo_workflow_nonlinear:subworkflow_should_repeat"] = "1";
+                }
+            }
+        });
+    }
+
+    subworkflow.implementWorkflowService("haplo:nonlinear:get_parent_instance", function(M) {
+        return subworkflowWorkUnitToParentInstance(M.workUnit);
+    });
+
+    subworkflow.implementWorkflowService("haplo:nonlinear:get_other_instance", function(M, workflowDefn) {
+        let workUnit = O.work.query(workflowDefn.fullName).
+            isEitherOpenOrClosed().
+            tag("_nonlinearparent", M.workUnit.tags._nonlinearparent).
+            latest();
+        return workUnit ? workflowDefn.instance(workUnit) : undefined;
+    });
+
+    subworkflow.implementWorkflowService("haplo:nonlinear:is_subsequent", function(M) {
+        return isSubworkflowWorkUnitSubsequent(M.workUnit);
+    });
+
 };
 
 P.workflow.registerOnLoadCallback(function(workflows) {
-    _.each(subWorkflows, function(info, name) {
+    _.each(subworkflows, function(info, name) {
         var subworkflow = workflows.getWorkflow(info.spec.name);
         if(!subworkflow) {
             throw new Error("Workflow "+info.spec.name+" was used as a sub-workflow in a nonlinear workflow, but wasn't defined.");
         }
-        setupSubWorkflow(subworkflow, info);
+        setupSubworkflow(subworkflow, info);
     });
 });
 
 // --------------------------------------------------------------------------
 
-P.getParentWorkflowOfSubworkflow = function(M) {
-    var parentTag = M.workUnit.tags._nonlinearparent;
-    if(!parentTag) { return undefined; }
-    var wu = O.work.load(1*parentTag);
-    return O.service("std:workflow:definition_for_name", wu.workType).instance(wu);
-};
+// Deprecated.
+P.implementService("haplo:nonlinear:get_parent_workflow_of_subworkflow", function(M) {
+    return subworkflowWorkUnitToParentInstance(M.workUnit);
+});
 
-// --------------------------------------------------------------------------
-
-// TODO: rethink these interfaces - but beware Leeds exams uses them
-P.implementService("haplo:nonlinear:get_parent_workflow_of_subworkflow", P.getParentWorkflowOfSubworkflow);
-P.implementService("haplo:nonlinear:create_subworkflow", function(workflowDefn, parentM, subSpec) {
-    var subworkflowDefn = subWorkflows[workflowDefn.fullName];
-    if(!subworkflowDefn) {
-        throw new Error("Trying to create subworkflow of kind "+workflowDefn.fullName+" but it is not defined as a subworkflow.");
-    }
-    var subworkflow = new P.SubworkflowInfo(parentM, subworkflowDefn.spec);
-    return subworkflow.startWorkflow(subSpec);
+// Deprecated.
+P.implementService("haplo:nonlinear:create_subworkflow", function(workflowDefn, parentM, additionalProperties) {
+    return startSubworkflow(parentM, workflowDefn, additionalProperties);
 });
 

@@ -90,6 +90,33 @@ P.provideFeature("haplo:object-files", function(plugin) {
                 }
             }
         });
+
+        P.element("version_history", "Version history table",
+            function(L) {
+                let versions = O.serviceMaybe("haplo:object-files:get-versions-for-implementation", spec.elementName);
+                if(versions) {
+                    let data = [{ rowName: "Current version", version: L.object.version, date: L.object.lastModificationDate }];
+                    _.each(versions, (v) => {
+                        let date = v.getVersionDate(L.object);
+                        let version = date ? getVersionAtDate(L.object, date) : undefined;
+                        data.push({
+                            rowName: v.rowName,
+                            version: version,
+                            date: date
+                        });
+                    });
+                    L.render({
+                        data: data
+                    });
+                }
+            }
+        );
     };
 });
+
+var getVersionAtDate = function(object, date) {
+    if(object.lastModificationDate < date) { return object.version; }
+    var tmp = _.find(_.clone(object.history).reverse(), function(v) { return v.lastModificationDate < date; }) || { version: "" };
+    return tmp.version; 
+};
 

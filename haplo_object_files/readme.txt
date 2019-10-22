@@ -24,3 +24,33 @@ Using this feature provides the function @objectFiles@ on the plugin object. You
 h3(action). @hres:action:object-files:can-create-any-file@
 
 This action will allow the user to create any type of object file. Use with care.
+
+h3(service). @haplo:object-files:get-versions-for-implementation@
+
+If this service is implemented, a version table will appear at the bottom of the object page for any file. This will show the version number at the time actions related to the object happened. You will also nee to add to the relevant type:
+
+
+bc.    element: std:group:everyone bottom haplo_object_files:version_history
+
+
+The service should return an array of objects, each of which has two properties:
+
+| @rowName@ | The name of the row in the version table (for display) |
+| @getVersionDate(object)@ | An function that takes the file object, and returns the relevant date for this row |
+
+
+Example:
+
+bc. P.implementService("haplo:object-files:get-versions-for-implementation", function(fileType) {
+    if(fileType !== "funding_files") { return; }
+    return [
+        {rowName: "Last peer review", getVersionDate: lastClosedWuDate("hres_funding_peer_review:proposal_review")},
+        {rowName: "Internal approval", getVersionDate: lastClosedWuDate("westminster_2_funding_project_approval:pa")},
+        {rowName: "Funder submission", getVersionDate: function(object) {
+            var relatedApplicationRef = object.first(A.Proposal);
+            var submission = relatedApplicationRef ? 
+                relatedApplicationRef.load().first(A.ProposalStage, Q.ProposalSubmitted) : null;
+            return submission ? submission.start : "";
+        }}
+    ];
+});

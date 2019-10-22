@@ -1,6 +1,6 @@
 pageTitle("Review: " M.title)
 backLink(M.url)
 
-std:ui:notice("Please review the information below before continuing.")
+std:ui:request("Please review the information below before continuing.")
 
 render(reviewUI.documents)

@@ -1,0 +1,14 @@
+{
+  "pluginName": "haplo_scheduled_emails",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Scheduled Emails",
+  "displayDescription": "Plugin providing functionality for defining emails to go out on a schedule, and ability to test them",
+  "installSecret": "84e25b063e8ab7e2052b0daf81770070f9b70f2a",
+  "apiVersion": 4,
+  "privilegesRequired": ["pBackgroundProcessing"],
+  "load": [
+      "js/haplo_scheduled_emails.js"
+    ],
+  "respond": ["/do/haplo-scheduled-emails"]
+}

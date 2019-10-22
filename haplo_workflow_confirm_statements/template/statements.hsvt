@@ -13,4 +13,6 @@ if(text.singleStatement) {
   <p> <label> <input type="checkbox" name="_wcs_confirm"> text.label </label> </p>
 }
 
-<div style="border-bottom:1px solid #ddd;margin:16px 0"></div>
+unless(NEW_TRANSITION_UI) {
+  <div style="border-bottom:1px solid #ddd;margin:16px 0"></div>
+}

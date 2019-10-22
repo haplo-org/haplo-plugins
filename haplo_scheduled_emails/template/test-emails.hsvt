@@ -1,0 +1,33 @@
+// HSVT documentation: http://docs.haplo.org/dev/plugin/templates
+
+pageTitle("Test scheduled emails" if(object) { " for " object.title })
+backLink(if(object) { std:object:url(object) } else {"/"})
+
+each(data) {
+    std:object(object "linkedheading")
+
+    <table>
+      <tr>
+        <th> "Email" </th>
+        <th> "Date sent" </th>
+        <th></th>
+      </tr>
+      each(emails) {
+        <tr>
+          <td> displayName </td>
+          <td> displayDate </td>
+          <td> 
+            if(date) {
+              <form method="POST"> 
+                std:form:token()
+                <input type="hidden" name="date" value=date>
+                <input type="submit" value="Test"> 
+              </form>
+            }
+          </td>
+        </tr>
+      }
+    </table>
+
+    <hr>
+}

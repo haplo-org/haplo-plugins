@@ -201,6 +201,7 @@ IMPL.prototype = {
         transformation.setTarget("user", {});
         transformation.setTarget("profile", profileObject);
         transformation.transform();
+        if(!transformation.isComplete) { return; } // not enough data
         this._syncPlugins.forEach((sp) => sp.onUpdatedRecord(engine, this.batch, record, transformation));
         return transformation.getTarget("user");
     },

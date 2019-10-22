@@ -147,74 +147,78 @@ P.doSyncApply = function(sync) {
                     details = impl.prepareForRecordAndExtractDetails(this, detailsFull, updatedProfileObject, implData);
                 }
 
-                // Implementation updates profile object
-                impl.updateProfileObject(this, updatedProfileObject, detailsFull, implData);
-                if(!(updatedProfileObject.firstType())) { updatedProfileObject.appendType(T.Person); }
-                updatedProfileObject.remove(A.Title);
-                updatedProfileObject.appendTitle(O.text(O.T_TEXT_PERSON_NAME, {
-                    title: details.title ? details.title : "",
-                    first: details.nameFirst,
-                    last: details.nameLast
-                }));
-                updatedProfileObject.remove(A.EmailAddress);
-                updatedProfileObject.append(O.text(O.T_IDENTIFIER_EMAIL_ADDRESS, details.email), A.EmailAddress);
+                if(!details) {
+                    log("Record has missing data for username "+username+" (ignoring)");
+                } else {
+                    // Implementation updates profile object
+                    impl.updateProfileObject(this, updatedProfileObject, detailsFull, implData);
+                    if(!(updatedProfileObject.firstType())) { updatedProfileObject.appendType(T.Person); }
+                    updatedProfileObject.remove(A.Title);
+                    updatedProfileObject.appendTitle(O.text(O.T_TEXT_PERSON_NAME, {
+                        title: details.title ? details.title : "",
+                        first: details.nameFirst,
+                        last: details.nameLast
+                    }));
+                    updatedProfileObject.remove(A.EmailAddress);
+                    updatedProfileObject.append(O.text(O.T_IDENTIFIER_EMAIL_ADDRESS, details.email), A.EmailAddress);
 
-                if(!(profileObject && profileObject.valuesEqual(updatedProfileObject))) {
-                    updatedProfileObject.save();
-                }
-
-                // Store mapping for later
-                usernameToRef[username] = updatedProfileObject.ref;
-
-                // Platform user
-                var userDetails = {
-                    email: details.email,
-                    nameFirst: details.nameFirst,
-                    nameLast: details.nameLast
-                };
-                var groups = _.map(details.groups||[], (g) => {
-                    return (typeof(g) === "string") ? Group[g] : g;
-                });
-                if(user) {
-                    if(!user.isActive) {
-                        log("reactivate "+username);
-                        user.setIsActive(true);
+                    if(!(profileObject && profileObject.valuesEqual(updatedProfileObject))) {
+                        updatedProfileObject.save();
                     }
-                    user.setDetails(userDetails);   // Won't modify user if nothing changed
-                    // Preserve any groups to which the user has been added manually
-                    var existingUnmanagedGroups = _.filter(user.directGroupIds, function(gid) {
-                        return (-1 === managedGroups.indexOf(gid));
+
+                    // Store mapping for later
+                    usernameToRef[username] = updatedProfileObject.ref;
+
+                    // Platform user
+                    var userDetails = {
+                        email: details.email,
+                        nameFirst: details.nameFirst,
+                        nameLast: details.nameLast
+                    };
+                    var groups = _.map(details.groups||[], (g) => {
+                        return (typeof(g) === "string") ? Group[g] : g;
                     });
-                    user.setGroupMemberships(existingUnmanagedGroups.concat(groups));
-                    if(!user.ref) {
-                        log("Creating store object for user: "+username);
-                        user.ref = updatedProfileObject.ref;
+                    if(user) {
+                        if(!user.isActive) {
+                            log("reactivate "+username);
+                            user.setIsActive(true);
+                        }
+                        user.setDetails(userDetails);   // Won't modify user if nothing changed
+                        // Preserve any groups to which the user has been added manually
+                        var existingUnmanagedGroups = _.filter(user.directGroupIds, function(gid) {
+                            return (-1 === managedGroups.indexOf(gid));
+                        });
+                        user.setGroupMemberships(existingUnmanagedGroups.concat(groups));
+                        if(!user.ref) {
+                            log("Creating store object for user: "+username);
+                            user.ref = updatedProfileObject.ref;
+                        }
+                    } else {
+                        userDetails.groups = groups;
+                        userDetails.ref = updatedProfileObject.ref;
+                        user = O.setup.createUser(userDetails);
+                        row.userId = user.id;
                     }
-                } else {
-                    userDetails.groups = groups;
-                    userDetails.ref = updatedProfileObject.ref;
-                    user = O.setup.createUser(userDetails);
-                    row.userId = user.id;
-                }
 
-                // Update database
-                row.lastSync = sync.id;
-                row.dataDigest = dataDigest;
-                row.error = !!(errorForUsername);
-                row.inFeed = true;
-                row.save();
-                // Unset error state now it's been saved (although will be set again if something happens now)
-                errorForUsername = undefined;
+                    // Update database
+                    row.lastSync = sync.id;
+                    row.dataDigest = dataDigest;
+                    row.error = !!(errorForUsername);
+                    row.inFeed = true;
+                    row.save();
+                    // Unset error state now it's been saved (although will be set again if something happens now)
+                    errorForUsername = undefined;
 
-                // Keep the full details for debugging in a separate table. This avoids the entries in the
-                // main users table being too large.
-                // TODO: Database API doesn't let this be done in a nicer way yet
-                var lastUserDataQ = P.db.lastUserData.select().where("userId","=",user.id).limit(1);
-                if(lastUserDataQ.length === 0) {
-                    P.db.lastUserData.create({userId:user.id,json:JSON.stringify(detailsFull)}).save();
-                } else {
-                    lastUserDataQ[0].json = JSON.stringify(detailsFull);
-                    lastUserDataQ[0].save();
+                    // Keep the full details for debugging in a separate table. This avoids the entries in the
+                    // main users table being too large.
+                    // TODO: Database API doesn't let this be done in a nicer way yet
+                    var lastUserDataQ = P.db.lastUserData.select().where("userId","=",user.id).limit(1);
+                    if(lastUserDataQ.length === 0) {
+                        P.db.lastUserData.create({userId:user.id,json:JSON.stringify(detailsFull)}).save();
+                    } else {
+                        lastUserDataQ[0].json = JSON.stringify(detailsFull);
+                        lastUserDataQ[0].save();
+                    }
                 }
 
             } catch(e) {

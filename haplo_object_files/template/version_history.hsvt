@@ -1,0 +1,10 @@
+
+<div class="version-history-table">
+    <table>
+        <tr><th> "Approval stage" </th><th> "Version" </th><th> "Date" </th></tr>
+
+        each(data) {
+            <tr><td> rowName </td><td> version </td><td> std:date:time(date) </td></tr>
+        }
+    </table>
+</div>

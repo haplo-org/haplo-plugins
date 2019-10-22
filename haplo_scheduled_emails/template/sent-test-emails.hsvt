@@ -1,0 +1,6 @@
+// HSVT documentation: http://docs.haplo.org/dev/plugin/templates
+
+pageTitle("Test scheduled emails" if(object) { " for " object.title })
+backLink("/do/haplo-scheduled-emails/test-emails" if(object) {"/" object.ref })
+
+"Test versions of emails scheduled for " if(displayDate) { displayDate } else { "today" } " have been sent for " if(object) { object.title } else { " all objects" } "."

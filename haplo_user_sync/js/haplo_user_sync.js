@@ -115,7 +115,15 @@ P.implementService("haplo_user_sync:ref_to_username", function(ref) {
 
 P.implementService("haplo:data-import-framework:filter:haplo:username-to-ref", function() {
     return function(username) {
-        var user = O.service("haplo_user_sync:username_to_user", username);
+        var q = P.db.users.select().where("username","=",username.toLowerCase());
+        var user = q.length ? O.user(q[0].userId) : undefined;
+        return user ? (user.ref||undefined) : undefined;
+    };
+});
+
+P.implementService("haplo:data-import-framework:filter:haplo:email-to-ref", function() {
+    return function(emailAddress) {
+        var user = O.user(emailAddress);
         return user ? (user.ref||undefined) : undefined;
     };
 });

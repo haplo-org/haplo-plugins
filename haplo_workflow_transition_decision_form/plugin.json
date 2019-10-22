@@ -1,0 +1,14 @@
+{
+  "pluginName": "haplo_workflow_transition_decision_form",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Workflow Transition Decision Form",
+  "displayDescription": "Display a form on a workflow transition page, then display contents of form along with selected transition on the workflow object's action panel.",
+  "apiVersion": 4,
+  "loadPriority": 30000,
+  "depend": ["std_workflow"],
+  "use": ["std:workflow"],
+  "load": [
+      "js/haplo_workflow_transition_decision_form.js"
+    ]
+}

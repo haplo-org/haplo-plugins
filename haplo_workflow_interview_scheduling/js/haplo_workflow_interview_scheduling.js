@@ -4,6 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
+
+var workTypeMeetingDateDescsUsed = {};
+
 var meetingDateForm = P.form({
     specificationVersion: 0,
     formId: "meetingDateForm",
@@ -33,15 +36,26 @@ var meetingDateForm = P.form({
     ]
 });
 
-P.hook("hScheduleDailyEarly", function() {
+P.hook("hScheduleDailyEarly", function(response, year, month, dayOfMonth) {
+    var hookCalledAt = new XDate(year, month, dayOfMonth).clearTime();
     _.each(O.work.query().tag("interviewScheduled", "t"), function(wu) {
         var object = wu.ref.load();
-        if(!object.first(A.MeetingDate)) { return; }    // TODO: reporting?
-        var date = new XDate(object.first(A.MeetingDate).start).clearTime();
-        if(date <= new XDate().clearTime()) {
+        var meetingDateDescs = workTypeMeetingDateDescsUsed[wu.workType];
+        if(!meetingDateDescs) { return; }
+        var everyMeetingDatePassedOrMissing = _.every(meetingDateDescs, function(descCode) {
+            var meetingDateDesc = ATTR[descCode];
+            var meetingDatetime = object.first(meetingDateDesc);
+            if(!meetingDatetime) { return true; }    // TODO: reporting?
+            var meetingStartDate = new XDate(meetingDatetime.start).clearTime();
+            if(meetingStartDate <= hookCalledAt) {
+                O.service("haplo_meeting_scheduling:meeting_date_passed", wu, SCHEMA.getAttributeInfo(meetingDateDesc));
+                return true;
+            }
+            return false;
+        });
+        if(everyMeetingDatePassedOrMissing) {
             delete wu.tags.interviewScheduled;
             wu.save();
-            O.service("haplo_meeting_scheduling:meeting_date_passed", wu);
         }
     });
 });
@@ -85,16 +99,17 @@ var onSaveCompletedForm = function(spec, M, object, document) {
     if(!("date" in document)) { throw new Error("Meeting form must include 'date' in the document path."); }
 
     var mObject = object.mutableCopy();
-    mObject.remove(A.MeetingDate);
-    mObject.remove(A.MeetingLocation);
+    mObject.remove(spec.meetingDateDesc || A.MeetingDate);
+    mObject.remove(spec.meetingLocationDesc || A.MeetingLocation);
     var date = new XDate(document.date);
     if(document.time) {
         var timeElements = _.map(document.time.split(/[:. ]/), function(i) { return parseInt(i,10); });
         date.setHours(Math.min(timeElements[0],23)).setMinutes(Math.min(timeElements[1],59));
     }
-    mObject.append(O.datetime(date.toDate(), undefined, document.time ? O.PRECISION_MINUTE : O.PRECISION_DAY), A.MeetingDate);
+    var precision = document.time ? O.PRECISION_MINUTE : O.PRECISION_DAY;
+    mObject.append(O.datetime(date.toDate(), undefined, precision), spec.meetingDateDesc || A.MeetingDate);
     if(document.location) {
-        mObject.append(document.location, A.MeetingLocation);
+        mObject.append(document.location, spec.meetingLocationDesc || A.MeetingLocation);
     }
     if(!mObject.valuesEqual(object)) {
         O.withoutPermissionEnforcement(function() {
@@ -116,6 +131,14 @@ var onSaveCompletedForm = function(spec, M, object, document) {
 // TODO reconsider how this should work when returning to this state
 P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow, spec) {
     var plugin = workflow.plugin;
+
+    var meetingDateDescs = workTypeMeetingDateDescsUsed[workflow.fullName];
+    var meetingDateDescInfo = SCHEMA.getAttributeInfo(spec.meetingDateDesc || A.MeetingDate);
+    if(!meetingDateDescs) {
+        workTypeMeetingDateDescsUsed[workflow.fullName] = [meetingDateDescInfo.code];
+    } else if(-1 === meetingDateDescs.indexOf(meetingDateDescInfo.code)) {
+        meetingDateDescs.push(meetingDateDescInfo.code);
+    }
 
     workflow.use("std:document_store", {
         name: spec.documentStore.name,
@@ -162,13 +185,17 @@ P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow
         }
     });
     
-    plugin.implementService("haplo_meeting_scheduling:meeting_date_passed", function(workUnit) {
-        if(workflow.fullName === workUnit.workType) {
-            var M = workflow.instance(workUnit);
-            updateProjectDatesMaybe(spec, M, new Date(), true);
-            if(M.transitions.has(spec.meetingTransition)) {
-                M.transition(spec.meetingTransition);
-            }
+    plugin.implementService("haplo_meeting_scheduling:meeting_date_passed", function(workUnit, meetingDateInfo) {
+        var matchDateDesc = true;
+        if(meetingDateInfo) {
+            var meetingDateDesc = spec.meetingDateDesc || A.MeetingDate;
+            matchDateDesc = SCHEMA.getAttributeInfo(meetingDateDesc).code === meetingDateInfo.code;
+        }
+        if(workflow.fullName !== workUnit.workType || !matchDateDesc) { return; }
+        var M = workflow.instance(workUnit);
+        updateProjectDatesMaybe(spec, M, new Date(), true);
+        if(M.transitions.has(spec.meetingTransition)) {
+            M.transition(spec.meetingTransition);
         }
     });
 

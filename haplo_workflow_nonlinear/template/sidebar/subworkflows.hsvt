@@ -3,19 +3,34 @@
     each(manualStart) {
         <div style="margin-bottom:16px">
             <div>
-                <b> <a href=["/do/subworkflow/manual-start/" parentM.workUnit.id ? type=spec.name]> displayableSubworkflowName </a> </b>
+                <b> 
+                    <a href=["/do/subworkflow/manual-start/" parentM.workUnit.id ? type=spec.name]>
+                        ifAll(closed spec.subsequentWorkflowTitlePrefix) {
+                            spec.subsequentWorkflowTitlePrefix
+                        }
+                        displayableSubworkflowName
+                    </a>
+                </b>
             </div>
             <div> <i> "Not started" </i> </div>
             <div> <a href=["/do/subworkflow/manual-start/" parentM.workUnit.id ? type=spec.name]> "Start now..." </a> </div>
         </div>
     }
 
-    each(shape.existingSubworkflows) {
+    each(existingVisibleSubworkflows) {
         <div style="margin-bottom:16px">
             <div>
-                <b> <a href=M.url>
-                    displayableSubworkflowName if(workUnit.tags.submitter) { <br> customTaskTitle }
-                </a> </b>
+                <b>
+                    <a href=M.url>
+                        ifAll(isSubsequent spec.subsequentWorkflowTitlePrefix) {
+                            spec.subsequentWorkflowTitlePrefix
+                        }
+                        displayableSubworkflowName
+                        if(subworkflowSubmitterNameToShow) {
+                            <br> subworkflowSubmitterNameToShow
+                        }
+                    </a>
+                </b>
             </div>
             // TODO: Turn this into a nice checkbox list
             switch(checklistState) { <div><i>"Not started"</i></div> }

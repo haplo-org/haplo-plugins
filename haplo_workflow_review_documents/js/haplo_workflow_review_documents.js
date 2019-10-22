@@ -10,6 +10,23 @@ P.workflow.registerWorkflowFeature("haplo:workflow:force_review_documents", func
     specForWorkflow[workflow.fullName] = spec;
     workflow.transitionUI(spec.selector, checkHasReviewed);
     workflow.transitionUIWithoutTransitionChoice(spec.selector, checkHasReviewed);
+
+    // Integrate into docstore editing so that review is shown before form edit
+    // (without this, the redirect at the end of the docstore edit is intercepted so the user
+    // is asked to review the forms after other forms have been edited)
+    workflow.implementWorkflowService("std:workflow:modify-edit-url-for-transition-ui", function(M, editUrl, docstore, docstoreSpec) {
+        // Only ask the user to review the forms if they are the actionable user
+        if(M.workUnit.isActionableBy(O.currentUser) && M.selected(spec.selector)) {
+            return P.template("docstore-review-then-edit-url").render({M:M,then:editUrl});
+        }
+    });
+    workflow.implementWorkflowService("std:workflow:transition-url-properties-after-edit", function(M, transitionUrl, docstore, docstoreSpec) {
+        if(M.workUnit.isActionableBy(O.currentUser) && M.selected(spec.selector)) {
+            // If it's got to this point, then the review will have been forced when the edit button was clicked
+            // on the application object. It can therefore be safely marked as reviewed.
+            transitionUrl.extraParameters.reviewed = "yes";
+        }
+    });
 });
 
 // --------------------------------------------------------------------------
@@ -34,9 +51,12 @@ P.respond("GET", "/do/haplo-workflow-review-documents/review", [
     var workflow = O.service("std:workflow:definition_for_name", workUnit.workType);
     var M = workflow.instance(workUnit);
 
-    var forwardTransitionParams = _.clone(E.request.parameters);
-    forwardTransitionParams.reviewed = "yes";
-    var forwardUrl = M.transitionUrl(undefined, forwardTransitionParams);
+    var forwardUrl = O.checkedSafeRedirectURLPath(E.request.parameters.then);
+    if(!forwardUrl) {
+        var forwardTransitionParams = _.clone(E.request.parameters);
+        forwardTransitionParams.reviewed = "yes";
+        forwardUrl = M.transitionUrl(undefined, forwardTransitionParams);
+    }
 
     var reviewUI = O.service("haplo:workflow:review_documents:review_ui_deferred", M, O.currentUser);
     if(!reviewUI) {

@@ -1,0 +1,16 @@
+pageTitle(form.formTitle ": " M.title)
+backLink(M.url)
+
+each(forms) {
+  <div style="margin-bottom:48px">
+    within(transition) { template:std:ui:choose:selected-item() }
+    std:document(form)
+    <div style="padding:4px 8px;background:#eee;border-radius:4px">
+      <b> user.name </b> " at " std:date:time(row.datetime)
+    </div>
+  </div>
+}
+
+if(showAllLink) {
+  <p> std:ui:button-link("?all=1") { "Show previous versions" } </p>
+}

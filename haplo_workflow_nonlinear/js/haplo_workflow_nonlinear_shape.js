@@ -25,7 +25,7 @@ var Shape = P.Shape = function(M) {
     });
 
     // Generate information about each of the sub-workflows
-    this.subworkflows = _.map(P.subWorkflowsByParent[M.workUnit.workType] || [], function(spec) {
+    this.subworkflows = _.map(P.subworkflowsByParent[M.workUnit.workType] || [], function(spec) {
         var wus = subworkflowWorkUnits[spec.name];
         if(wus && wus.length) {
             return _.map(wus, function(wu) { return new SubworkflowInfo(M, spec, wu); });
@@ -65,12 +65,6 @@ Shape.prototype.__defineGetter__("transitionPreventableSubworkflows", function()
     return this.$transitionPreventableSubworkflows;
 });
 
-Shape.prototype.manuallyStartableSubworkflowsForUser = function(user) {
-    return _.filter(this.notStartedSubworkflowsForCurrentStage, function(subs) {
-        return subs[0].canStartManuallyByUser(user);
-    });
-};
-
 Shape.prototype.__defineGetter__("notStartedSubworkflowsForCurrentStage", function() {
     if(!("$notStartedSubworkflowsForCurrentStage" in this)) {
         this.$notStartedSubworkflowsForCurrentStage = _.filter(this.subworkflows, function(subs) {
@@ -86,6 +80,18 @@ Shape.prototype.__defineGetter__("notStartedSubworkflowsForCurrentStage", functi
     return this.$notStartedSubworkflowsForCurrentStage;
 });
 
+Shape.prototype.existingVisibleSubworkflowsForUser = function(user) {
+    return _.filter(this.existingSubworkflows, function(sub) {
+        return sub.userCanView(user);
+    });
+};
+
+Shape.prototype.manuallyStartableSubworkflowsForUser = function(user) {
+    return _.filter(this.notStartedSubworkflowsForCurrentStage, function(subs) {
+        return subs[0].userCanStartManually(user);
+    });
+};
+
 // This needs to be called in a loop
 Shape.prototype.performSingleUpdateWorkflowStep = function() {
     var M = this.M;
@@ -93,7 +99,7 @@ Shape.prototype.performSingleUpdateWorkflowStep = function() {
     // Optionally automatically start subworkflows.
     var startedSubworkflow = false;
     _.each(this.startableSubworkflows, function(subs) {
-        subs[0].startWorkflow();
+        subs[0].start({});
         startedSubworkflow = true;
     });
     if(startedSubworkflow) { return true; }
@@ -114,7 +120,8 @@ Shape.prototype.performSingleUpdateWorkflowStep = function() {
 
     var transition = M.transitions.list.length ? M.transitions.list[0] : undefined;
     if(transition) {
-        // Never complete the workflow while a sub-workflow is open
+        // Never complete the workflow while a sub-workflow is open - however if the destination is
+        // a dispatch state we can't tell that the workflow will finish.
         if(subworkflowOpen && transition.destinationFinishesWorkflow) {
             return false;
         }
@@ -139,42 +146,84 @@ SubworkflowInfo.prototype.__defineGetter__("M", function() {
     return this.$M;
 });
 
-SubworkflowInfo.prototype.canAutomaticallyStart = function(user) {
+SubworkflowInfo.prototype.__defineGetter__("isSubsequent", function() {
+    if(!("$isSubsequent" in this)) {
+        this.$isSubsequent = (this.workUnit && P.isSubworkflowWorkUnitSubsequent(this.workUnit));
+    }
+    return this.$isSubsequent;
+});
+
+// Assumes the permission is not given if property is missing.
+SubworkflowInfo.prototype._userCan = function(user, subworkflowActionPropertyKey) {
+    var subworkflowActionProperty = this.spec[subworkflowActionPropertyKey];
+    if(!subworkflowActionProperty) {
+        return false;
+    }
+    var i, rule, roles, subworkflowRoles, ruleSelectsParentState, userHasAnyParentRuleRoles,
+        userHasAnySubworkflowRuleRoles, ruleApplies, allow = false, deny = false;
+    for(i = subworkflowActionProperty.length-1; i >= 0; i -= 1) {
+        rule = subworkflowActionProperty[i];
+        roles = rule.roles || [];
+        subworkflowRoles = rule.subworkflowRoles || [];
+        ruleSelectsParentState = this.parentM.selected(rule.selector || {});
+        userHasAnyParentRuleRoles = roles.length > 0 ? this.parentM.hasAnyRole(user, roles) : subworkflowRoles.length < 1;
+        userHasAnySubworkflowRuleRoles = subworkflowRoles.length > 0 ?
+            this.M.hasAnyRole(user, subworkflowRoles) : roles.length < 1;
+        ruleApplies = (ruleSelectsParentState && (userHasAnyParentRuleRoles || userHasAnySubworkflowRuleRoles));
+        if(!ruleApplies) {
+            continue;
+        }
+        switch(rule.action) {
+            case "allow":
+                allow = true;
+                break;
+            case "deny":
+                deny = true;
+                break;
+            default:
+                if(rule.action !== undefined) {
+                    throw new Error("Sub-workflow rule 'action' argument must be either 'allow' or 'deny' when specified.");
+                }
+                allow = true;
+                break;
+        }
+    }
+    return (allow && !deny);
+};
+
+SubworkflowInfo.prototype.userCanView = function(user) {
+    var allUsersCanView = !this.spec.canView;
+    return (allUsersCanView || O.currentUser.isSuperUser || this._userCan(user, "canView"));
+};
+
+SubworkflowInfo.prototype.userCanStartManually = function(user) {
+    return this._userCan(user, "canStartManually");
+};
+
+SubworkflowInfo.prototype.canAutomaticallyStart = function() {
     return (this.spec.start && this.parentM.selected(this.spec.start));
 };
 
-SubworkflowInfo.prototype.canStartManuallyByUser = function(user) {
-    if(!this.spec.canStartManually) {
-        return false;
-    }
-    var that = this;
-    return _.some(this.spec.canStartManually, function(spec) {
-        return (that.parentM.selected(spec.selector) && that.parentM.hasAnyRole(user, spec.roles));
-    });
-};
-
 SubworkflowInfo.prototype.canPreventTransition = function() {
-    if(!this.spec.preventTransition) {
-        return false;
-    }
-    return this.parentM.selected(this.spec.preventTransition);
+    return (this.spec.preventTransition && this.parentM.selected(this.spec.preventTransition));
 };
 
-SubworkflowInfo.prototype.startWorkflow = function(subSpec) {
+SubworkflowInfo.prototype.start = function(additionalProperties) {
     var parentM = this.parentM;
-    var properties = {_parentM:parentM};
+    var properties = _.extend({_parentM:parentM}, additionalProperties);
     if(parentM.workUnit.ref) {
         properties.object = parentM.workUnit.ref.load();
     }
-    if(subSpec && subSpec.actionableRef) {
-        properties.submitter = subSpec.actionableRef;
+    // Deprecated.
+    if(additionalProperties.actionableRef && !("submitter" in properties)) {
+        properties.submitter = additionalProperties.actionableRef;
     }
     return this.spec._workflow.create(properties);
 };
 
 // --------------------------------------------------------------------------
 
-P.updateNonlinearWorkflow = function(M) {
+var updateNonlinearWorkflow = P.updateNonlinearWorkflow = function(M) {
     var safety = 256;
     while((--safety) > 0) {
         var shape = new Shape(M);
@@ -188,5 +237,5 @@ P.updateNonlinearWorkflow = function(M) {
 };
 
 P.subworkflowHasChangedState = function(M, subworkflowM) {
-    P.updateNonlinearWorkflow(M);
+    updateNonlinearWorkflow(M);
 };
