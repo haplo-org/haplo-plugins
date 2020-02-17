@@ -19,6 +19,7 @@ P.respond("GET,POST", "/do/haplo-simple-notification", [
     var details = getDetails(workUnit);
     var responses = P.db.replies.select().where("workUnitId", "=", workUnit.id).
         order("datetime");
+    var i = P.locale().text("template");
     E.render({
         pageTitle: details.title,
         responses: responses,
@@ -26,10 +27,10 @@ P.respond("GET,POST", "/do/haplo-simple-notification", [
         object: workUnit.ref,
         options: [
             {
-                label: details.buttonLabel || "Mark as complete"
+                label: details.buttonLabel || i["Mark as complete"]
             },
             {
-                label: "Reply",
+                label: i["Reply"],
                 action: "/do/haplo-simple-notification/send-reply/"+workUnit.id
             }
         ]

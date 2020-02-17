@@ -82,3 +82,8 @@ Call the service with:
 If the system was updated with the schedule by this feature you should probably delete the @tag("interviewScheduled", "t")@ after calling this service as it could be repeated in the future since it is internally used. Incidentally this is the tag you can use to find workflow instances with outstanding interviews.
 
 Implement this service to listen to when interview dates pass for a potential @WorkUnit@.
+
+
+h3(service). haplo_meeting_scheduling:get_used_worktype_meeting_date_desc
+
+If called, returns workTypeMeetingDateDescsUsed to be sure the correct attributes are checked for meeting specific data, see usage in ds_researcher_reporting.js.

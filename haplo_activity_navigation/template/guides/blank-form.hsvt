@@ -2,7 +2,7 @@ pageTitle(form.title)
 backLink("/do/activity/" activity.name)
 std:plugin:resources("blank-form.js")
 
-std:ui:notice("This is an example form for information only.")
+std:ui:notice(i("This is an example form for information only."))
 
 <form method="POST" id="blank-form" class="oforms-no-autofocus"> std:form:token()
     each(forms) {

@@ -1,9 +1,9 @@
 #option:no-tag-attribute-quote-minimisation
 
-<p> "Message sent by " user.name " (" user.email ")" </p>
+<p> i("Message sent by {} ({email})") { user.name } email{ user.email } </p>
 
-<p> <i> "Subject:" </i> " " document.topic </p>
+<p> <i> i("Subject:") </i> " " document.topic </p>
 
-<p> <i> "Message:" </i> </p>
+<p> <i> i("Message:") </i> </p>
 
 std:text:paragraph(document.message)

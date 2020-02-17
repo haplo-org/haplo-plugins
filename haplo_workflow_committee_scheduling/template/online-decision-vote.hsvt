@@ -1,7 +1,7 @@
 
-pageTitle("Online decision voting")
+pageTitle(i("Online decision voting"))
 
 <form method="POST"> std:form:token()
   std:form(instance)
-  <p><input type="submit" value="Save"></p>
+  <p><input type="submit" value=i("Save")></p>
 </form>

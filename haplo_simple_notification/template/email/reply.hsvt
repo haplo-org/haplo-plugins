@@ -1,11 +1,11 @@
 #option:no-tag-attribute-quote-minimisation
 
-<p> "Dear " toUser.nameFirst </p>
-<p> senderName " has sent a response regarding your request:" </p>
+<p> i("Dear {}") { toUser.nameFirst } </p>
+<p> i("{} has sent a response regarding your request:") { senderName } </p>
 std:text:paragraph(emailText)
 <div class="box"> std:text:paragraph(details.text) </div>
 if(senderName) {
-    <p> "Reply to " senderName if(senderEmail) {
+    <p> i("Reply to {}") { senderName } if(senderEmail) {
         " (" <a href=["mailto:"senderEmail]> senderEmail </a> ")"
     } </p>
 }

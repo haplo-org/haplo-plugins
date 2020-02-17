@@ -10,12 +10,12 @@
     <td>std:date(created)</td>
     <td>
         std:date(done) <br>
-        "By: " <a href=[O.application.url "/" doneBy.ref]>doneBy.name</a>
+        i("By: {}") {<a href=[O.application.url "/" doneBy.ref]>doneBy.name</a>}
         <form style="float: right;" method="post" action=["/do/haplo-group-notification-queue/task/" id]>
             std:form:token()
             <input type="hidden" name="group" value=group>
             <input type="hidden" name="action" value="undo">
-            <input type="submit" value="Undo">
+            <input type="submit" value=i("Undo")>
         </form>
     </td>
 </tr>

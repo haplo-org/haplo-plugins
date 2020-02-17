@@ -7,9 +7,9 @@ if(statistics) {
 if(adminMode) {
   <div class="activities_admin_nav_container">
     <a class="activities_admin_nav_container_dashboards" href="#" style="display:none" data-actkind="menu">
-      "&laquo; Dashboards"
+      "&laquo; " i("Dashboards")
     </a>
-    <a class="activities_admin_nav_container_guides" href="#" data-actkind="guides"> "Guides &raquo;" </a>
+    <a class="activities_admin_nav_container_guides" href="#" data-actkind="guides"> i("Guides") " &raquo;" </a>
   </div>
 }
 
@@ -19,7 +19,7 @@ if(adminMode) {
   }
   if(canEdit) {
     <p class="activities_overview_text_edit">
-      <a href=["/do/activity/edit-overview/" activity.name]> "Edit summary" </a>
+      <a href=["/do/activity/edit-overview/" activity.name] role="button"> i("Edit summary") </a>
     </p>
   }
   each(overviewDeferreds) {

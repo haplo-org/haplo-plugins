@@ -25,7 +25,7 @@ pageTitle("User Sync Administration")
   }
 </table>
 if(lastSyncTime) {
-    <p> <a href=[? s=lastSyncTime]> "Previous" </a> </p>
+    <p> <a href=[? s=lastSyncTime] role="button"> "Previous" </a> </p>
 }
 <h2> "Configuration" </h2>
 std:document(config)
@@ -41,8 +41,14 @@ if(overridesEnabled) {
 render(implAdminUIHTML)
 
 <h2 style="margin-top:64px"> "Testing" </h2>
-<p> <a href="/do/haplo-user-sync/test/upload-file"> "Upload a file..." </a> </p>
-<p> <a href="/do/haplo-user-sync/test/fetch-files"> "Fetch files..." </a> </p>
+<p>
+  std:ui:button-link("/do/haplo-user-sync/test/upload-file") { "Upload a file..." }
+</p>
+<p>
+  std:ui:button-link("/do/haplo-user-sync/test/fetch-files") { "Fetch files... " }
+</p>
 if(haveMappings) {
-  <p> <a href="/do/haplo-user-sync/test/get-mappings-for-application-move"> "Get mappings documents..." </a> </p>
+  <p>
+    std:ui:button-link("/do/haplo-user-sync/test/get-mappings-for-application-move") { "Get mappings documents..." }
+  </p>
 }

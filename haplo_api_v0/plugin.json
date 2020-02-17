@@ -1,0 +1,12 @@
+{
+  "pluginName": "haplo_api_v0",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "API v0: Common services",
+  "displayDescription": "JSON REST API common functionality and support",
+  "apiVersion": 4,
+  "loadPriority": 1000,
+  "load": [
+      "js/haplo_api_v0.js"
+    ]
+}

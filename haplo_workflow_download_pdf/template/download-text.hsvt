@@ -17,7 +17,7 @@ if(headerTable) {
 each(sections) {
     if(isDraft) {
         <div class="notice">
-            <p> "This is a draft version" </p>
+            <p> i("This is a draft version") </p>
         </div>
     }
     <h1> title </h1>
@@ -27,7 +27,7 @@ each(sections) {
 
 if(files.length) {
     <hr>
-    <h1> "Attached files" </h1>
+    <h1> i("Attached files") </h1>
     each(files) {
         <p> filename </p>
     }

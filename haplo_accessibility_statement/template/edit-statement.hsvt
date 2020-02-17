@@ -1,0 +1,7 @@
+pageTitle(i("Edit accessibility statement"))
+backLink("/do/haplo-accessibility-statement/edit-statement") { i("Cancel") }
+
+<form method="POST"> std:form:token()
+  std:form(form)
+  <p> <input type="submit" value=i("Update accessibility statements")> </p>
+</form>

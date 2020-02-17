@@ -69,6 +69,7 @@ P.respond("POST", "/api/push-data", [
 
     let result = 'success',
         errors = [],
+        actions = [],
         appliedCount = 0,
         failureCount = 0,
         errorCount = 0,
@@ -105,8 +106,23 @@ P.respond("POST", "/api/push-data", [
                 // Permit all object store changes
                 O.withoutPermissionEnforcement(function() {
                     let batch = O.service("haplo:data-import-framework:batch", api.control, files, errorCallback);
+                    let action;
+                    batch.observe("object:save", (transformation, destinationName, object, isNewObject) => {
+                        if(!object.ref) { object.preallocateRef(); }
+                        action.changed.push({
+                            kind: "object:save",
+                            destination: destinationName,
+                            ref: object.ref.toString(),
+                            new: isNewObject
+                        });
+                    });
                     batch.eachRecord((record) => {
+                        action = {
+                            changed:[]
+                        };
                         let transformation = batch.transform(record);
+                        action.record = batch._currentRecordIdentifier;
+                        actions.push(action);
                         if(transformation.isComplete) {
                             transformation.commit();
                             appliedCount++;
@@ -131,7 +147,8 @@ P.respond("POST", "/api/push-data", [
         applied: appliedCount,
         failures: failureCount,
         errorCount: errorCount,
-        errors: errors
+        errors: errors,
+        actions: actions
     };
 
     if(responseFormat === 'JSON') {
@@ -150,6 +167,20 @@ P.respond("POST", "/api/push-data", [
                     cursor.element("error").text(""+e).up();
                 });
                 cursor.up();
+            } else if(key === "actions") {
+                cursor.element("actions");
+                value.forEach((a) => {
+                    cursor.element("record").
+                        attribute("identifier", a.record);
+                    a.changed.forEach((c) => {
+                        cursor.element("changed");
+                        _.each(c, (v,k) => {
+                            cursor.attribute(k,""+v);
+                        });
+                        cursor.up();
+                    });
+                    cursor.up();
+                });
             } else {
                 cursor.attribute(key, ""+value);
             }

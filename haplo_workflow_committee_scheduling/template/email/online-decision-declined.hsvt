@@ -2,7 +2,7 @@
 
 <h1>title</h1>
 
-<p><a href=std:object:url:full(researcher)>researcher.title</a>" has declined to participate in the " NAME("online decision") " for "<a href=appUrl>appTitle</a></p>
+<p>i("{researcherTitle} has declined to participate in the NAME(online decision) for {} ")  { <a href=appUrl>appTitle</a> } researcherTitle{<a href=std:object:url:full(researcher)>researcher.title</a>}</p>
 
 <p class="button"> <a href=decisionUrl>NAME("Online decision")</a> </p>
 

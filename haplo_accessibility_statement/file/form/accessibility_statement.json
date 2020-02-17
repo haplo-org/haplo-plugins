@@ -1,0 +1,13 @@
+{
+    "specificationVersion": 0,
+    "formId": "accessibility_statement",
+    "formTitle": "Accessibility statement",
+    "elements": [
+        {
+            "type": "document-text",
+            "label": "Statement",
+            "path": "statement",
+            "explanation": "Text to display on the accessibility statement page."
+        }
+    ]
+}

@@ -1,10 +1,10 @@
 
 <table class="hgn_width hgn_no_wrapping">
     <tr>
-        <th class="hgn_source">"Source"</th>
-        <th class="hgn_description">"Description"</th>
-        <th class="hgn_created">"Created"</th>
-        <th class="hgn_completed">"Completed"</th>
+        <th class="hgn_source">i("Source")</th>
+        <th class="hgn_description">i("Description")</th>
+        <th class="hgn_created">i("Created")</th>
+        <th class="hgn_completed">i("Completed")</th>
     </tr>
     each(tasks) {
         if(done) { within(.) { template:done-row() } }

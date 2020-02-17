@@ -1,0 +1,14 @@
+{
+  "pluginName": "haplo_workflow_direct_to_transitions",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Direct To Transitions",
+  "displayDescription": "Support for displaying available transitions on main workflow page",
+  "installSecret": "306e533b97f23a0fe0d0cea9c0b0e80820ace62c",
+  "apiVersion": 4,
+  "use": ["std:workflow"],
+  "load": [
+      "js/haplo_direct_to_transitions.js"
+    ],
+  "respond": ["/do/haplo-direct-to-transitions"]
+}

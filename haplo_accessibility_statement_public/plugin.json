@@ -1,0 +1,16 @@
+{
+  "pluginName": "haplo_accessibility_statement_public",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Accessibility Statement Public",
+  "displayDescription": "Plugin to allow anonymous users to see the accessibility statement",
+  "apiVersion": 4,
+  "depend": [
+    "haplo_accessibility_statement"
+  ],
+  "load": [
+      "js/haplo_accessibility_statement_public.js"
+    ],
+  "respond": ["/do/public-accessibility-statement"],
+  "allowAnonymousRequests": true
+}

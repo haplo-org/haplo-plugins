@@ -136,7 +136,7 @@ P.respond("GET,POST", "/do/haplo-data-import/generate-control-file", [
             destinationMadeAvailable = {};
 
         // Pragmatically add sensible load instructions for haplo:person + user sync
-        if(modelName === "haplo:person" && O.serviceImplemented("haplo:data-import-framework:filter:haplo:username-to-ref")) {
+        if(modelName === "haplo:person") {
             instructions.push({
                 "source": "TODO-USERNAME",
                 "destination": "load:by-ref",

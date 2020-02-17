@@ -4,12 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-
 var workTypeMeetingDateDescsUsed = {};
 
 var meetingDateForm = P.form({
     specificationVersion: 0,
     formId: "meetingDateForm",
+    formTitle: "Meeting details",
     "class": "oforms-no-autofocus",
     elements: [
         {
@@ -89,8 +89,7 @@ var updateProjectDatesMaybe = function(spec, M, date, happened) {
 };
 
 var onSaveCompletedForm = function(spec, M, object, document) {
-    var preventDefault = "onSaveCompletedForm" in spec ?
-        spec.onSaveCompletedForm(spec, M, object, document) : false;
+    var preventDefault = "onSaveCompletedForm" in spec ? spec.onSaveCompletedForm(spec, M, object, document) : false;
     if(preventDefault) { 
         // Cleanup
         return;
@@ -119,6 +118,7 @@ var onSaveCompletedForm = function(spec, M, object, document) {
     updateProjectDatesMaybe(spec, M, document.date);
 
     var meetingDay = date.clone().clearTime();
+    if(!("isValidMeeting" in M.workUnit.tags)) { M.workUnit.tags.isValidMeeting = "v"; }
     if(meetingDay > new XDate().clearTime() || !M.transitions.has(spec.meetingTransition)) {
         M.workUnit.tags.interviewScheduled = "t";
         M.workUnit.save();
@@ -130,10 +130,10 @@ var onSaveCompletedForm = function(spec, M, object, document) {
 
 // TODO reconsider how this should work when returning to this state
 P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow, spec) {
-    var plugin = workflow.plugin;
+    var plugin = workflow.plugin,
+        meetingDateDescs = workTypeMeetingDateDescsUsed[workflow.fullName],
+        meetingDateDescInfo = SCHEMA.getAttributeInfo(spec.meetingDateDesc || A.MeetingDate);
 
-    var meetingDateDescs = workTypeMeetingDateDescsUsed[workflow.fullName];
-    var meetingDateDescInfo = SCHEMA.getAttributeInfo(spec.meetingDateDesc || A.MeetingDate);
     if(!meetingDateDescs) {
         workTypeMeetingDateDescsUsed[workflow.fullName] = [meetingDateDescInfo.code];
     } else if(-1 === meetingDateDescs.indexOf(meetingDateDescInfo.code)) {
@@ -185,6 +185,8 @@ P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow
         }
     });
     
+
+
     plugin.implementService("haplo_meeting_scheduling:meeting_date_passed", function(workUnit, meetingDateInfo) {
         var matchDateDesc = true;
         if(meetingDateInfo) {
@@ -207,13 +209,14 @@ P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow
         if(!O.serviceMaybe("std:document_store:workflow:form_action_allowed", M, spec.documentStore.name, O.currentUser, 'edit')) { O.stop("Not permitted"); }
         var document = workflow.documentStore[spec.documentStore.name].instance(M).currentDocument;
         var date = new XDate(document.date);
-        var meetingDay = date.clone().clearTime();
-        if(meetingDay > new XDate().clearTime()){ O.stop("Date is not past"); }
+        var meetingDay = date.clone().clearTime(); 
+        if(meetingDay > new XDate().clearTime()) { O.stop("Date is not past"); }
         if(E.request.method === "POST") {
             if("interviewScheduled" in M.workUnit.tags) {
                 delete M.workUnit.tags.interviewScheduled;
                 M.workUnit.save();
             }
+            if(!("isValidMeeting" in M.workUnit.tags)) { M.workUnit.tags.isValidMeeting = "v"; }
             updateProjectDatesMaybe(spec, M, document.date, true);
             M.transition(spec.meetingTransition);
             E.response.redirect(M.url);
@@ -225,6 +228,10 @@ P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow
             text: "You have scheduled the meeting in the past. This will move on to the next stage of the process. Are you sure?",
             options:[{label:"Confirm"}]
         }, "std:ui:confirm");
+    });
+
+    P.implementService("haplo_meeting_scheduling:get_used_worktype_meeting_date_desc", function() {
+        return workTypeMeetingDateDescsUsed;
     });
 
 });

@@ -52,3 +52,23 @@ A path to use to declare the handler to display the form.
 h3(property). prepareFormInstance(M, instance)
 
 A function to set up a form instance before it's used.
+
+h3(property). blankDocumentForKey(M)
+
+Return what the blank document for a given key should be. You should return a JSON document that sets any default values you want to be set when the user first edits the document store.
+
+h3(property). view
+
+Similar to the docstore version of view, but hides links from the application panel (which are, by default, visible to everyone in the workflow). This has the concept of "allowing for roles at selectors" and takes a list of these definition objects, which has properties:
+
+roles: ["researcher", ...] - list of roles to match on
+
+selector: {state:"state"} - Workflow selector to match on
+
+action: "deny" - Default: allow. specify whether to eg: give permissions for a particular matched role/selector or whether to deny access
+
+<hr>
+
+h3(workflowService). "haplo:transition_decision_form:last_committed_document"
+
+A "workflow service":https://docs.haplo.org/standard/workflow/interfaces/instance#workflowService to get the last committed document for a given @formId@. Returns an empty object if there isn't one.

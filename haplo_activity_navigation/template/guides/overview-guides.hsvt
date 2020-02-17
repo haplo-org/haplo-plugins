@@ -8,8 +8,8 @@ each(sections) {
             each(guides) {
                 <tr>
                     <td style="width:200px"> title </td>
-                    <td>if(screen) { <a href=screen> "On screen" </a> } </td>
-                    <td>if(print) { <a href=print> "Printable" </a> } </td>
+                    <td>if(screen) { <a href=screen> i("On screen") </a> } </td>
+                    <td>if(print) { <a href=print> i("Printable") </a> } </td>
                 </tr>
             }
         </table>
@@ -37,6 +37,6 @@ each(sections) {
 
 if(canEdit) {
     <p class="activities_overview_text_edit">
-        <a href=["/do/activity/guides/edit-guides/" activity.name]> "Edit guides" </a>
+        <a href=["/do/activity/guides/edit-guides/" activity.name] role="button"> i("Edit guides") </a>
     </p>
 }

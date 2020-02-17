@@ -31,10 +31,11 @@ P.respond("GET", "/do/activity", [
             category: "activity:menu"
         }
     });
+    var i = P.locale().text("template");
     if(canEdit) {
         menuBuilder.
             panel(99999).title("Customisation").
-            link("default", "/do/activity/edit-overview/"+activity.name, "Edit "+activity.title+" overview");
+            link("default", "/do/activity/edit-overview/"+activity.name, O.interpolateString(i["Edit {title} overview"], {title: activity.title}));
     }
     if(menuBuilder.anyBuilderShouldBeRendered()) {
         adminMode = true;
@@ -88,7 +89,7 @@ P.respond("GET", "/do/activity", [
             "haplo:activity": activity.name
         }
     });
-    linksBuilder.title("Useful links"); // default title for sidebar
+    linksBuilder.title(i["Useful links"]); // default title for sidebar
     if(linksBuilder.anyBuilderShouldBeRendered()) {
         sidebarDeferreds.push({sort:1005, deferred:linksBuilder.deferredRender()});
     }
@@ -146,11 +147,11 @@ P.respond("GET,POST", "/do/activity/edit-overview", [
         }).save();
         return E.response.redirect("/do/activity/"+activity.name);
     }
-
+    var i = P.locale().text("template");
     E.render({
-        pageTitle: "Edit "+activity.title,
+        pageTitle: "Edit "+activity.title, //TODO I18N
         backLink: "/do/activity/"+activity.name,
-        backLinkText: "Cancel",
+        backLinkText: i["Cancel"],
         activity: activity,
         form: form
     }, "overview-edit");

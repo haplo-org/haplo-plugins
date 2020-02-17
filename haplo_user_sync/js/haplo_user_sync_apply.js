@@ -196,6 +196,7 @@ P.doSyncApply = function(sync) {
                     } else {
                         userDetails.groups = groups;
                         userDetails.ref = updatedProfileObject.ref;
+                        userDetails.tags = {"username": username};
                         user = O.setup.createUser(userDetails);
                         row.userId = user.id;
                     }

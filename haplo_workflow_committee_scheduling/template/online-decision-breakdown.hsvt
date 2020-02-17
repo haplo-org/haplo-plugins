@@ -1,15 +1,15 @@
 std:plugin:resources("online-decision.css")
 
-pageTitle("Online decision choice breakdown")
+pageTitle(i("Online decision choice breakdown"))
 
 std:object(app "linkedheading")
 
-<h2>"Choices"</h2>
+<h2>i("Choices")</h2>
 
 <table class="breakdown-table">
   <tr>
-    <th>"Invitee"</th>
-    <th>"Choice"</th>
+    <th>i("Invitee")</th>
+    <th>i("Choice")</th>
   </tr>
   each(votes) {
   <tr>

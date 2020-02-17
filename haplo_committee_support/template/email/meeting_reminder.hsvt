@@ -1,28 +1,29 @@
-<p> "Dear " toUser.nameFirst </p>
+<p> i("Dear {}") { toUser.nameFirst } </p>
 
 <p>
-    "This is a reminder about the " committee.title " meeting on " std:date(date)
     if(location) {
-        " at " location
+        i("This is a reminder about the {committeeTitle} meeting on {} at {location}.") {std:date(date)} committeeTitle{committee.title} location{location}
     }
-    "."
+    else{
+        i("This is a reminder about the {committeeTitle} meeting on {}.") {std:date(date)} committeeTitle{committee.title}
+    }
 </p>
 
 if(appDetails.length) {
-    <p> "The following applications will be discussed during this meeting:" </p>
+    <p> i("The following applications will be discussed during this meeting:") </p>
     each(appDetails) {
         <p>
             <a href=url> typeName " - " applicantSurname </a>
             if(reviewers.length) {
-                <br> "Reviewed by" haplo_committee_support:render_object_list(reviewers)
+                <br> i("Reviewed by") haplo_committee_support:render_object_list(reviewers)
             }
         </p>
     }
 }
 
-<p> "More information:" </p>
-<p><a href=fullInfoURL> "Committee Meeting Details and Applications" </a></p>
+<p> i("More information:") </p>
+<p><a href=fullInfoURL> i("Committee Meeting Details and Applications") </a></p>
 
 if(noAttendees) {
-    "Please note there are no attendees listed on the committee meeting so this notification has only been sent to the committee representatives. Please notify other members as necessary."
+    i("Please note there are no attendees listed on the committee meeting so this notification has only been sent to the committee representatives. Please notify other members as necessary.")
 }

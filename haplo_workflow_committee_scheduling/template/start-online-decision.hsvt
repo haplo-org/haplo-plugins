@@ -1,10 +1,10 @@
 std:plugin:resources("start-online-decision.js")
 
-pageTitle("Start online decision process")
+pageTitle(i("Start online decision process"))
 
-<p><button class="select-all">"Select all committee members"</button> <button class="deselect-all" style="margin-left:20px;">"Select none"</button></p>
+<p><button class="select-all">i("Select all committee members")</button> <button class="deselect-all" style="margin-left:20px;">i("Select none")</button></p>
 
 <form method="POST"> std:form:token()
   std:form(instance)
-  <p><input type="submit" value="Send Invitation to Selected Committee Members"></p>
+  <p><input type="submit" value=i("Send Invitation to Selected Committee Members")></p>
 </form>

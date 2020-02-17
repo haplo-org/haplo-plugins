@@ -1,14 +1,4 @@
 {
-    "haplo:data-import-framework:filter:haplo:username-to-ref": {
-        "statements": [
-            "conforms-to haplo:data-import-framework:filter"
-        ],
-        "metadata": {
-            "name": "haplo:username-to-ref",
-            "description": "Convert username of user managed by the User Sync into the Ref value of the profile.",
-            "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/username-to-ref"
-        }
-    },
     "haplo:data-import-framework:filter:haplo:email-to-ref": {
         "statements": [
             "conforms-to haplo:data-import-framework:filter"

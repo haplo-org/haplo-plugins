@@ -1,4 +1,4 @@
 
 std:object:link(object)
 
-<p>"You have been invited to participate in the "NAME("online decision")" process."</p>
+<p>i("You have been invited to participate in the NAME(online decision) process.")</p>

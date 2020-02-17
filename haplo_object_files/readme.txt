@@ -25,6 +25,10 @@ h3(action). @hres:action:object-files:can-create-any-file@
 
 This action will allow the user to create any type of object file. Use with care.
 
+h3(serice). @haplo_object_files:hide-attach-file-button
+
+The service should take an object and return true/false if the attach file button should be hidden.
+
 h3(service). @haplo:object-files:get-versions-for-implementation@
 
 If this service is implemented, a version table will appear at the bottom of the object page for any file. This will show the version number at the time actions related to the object happened. You will also nee to add to the relevant type:

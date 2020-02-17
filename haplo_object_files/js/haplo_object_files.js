@@ -19,6 +19,7 @@ P.provideFeature("haplo:object-files", function(plugin) {
         plugin.hook("hObjectDisplay", function(response, object) {
             if(!_.find(objectTypes, (t) => object.isKindOf(t))) { return; }
             if(!attachFileButtonShouldBeDisplayed(object)) { return; }
+            if(O.serviceMaybe("haplo_object_files:hide-attach-file-button", object)) { return; }
 
             response.buttons["*OBJECTFILE"] = 
                 [[spec.basePath+"/new/"+object.ref, "Attach file"]];

@@ -1,0 +1,13 @@
+pageTitle("Review decisions for "M.title)
+backLink(M.url)
+
+each(decisions) {
+  <div style="margin-bottom:48px">
+    within(transition) { template:std:ui:choose:selected-item() }
+    <div style="padding:4px 8px;background:#eee;border-radius:4px">
+      <b> user </b> " selected " transition.label " at " std:date:time(datetime) <br>
+      if(notes) { <b> "General notes:" </b> <br> <p> notes </p> }
+      if(private) { <b> "Private notes:" </b> <br> <p> private </p> }
+    </div>
+  </div>
+}

@@ -1,14 +1,24 @@
 std:plugin:resources("online-decision.css")
 
-pageTitle("Add comment")
+pageTitle(i("Add comment"))
 
 within(thread) {
 <div class="root-message">
   <div class="message">
     <p class="message-date">std:date:time(date)</p>
-    <p class="message-header">user
+    <p class="message-header">
     if(choice) {
-    <span class="message-choice">" " if(isChange) { "changed their recommendation:" } else { "recommended:" } " " choice</span>
+      <span class="message-choice">
+        if(isChange) {
+          i("{} changed their recommendation: {choice}") {user} choice{choice}
+        }
+        else {
+          i("{} recommended: {choice}") {user} choice{choice}
+        }
+      </span>
+    }
+    else {
+      user
     }
     </p>
     if(text) {
@@ -33,5 +43,5 @@ within(thread) {
 
 <form method="POST"> std:form:token()
   std:form(instance)
-  <p><input type="submit" value="Save"></p>
+  <p><input type="submit" value=i("Save")></p>
 </form>

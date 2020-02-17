@@ -36,7 +36,7 @@ var workflowsWithFollowOnNotes = {};
 
 P.workflow.registerWorkflowFeature("haplo:follow_on_notes", function(workflow, spec) {
 
-    var i = {
+    var j = {
         workflow: workflow,
 
         addSelector: spec.selector || {closed:true},
@@ -46,7 +46,7 @@ P.workflow.registerWorkflowFeature("haplo:follow_on_notes", function(workflow, s
         canSeePrivateNotes: spec.canSeePrivateNotes ? spec.canSeePrivateNotes : function() { return false; },
 
         canSeeEntry: function(M, user, document) {
-            return !(document['private']) || i.canSeePrivateNotes(M, O.currentUser);
+            return !(document['private']) || j.canSeePrivateNotes(M, O.currentUser);
         },
 
         canCreateNote: function(M, user) {
@@ -54,14 +54,14 @@ P.workflow.registerWorkflowFeature("haplo:follow_on_notes", function(workflow, s
         }
     };
 
-    workflowsWithFollowOnNotes[workflow.fullName] = i;
+    workflowsWithFollowOnNotes[workflow.fullName] = j;
 
     workflow.haploFollowOnNotes = {
         deferredRender: function(M) {
             var notes = [], notesEntries = M.timelineSelect().where("action","=","haplo_workflow_follow_on_notes");
             _.each(notesEntries, function(entry) {
                 var document = entry.data;
-                if(i.canSeeEntry(M, O.currentUser, document)) {
+                if(j.canSeeEntry(M, O.currentUser, document)) {
                     notes.push({
                         entry: entry,
                         document: document,
@@ -75,17 +75,18 @@ P.workflow.registerWorkflowFeature("haplo:follow_on_notes", function(workflow, s
 
     workflow.renderTimelineEntryDeferred(function(M, entry) {
         if(entry.action !== "haplo_workflow_follow_on_notes") { return; }
-        if(!i.canSeeEntry(M, O.currentUser, entry.data)) { return; }
+        if(!j.canSeeEntry(M, O.currentUser, entry.data)) { return; }
         return P.template("timeline/note").deferredRender({
             M: M,
             entry: entry
         });
     });
 
-    workflow.actionPanel(i.addSelector, function(M, builder) {
-        if(i.canCreateNote(M, O.currentUser)) {
+    workflow.actionPanel(j.addSelector, function(M, builder) {
+        if(j.canCreateNote(M, O.currentUser)) {
+            var i = P.locale().text("template");
             builder.link("default", "/do/workflow-follow-on-notes/add-follow-on-note/"+M.workUnit.id,
-                "Add follow-on note", "secondary");
+                i["Add follow-on note"], "secondary");
         }
     });
 

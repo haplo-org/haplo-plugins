@@ -14,5 +14,5 @@ if(workUnit.ref) {
 
 <form method="POST"> std:form:token()
     <p><textarea rows="12" cols="80" name="emailText" autofocus="autofocus"></textarea></p>
-    <p><input type="submit" value="Send"></p>
+    <p><input type="submit" value=i("Send")></p>
 </form>

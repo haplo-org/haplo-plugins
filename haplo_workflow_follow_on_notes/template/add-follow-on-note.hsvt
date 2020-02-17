@@ -1,4 +1,4 @@
-pageTitle("Add follow-on note")
+pageTitle(i("Add follow-on note"))
 backLink(M.url)
 
 if(M.workUnit.ref) {
@@ -12,5 +12,5 @@ if(M.workUnit.ref) {
             std:text:paragraph(privateNoteExplanation)
         }
     }
-    <input type="submit" value="Save">
+    <input type="submit" value=i("Save")>
 </form>

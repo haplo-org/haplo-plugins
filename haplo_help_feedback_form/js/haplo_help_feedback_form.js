@@ -35,10 +35,11 @@ P.respond("GET,POST", "/do/haplo-help-feedback-form/feedback", [
         form.choices("topics", topicNames);
         form.update(E.request);
         if(form.complete) {
+            var i = P.locale().text("template");
             O.email.template("haplo:email-template:help-feedback-delivery").deliver(
                 _.find(config.topics, function(t) { return t.topic === document.topic; }).email,
-                "Feedback",
-                "Feedback from " + O.currentUser.name,
+                i["Feedback"],
+                O.interpolateString(i["Feedback from {name}"], {name: O.currentUser.name}),
                 P.template("message").render({
                     user: O.currentUser,
                     document: document

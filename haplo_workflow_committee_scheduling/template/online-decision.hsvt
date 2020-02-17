@@ -1,14 +1,14 @@
 std:plugin:resources("online-decision.css")
 
-pageTitle("Online decision overview")
+pageTitle(i("Online decision overview"))
 
 std:object(app "linkedheading")
 
 <div class="summary">
 <table class="vote-table">
   <tr>
-    <th>"Recommendation"</th>
-    <th>"Count"</th>
+    <th>i("Recommendation")</th>
+    <th>i("Count")</th>
   </tr>
   each(votes) {
   <tr>
@@ -19,17 +19,27 @@ std:object(app "linkedheading")
 </table>
 </div>
 
-<p><a href=breakdownUrl>"View committee member recommendations"</a></p>
+<p><a href=breakdownUrl>i("View committee member recommendations")</a></p>
 
-<h2>"Discussion"</h2>
+<h2>i("Discussion")</h2>
 
 each(messages) {
 <div class="root-message">
   <div class="message" id=unsafeAttributeValue(unsafeid)>
     <p class="message-date">std:date:time(date)</p>
-    <p class="message-header">user
+    <p class="message-header">
     if(choice) {
-    <span class="message-choice">" " if(isChange) { "changed their recommendation:" } else { "recommended:" } " " choice</span>
+      <span class="message-choice">
+        if(isChange) {
+          i("{} changed their recommendation: {choice}") {user} choice{choice}
+        }
+        else{
+          i("{} recommended: {choice}") {user} choice{choice}
+        }
+      </span>
+    }
+    else {
+      user
     }
     </p>
     if(text) {
@@ -51,10 +61,10 @@ each(messages) {
   }
   if(isOpen) {
     <div class="message-reply">
-      <p class="reply-link"><a href=replyUrl>"Reply"</a></p>
+      <p class="reply-link"><a href=replyUrl role="button">i("Reply")</a></p>
     </div>
   }
 </div>
 }
 
-if(addCommentUrl) { <p><a href=addCommentUrl>"Add comment"</a></p> }
+if(addCommentUrl) { <p><a href=addCommentUrl role="button">i("Add comment")</a></p> }

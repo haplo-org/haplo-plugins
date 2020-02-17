@@ -1,8 +1,8 @@
 std:plugin:resources("minutes.css")
-pageTitle("Actions taken: " meeting.title)
+pageTitle(i("Actions taken: {}") { meeting.title })
 backLink(std:object:url(meeting))
 
-if(meetingNotStarted) { std:ui:notice("This meeting has not yet taken place.") }
+if(meetingNotStarted) { std:ui:notice(i("This meeting has not yet taken place.")) }
 
 std:object(meeting)
 

@@ -12,8 +12,8 @@
                     </a>
                 </b>
             </div>
-            <div> <i> "Not started" </i> </div>
-            <div> <a href=["/do/subworkflow/manual-start/" parentM.workUnit.id ? type=spec.name]> "Start now..." </a> </div>
+            <div> <i> i("Not started") </i> </div>
+            <div> <a href=["/do/subworkflow/manual-start/" parentM.workUnit.id ? type=spec.name] role="button"> i("Start now...") </a> </div>
         </div>
     }
 
@@ -33,15 +33,15 @@
                 </b>
             </div>
             // TODO: Turn this into a nice checkbox list
-            switch(checklistState) { <div><i>"Not started"</i></div> }
+            switch(checklistState) { <div><i>i("Not started")</i></div> }
                 closed { "" } // Don't show Done's if last status is displaying...
-                open { <div><i>"In progress"</i></div> }
+                open { <div><i>i("In progress")</i></div> }
             if(workUnit) {
                 <div> displayableStatus </div>
                 unless(closed) { 
                   // Less confusing to hide currently with if closed
                   if(displayableCurrentlyWith) {
-                      <div> "With: " displayableCurrentlyWith </div>
+                      <div> i("With: {}") { displayableCurrentlyWith } </div>
                   }
                 }
             }

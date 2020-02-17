@@ -1,0 +1,9 @@
+pageTitle(i("Accessibility statement"))
+
+if(statement) {
+  std:text:document(statement)
+}
+
+if(canEdit) {
+  std:ui:button-link("/do/haplo-accessibility-statement/edit-statement") { i("Edit accessibility statements") }
+}

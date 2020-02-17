@@ -49,6 +49,10 @@ By default, the committee rep state is only actionable by the first Committee re
 <pre>"haplo_committee_scheduling:enable_committee_rep_takeover": true</pre>
 to enable other Committee reps to takeover being the rep/handling the scheduling/decision for all committee scheduling states in all workflows.
 
+Set the config data:
+<pre>"haplo_committee_scheduling:enable_forward_to_member": true</pre>
+to enable the Committee rep to select a committee member to forward the application to.
+
 h2. Actions taken
 
 By default, an "Actions taken" link is added to in person meeting records. This directs to a page with a summary of the meeting and a list of all the items on the agenda and the actions taken \
@@ -94,6 +98,11 @@ var TEXT = {
     "transition-notes:send_to_dep_chair": "Forward application to the committee Deputy Chair",
     "transition-confirm:send_to_dep_chair": "You have chosen to forward the application to the Deputy Chair.",
 
+    "transition:send_to_member": "Forward application to committee member",
+    "transition-indicator:send_to_member": "primary",
+    "transition-notes:send_to_member": "Forward application to the selected committee member",
+    "transition-confirm:send_to_member": "You have chosen to forward the application to the selected committee member.",
+
     "transition:return_to_rep": "Return to NAME(haplo:workflow_committee_scheduling:committee-representative:lc|committee representative)",
     "transition-indicator:return_to_rep": "secondary",
     "transition-confirm:return_to_rep": "You have chosen to return the application to the NAME(haplo:workflow_committee_scheduling:committee-representative:lc|committee representative).",
@@ -101,17 +110,35 @@ var TEXT = {
     "timeline-entry:progress_application": "progressed the application",
     "timeline-entry:send_to_chair": "forwarded application to committee Chair",
     "timeline-entry:send_to_dep_chair": "forwarded application to committee Deputy Chair",
+    "timeline-entry:send_to_member": "forwarded application to committee member",
     "timeline-entry:return_to_rep": "returned application to NAME(haplo:workflow_committee_scheduling:committee-representative:lc|committee representative)"
 };
 
 var TRANSITION_BUTTON_PRIORITIES = {
     "send_to_chair": 110,
     "send_to_dep_chair": 120,
+    "send_to_member": 125,
     "return_to_rep": 130
 };
 
 var COMMITTEE_ACTION_PANEL_PRIORITY = P.COMMITTEE_ACTION_PANEL_PRIORITY = 110;
 P.COMMITTEE_PANEL_PRIORITY = 250;
+
+var forwardToMemberForm = P.form({
+    specificationVersion: 0,
+    formId: "ForwardToMemberForm",
+    formTitle: "Forward to selected committee member",
+    elements: [
+        {
+            type: "choice",
+            label: "Committee member:",
+            path: "selected",
+            style: "radio",
+            choices: "people",
+            required: true
+        }
+    ]
+});
 
 var getScheduledMeetingForWorkflow = function(M) {
     return M.workUnit.data.currentCommitteeMeeting ? O.ref(M.workUnit.data.currentCommitteeMeeting) : undefined;
@@ -160,7 +187,8 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                 transitions: [
                     ["progress_application"].concat(stateInfo.exitStates),
                     ["send_to_chair", stateInfo.state+"_chair"],
-                    ["send_to_dep_chair", stateInfo.state+"_dep_chair"]
+                    ["send_to_dep_chair", stateInfo.state+"_dep_chair"],
+                    ["send_to_member", stateInfo.state+"_member"]
                 ].concat(stateInfo.additionalTransitions || []),
                 flags: committeeStateFlags,
                 flagsSetOnEnter: siFlagsSetOnEnter,
@@ -185,7 +213,19 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                 transitions: [
                     ["progress_application"].concat(stateInfo.exitStates),
                     ["return_to_rep", stateInfo.state]
-                ],
+                ].concat(stateInfo.additionalTransitions || []),
+                flags: committeeStateFlags,
+                flagsSetOnEnter: siFlagsSetOnEnter,
+                flagsSetOnExit: siFlagsSetOnExit,
+                flagsUnsetOnEnter: siFlagsUnsetOnEnter,
+                flagsUnsetOnExit: siFlagsUnsetOnExit
+            };
+            states[stateInfo.state+"_member"] = {
+                actionableBy: committeeEntityName+"Member",
+                transitions: [
+                    ["progress_application"].concat(stateInfo.exitStates),
+                    ["return_to_rep", stateInfo.state]
+                ].concat(stateInfo.additionalTransitions || []),
                 flags: committeeStateFlags,
                 flagsSetOnEnter: siFlagsSetOnEnter,
                 flagsSetOnExit: siFlagsSetOnExit,
@@ -196,12 +236,15 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
 
             var TRANSITION_TO_ENTITY = {
                 "send_to_chair": committeeEntityName+"Chair",
-                "send_to_dep_chair": committeeEntityName+"DepChair"
+                "send_to_dep_chair": committeeEntityName+"DepChair",
+                "send_to_member": committeeEntityName+"Member"
             };
 
             workflow.actionPanelTransitionUI({flags:["directToTransitionsCommitteeSchedule"+stateInfo.state]}, function(M, builder) {
                 if(M.workUnit.isActionableBy(O.currentUser)) {
                     _.each(M.transitions.list, function(t) {
+                        if(!O.application.config["haplo_committee_scheduling:enable_forward_to_member"] &&
+                            t.name === "send_to_member") { return; }
                         var panel = TRANSITION_BUTTON_PRIORITIES[t.name] ? builder.panel(COMMITTEE_ACTION_PANEL_PRIORITY) : builder;
                         panel.link(TRANSITION_BUTTON_PRIORITIES[t.name] || 150,
                             // Extra transitions appear after feature's own transitions
@@ -238,6 +281,7 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             text["status:"+stateInfo.state] = "Awaiting @"+committeeEntityName+"@ meeting";
             text["status:"+stateInfo.state+"_chair"] = "Awaiting @"+committeeEntityName+"@ Chair";
             text["status:"+stateInfo.state+"_dep_chair"] = "Awaiting @"+committeeEntityName+"@ Deputy Chair";
+            text["status:"+stateInfo.state+"_member"] = "Awaiting @"+committeeEntityName+"@ member";
             text["status:"+stateInfo.state+"_rep_notes"] = "Awaiting @"+committeeEntityName+"@ rep";
             workflow.text(text);
 
@@ -298,6 +342,29 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                     }
                 });
             }
+
+            if(O.application.config["haplo_committee_scheduling:enable_forward_to_member"]) {
+                workflow.use("std:transition_form", {
+                    selector: {state:stateInfo.state},
+                    transitions: ["send_to_member"],
+                    form: forwardToMemberForm,
+                    prepareFormInstance(M, instance) {
+                        var committee = M.entities[committeeEntityName+"_maybe"];
+                        if(!committee) { O.stop("Cannot find committee"); }
+                        var people = getCommitteeMembersList(committee);
+                        instance.choices("people", people);
+                    },
+                    onTransition: function(M, document) {
+                        var committee = M.entities[committeeEntityName+"_maybe"];
+                        if(committee) {
+                            var forwardToMember = M.workUnit.data.forwardToMember || {};
+                            forwardToMember[committee.ref.toString()] = document.selected;
+                            M.workUnit.data.forwardToMember = forwardToMember;
+                            M.workUnit.save();
+                        }
+                    }
+                });
+            }
         });
 
         committeeEntityNames = _.uniq(committeeEntityNames);
@@ -340,7 +407,33 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                     return this[committeeEntityName].every(A.Chair).concat(this[committeeEntityName+"DepChair_refList"]);
                 }
             };
-            committeeEntities[committeeEntityName+"Member"] = [committeeEntityName, A.CommitteeMember];
+            if(O.application.config["haplo_committee_scheduling:enable_forward_to_member"]) {
+                committeeEntities[committeeEntityName+"Member"] = function(context) {
+                    var memberRefs = [], M;
+                    if("$M" in this) { M = this.$M; }
+                    var committee = this[committeeEntityName+"_maybe"];
+                    if(M && committee) { 
+                        // look for forwardToMember stored in the workUnit data
+                        var forwardToMember = M.workUnit.data.forwardToMember;
+                        if(forwardToMember) {
+                            var memberRefStr = forwardToMember[committee.ref.toString()];
+                            // if we have one, then put it at the start of our committee member refs
+                            // so that this user will be the default actionableBy
+                            if(memberRefStr) {
+                                memberRefs.push(O.ref(memberRefStr));
+                            }
+                        }
+                    }
+                    if(committee) {
+                        committee.every(A.CommitteeMember, function(rep) {
+                            memberRefs.push(rep);
+                        });
+                    }
+                    return (context === "list") ? memberRefs : memberRefs[0];
+                };
+            } else {
+                committeeEntities[committeeEntityName+"Member"] = [committeeEntityName, A.CommitteeMember];
+            }
             workflow.use("std:entities:add_entities", committeeEntities);
         });
 
@@ -381,6 +474,19 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
                 }, "std:ui:confirm");
             });
         }
+
+        var getCommitteeMembersList = function(committee) {
+            var people = [];
+            committee.every(A.CommitteeMember, function(p) { people.push(p); });
+            return _.uniq(_.reduce(people, (memo, p) => {
+                var person = p.load();
+                var personUser = O.user(person.ref);
+                if(personUser) { // only include those with a user account attached
+                    memo.push([person.ref.toString(), person.title]);
+                }
+                return memo;
+            }, []), (p) => p[0]);
+        };
 
         var makeScheduleHandler = function(endOfPath, humanReadableVerb) {
             plugin.respond("GET,POST", spec.path+"/"+endOfPath, [

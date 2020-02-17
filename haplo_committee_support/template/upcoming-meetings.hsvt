@@ -1,3 +1,3 @@
-pageTitle("Upcoming committee meetings")
+pageTitle(i("Upcoming committee meetings"))
 
 each(committeeMeetings) { std:object(. "searchresult") }

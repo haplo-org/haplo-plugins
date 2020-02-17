@@ -1,12 +1,12 @@
-emailSubject("Pre-meeting review")
+emailSubject(i("Pre-meeting review"))
 
-<p> "Dear " toUser.nameFirst </p>
+<p> i("Dear {}") { toUser.nameFirst } </p>
 
-<p> "Please review the following submission prior to our next committee meeting." </p>
+<p> i("Please review the following submission prior to our next committee meeting.") </p>
 
 <p>
-    "Committee: " committee.title <br>
-    "Date of meeting: " std:date(date) <br>
-    "For review: " <a href=[std:object:url:full(M.entities.object)]> M.entities.object.title </a> <br>
-    if(notes){ "Notes: " notes }
+    i("Committee: {}") { committee.title } <br>
+    i("Date of meeting: {}") { std:date(date) } <br>
+    i("For review: {}") { <a href=[std:object:url:full(M.entities.object)]> M.entities.object.title </a> } <br>
+    if(notes){ i("Notes: {} ") { notes} }
 </p>

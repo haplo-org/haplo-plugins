@@ -506,26 +506,40 @@ function computePeriodDate(now, dates, rules, flags, state, suspensions, dateNam
     newEndLeast = roundToNearestMinute(newEndLeast);
     newEndMost = roundToNearestMinute(newEndMost);
 
+    function updateDateWithSuspensionLength(date, suspension, length) {
+        if(length > 0 && date.diffDays(suspension[0]) <= 0) {
+            date.addDays(length);
+        }
+    }
+
     _.each(suspensions, (suspension) => {
         //Length of time from start of suspension to end
         var suspensionLength = suspension[0].diffDays(suspension[1]);
-        //If suspension ends after now
-        if(now.diffDays(suspension[1]) > 0) {
-            // if suspension starts before now
-            if(now.diffDays(suspension[0]) < 0) {
-                // suspensions length is from now to the end of suspension
-                suspensionLength = now.diffDays(suspension[1]);
+        var suspensionLengthMost = 0, suspensionLengthLeast = 0;
+
+        var suspensionEndsInFuture = now.diffDays(suspension[1]) > 0;
+        var inMiddleOfSuspension = suspensionEndsInFuture && now.diffDays(suspension[0]) < 0;
+        if(inMiddleOfSuspension) {
+            // suspension length is from now to the end of suspension
+            suspensionLengthLeast = now.diffDays(suspension[1]);
+            suspensionLengthMost = now.diffDays(suspension[1]);
+        } else {
+            var newEndPlusSuspensionLeast = newEndLeast.clone().addDays(suspensionLength);
+            var updatedLeastIsBeforeNow = now.diffDays(newEndPlusSuspensionLeast) < 0;
+            if(suspensionEndsInFuture || updatedLeastIsBeforeNow) {
+                suspensionLengthLeast = suspensionLength;
             }
-            debug("Adding suspension with length", suspensionLength, "days. Starts:", suspension[0], "Ends:", suspension[1]);
-            // if most recently calculated end least is after (or the same day as) the start of the suspension
-            if(newEndLeast.diffDays(suspension[0]) <= 0) {
-                newEndLeast.addDays(suspensionLength);
-            }
-            // if most recently calculated end most is after (or the same day as) the start of the suspension
-            if(newEndMost.diffDays(suspension[0]) <= 0) {
-                newEndMost.addDays(suspensionLength);
+
+            var newEndPlusSuspensionMost = newEndMost.clone().addDays(suspensionLength);
+            var updatedMostIsBeforeNow = now.diffDays(newEndPlusSuspensionMost) < 0;
+            if(suspensionEndsInFuture || updatedMostIsBeforeNow) {
+                suspensionLengthMost = suspensionLength;
             }
         }
+
+        debug("Adding suspension with least length", suspensionLengthLeast, "days. Most length", suspensionLengthMost,"days. Starts:", suspension[0], "Ends:", suspension[1]);
+        updateDateWithSuspensionLength(newEndLeast, suspension, suspensionLengthLeast);
+        updateDateWithSuspensionLength(newEndMost, suspension, suspensionLengthMost);
     });
 
     var newEnd;

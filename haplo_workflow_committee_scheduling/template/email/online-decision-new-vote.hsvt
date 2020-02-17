@@ -2,15 +2,25 @@
 
 <h1>title</h1>
 
-<p>"There has been a " if(message.choice) { "new recommendation submitted" } else { "new comment added" } " to the " NAME("online decision") " for "<a href=appUrl>appTitle</a></p>
+<p>
+    if(message.choice) {
+        i("There has been a new recommendation submitted to the NAME(online decision) for {}") { <a href=appUrl>appTitle</a> }
+    }
+    else{
+        i("There has been a new comment added to the NAME(online decision) for {}") { <a href=appUrl>appTitle</a> }
+    }
+</p>
 
 <hr>
 
 within(message) {
-<p class="message-header">user " (" std:date:time(date) ")"
-if(choice) {
-<span class="message-choice">" recommended: " choice</span>
-}
+<p class="message-header">
+    if(choice) {
+        user " (" std:date:time(date) ") " <span class="message-choice">i("recommended: {}") { choice} </span>
+    }
+    else{
+        user " (" std:date:time(date) ")"
+    }
 </p>
 <p class="message-text">text</p>
 }

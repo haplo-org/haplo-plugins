@@ -1,6 +1,6 @@
-pageTitle("Review: " M.title)
+pageTitle(i("Review: {}") { M.title })
 backLink(M.url)
 
-std:ui:request("Please review the information below before continuing.")
+std:ui:request(i("Please review the information below before continuing."))
 
 render(reviewUI.documents)

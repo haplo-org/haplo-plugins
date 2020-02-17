@@ -1,13 +1,17 @@
 std:plugin:resources("duplicate-profiles.js")
 std:layout:wide()
 
-pageTitle("Duplicate profiles dashboard")
+pageTitle(i("Duplicate profiles dashboard"))
 
 <div>
-  <i> "found " count " potential duplicates (in " generated "s)" </i>
+  <i> i("found {} potential duplicates (in {searchSeconds}s)") { count } searchSeconds{ generated } </i>
   <table class="tablesort">
     <thead>
-      <tr><th>"Researcher"</th><th>"Duplicate"</th><th>"Identical email"</th><th>"Merge"</th><th>"Remove from list"</th></tr>
+      <tr><th>i("Researcher")</th>
+      <th>i("Duplicate")</th>
+      <th>i("Identical email")</th>
+      <th>i("Merge")</th>
+      <th>i("Remove from list")</th></tr>
     </thead>
     <tbody>
       each(duplicates) {
@@ -24,19 +28,19 @@ pageTitle("Duplicate profiles dashboard")
           }
           <td style="width: 50px;"> if(identicalEmail) { "&#10003;" } </td>
           if(merge) {
-            <td><a href=[ ? action="merge" ref=researcher.ref] class="mergelink"> "Merge" </a></td>
+            <td><a href=[ ? action="merge" ref=researcher.ref] class="mergelink" role="button"> i("Merge") </a></td>
           }
-          <td><a href=[ ? action="remove" ref=researcher.ref] class="remove"> "Remove" </a></td>
+          <td><a href=[ ? action="remove" ref=researcher.ref] class="remove" role="button"> i("Remove") </a></td>
         </tr>
       }
     </tbody>
   </table>
   if(ignoring) {
-    <h3> "Ignoring" </h3>
-    <p> "Ignoring the following profiles as not duplicates:" </p>
+    <h3> i("Ignoring") </h3>
+    <p> i("Ignoring the following profiles as not duplicates:") </p>
     each(ignoring) {
-      <p> researcher.title " (" <a href=[ ? action="unignore" ref=researcher.ref]> "unremove" </a> ")" </p>
+      <p> researcher.title " (" <a href=[ ? action="unignore" ref=researcher.ref] role="button"> i("unremove") </a> ")" </p>
     }
-    <p> "(" <a href=[ ? action="unignoreAll" ]> "remove all from ignore list" </a> ")" </p>
+    <p> "(" <a href=[ ? action="unignoreAll" ] role="button"> i("remove all from ignore list") </a> ")" </p>
   }
 </div>

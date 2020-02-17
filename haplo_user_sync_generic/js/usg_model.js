@@ -58,4 +58,37 @@ P.implementService("haplo:data-import-framework:setup-model:haplo:user-sync", fu
         ]
     });
 
+    model.addDestination({
+        name: "user:tags",
+        title: "User tags",
+        displaySort: 5,
+        depends: "user",
+        kind: "dictionary",
+        optional: true,
+        dictionaryNames: {
+            // TODO: Add service which gets the names for tags for this client (and disallows "username")
+        },
+        tryMakeTargetAvailableForDependency(dependencyName, dependencyTarget) {
+            return new UserTags();
+        }
+    });
+
+});
+
+
+var UserTags = function() {
+};
+
+P.implementService("haplo_user_sync_generic:get_sync_plugins", function(syncPlugins) {
+    syncPlugins.push({
+        onApply(engine, batch) {
+        },
+        onUpdatedRecord(engine, batch, record, transformation) {
+            //TODO: take tags from the user:tags destination and update the user
+        },
+        onUpdateBlockedProfileObject(engine, batch, object, username, user) {
+        },
+        onPostApply(engine, batch) {
+        }
+    });
 });

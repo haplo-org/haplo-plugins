@@ -97,28 +97,18 @@ P.db.table("lastUserData", {
 // --------------------------------------------------------------------------------------------------
 
 P.implementService("haplo_user_sync:username_to_user", function(username) {
-    var q = P.db.users.select().where("username","=",username.toLowerCase()).where("inFeed","=",true);
-    return q.length ? O.user(q[0].userId) : undefined;
+    var q = O.usersByTags({"username": username.toLowerCase()});
+    return q.length ? q[0] : undefined;
 });
 
 P.implementService("haplo_user_sync:user_to_username", function(user) {
-    var q = P.db.users.select().where("userId","=",user.id);
-    return q.length ? q[0].username : undefined;
+    return user.tags.username;
 });
 
 P.implementService("haplo_user_sync:ref_to_username", function(ref) {
     var user = O.user(ref);
     if(!user) { return undefined; }
-    var q = P.db.users.select().where("userId","=",user.id);
-    return q.length ? q[0].username : undefined;
-});
-
-P.implementService("haplo:data-import-framework:filter:haplo:username-to-ref", function() {
-    return function(username) {
-        var q = P.db.users.select().where("username","=",username.toLowerCase());
-        var user = q.length ? O.user(q[0].userId) : undefined;
-        return user ? (user.ref||undefined) : undefined;
-    };
+    return user.tags.username;
 });
 
 P.implementService("haplo:data-import-framework:filter:haplo:email-to-ref", function() {
@@ -166,6 +156,10 @@ P.implementService("haplo_user_sync:update_user_row_by_username", function(curre
     _.each(P.db.users.select().where("username","=",currentUsername.toLowerCase()), function(row) {
         row.username = newUsername;
         row.save();
+    });
+    _.each(O.usersByTags({"username": currentUsername.toLowerCase()}), function (user) {
+        user.tags.username = newUsername;
+        user.saveTags();
     });
 });
 

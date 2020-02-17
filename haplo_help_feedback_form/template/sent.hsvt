@@ -1,8 +1,8 @@
-pageTitle("Message sent")
+pageTitle(i("Message sent"))
 std:layout:minimal()
 std:plugin:resources("feedback.css")
 
 <div class="hhff_sent">
-    <h2> "Your message has been sent." </h2>
-    <p> "We'll be in touch soon, and will reply to your email address " <i> user.email </i> "." </p>
+    <h2> i("Your message has been sent.") </h2>
+    <p> i("We'll be in touch soon, and will reply to your email address {}.") {<i> user.email </i>} </p>
 </div>

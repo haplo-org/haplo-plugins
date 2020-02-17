@@ -1,0 +1,4 @@
+pageTitle(i("Accessibility statement"))
+backLink("/") { i("Home") }
+
+render(statement)

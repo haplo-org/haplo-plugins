@@ -1,0 +1,3 @@
+
+feature std:navigation
+    entry: plugin haplo:accessibility-statement:links [sort=999999999]

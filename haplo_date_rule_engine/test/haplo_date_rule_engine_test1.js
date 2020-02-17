@@ -52,22 +52,10 @@ t.test(function() {
                dateDifferent(value[0], expectedValue[0]) ||
                dateDifferent(value[1], expectedValue[1]) ||
                value[2] != expectedValue[2]) {
+                console.log("Expected: " + dateName + " = " + formatDateRange(expectedValue) + ", got " + formatDateRange(outputDates[dateName]));
                 failed = true;
             }
         });
-
-        if(failed) {
-            console.log("Failure in date rule engine test " + name);
-            _.each(expectedResult, function (expectedValue, dateName) {
-            var value = outputDates[dateName];
-            if(!value ||
-               dateDifferent(value[0], expectedValue[0]) ||
-               dateDifferent(value[1], expectedValue[1]) ||
-               value[2] != expectedValue[2]) {
-                console.log("Expected: " + dateName + " = " + formatDateRange(expectedValue) + ", got " + formatDateRange(outputDates[dateName]));
-            }
-            });
-        }
 
         t.assert(!failed);
     }
@@ -107,7 +95,7 @@ t.test(function() {
                // Suspensions
                [],
                // Expected results
-               {end: [undefined, undefined, "Missing input date: 'start'"]}
+               {end: [undefined, undefined, "Not enough inputs to calculate end"]}
               );
 
     test_dates("input rule", new XDate("2016-07-01"),
@@ -139,7 +127,7 @@ t.test(function() {
                // Suspensions
                [],
                // Expected results
-               {end: [undefined, undefined, "Date 'start' does not have a computation rule"]}
+               {end: [undefined, undefined, "Not enough inputs to calculate end"]}
               );
 
     test_dates("explicit undefined date", new XDate("2016-07-01"),
@@ -154,7 +142,7 @@ t.test(function() {
                // Suspensions
                [],
                // Expected results
-               {end: [undefined, undefined]}
+               {end: [undefined, undefined, "Not enough inputs to calculate end"]}
               );
 
     test_dates("recursion", new XDate("2016-07-01"),
@@ -170,7 +158,7 @@ t.test(function() {
                // Suspensions
                [],
                // Expected results
-               {end: [undefined, undefined, "The rule for date 'end' refers back to itself"]}
+               {end: [undefined, undefined, "Not enough inputs to calculate end"]}
               );
 
     test_dates("add day", new XDate("2016-07-01"),
@@ -731,6 +719,58 @@ t.test(function() {
 
                        // Going by the shortest period (7 days), that leaves us 4 days left, ending on the 8th.
                        // Going by the longest period (14 days), that leaves us 11 days, so ending on the 15th.
+
+                       //The suspension is 7 days long, so the end dates are now the 15th and the 22nd
+                       {end: [new XDate("2016-01-15"), new XDate("2016-01-22")]}
+                      );
+
+    state = test_dates("Period end with suspension, using state from previous, in near future to make sure it's still correct",
+                       new XDate("2016-01-10"),
+                       // Inputs
+                       {start: [new XDate("2016-01-01"), new XDate("2016-01-01")]},
+                       // Rules
+                       {start: ["input"],
+                        end: ["period", "start", ["add", "week", 1, 2, ["date", "start"]]]},
+                       // Flags
+                       [],
+                       // State
+                       state,
+                       // Suspensions
+                       [[new XDate("2016-01-05"), new XDate("2016-01-12")]],
+                       // Expected results:
+
+                       // Endpoint is 7-14 days on, so the 8th or 15th
+
+                       // Now is 2016-01-10 so we have used 10 days
+
+                       // Going by the shortest period (7 days), that leaves us 0 days left, ending on the 8th.
+                       // Going by the longest period (14 days), that leaves us 5 days, so ending on the 15th.
+
+                       //The suspension is 7 days long, so the end dates are now the 15th and the 22nd
+                       {end: [new XDate("2016-01-15"), new XDate("2016-01-22")]}
+                      );
+
+    state = test_dates("Period end with suspension, using state from previous, in far future to make sure it's still correct",
+                       new XDate("2017-01-04"),
+                       // Inputs
+                       {start: [new XDate("2016-01-01"), new XDate("2016-01-01")]},
+                       // Rules
+                       {start: ["input"],
+                        end: ["period", "start", ["add", "week", 1, 2, ["date", "start"]]]},
+                       // Flags
+                       [],
+                       // State
+                       state,
+                       // Suspensions
+                       [[new XDate("2016-01-05"), new XDate("2016-01-12")]],
+                       // Expected results:
+
+                       // Endpoint is 7-14 days on, so the 8th or 15th
+
+                       // Now is 2017-01-04 so we have used a whole year
+
+                       // Going by the shortest period (7 days), that leaves us 0 days left, so end date doesn't change, the 8th.
+                       // Going by the longest period (14 days), that leaves us 0 days, so end date doesn't change, the 15th.
 
                        //The suspension is 7 days long, so the end dates are now the 15th and the 22nd
                        {end: [new XDate("2016-01-15"), new XDate("2016-01-22")]}

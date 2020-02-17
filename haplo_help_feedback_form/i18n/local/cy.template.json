@@ -1,0 +1,17 @@
+{
+  "Configure help & feedback": "Ffurfweddu help ac adborth",
+  "The configuration has been updated": "Mae'r ffurfweddiad wedi ei diwedaru",
+  "The text below will be displayed when the user clicks the {} link in the top right, and if any topics and email addresses are specified, the user will be able to send feedback.": "Bydd y testun isod yn cael ei arddangos pan fydd y defnyddiwr yn clicio'r ddolen {} yn y dde uchaf, ac os nodir unrhyw bynciau a chyfeiriadau e-bost, bydd y defnyddiwr yn gallu anfon adborth.",
+  "Please complete all the fields.": "Cwblhewch bob maes.",
+  "Save configuration": "Cadw'r ffurfweddiad",
+  "Feedback": "Adborth",
+  "Please contact your administrator for assistance.": "Cysylltwch â'ch gwenyddydd am gymorth.",
+  "Send feedback": "Anfon adborth",
+  "Message sent by {} ({email})": "Neges wedi ei hafnon at {} ({email})",
+  "Subject:": "Pwnc:",
+  "Message:": "Neges:",
+  "Message sent": "Anfonwyd y neges",
+  "Your message has been sent.": "Mae'ch neges wedi ei hafnon.",
+  "We'll be in touch soon, and will reply to your email address {}.": "Byddwn mewn cysylltiad yn fuan a byddwn yn ateb i'ch cyfeiriad e-bost {}.",
+  "Feedback from {name}": "Adborth gan {name}"
+}

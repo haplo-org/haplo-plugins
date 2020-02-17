@@ -8,4 +8,8 @@
 
 <p>
   std:ui:button-link("/do/haplo-user-sync-generic/control-file") { "View current control file..." }
+  std:ui:button-link("/do/haplo-user-sync-generic/control-files") { "Control files history..." }
+</p>
+<p>
+  std:ui:button-link("/do/haplo-user-sync-generic/upload-control-file") { "Upload new control file..." }
 </p>

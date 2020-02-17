@@ -4,7 +4,8 @@ backLink(M.url)
 each(notifications) {
   <div style="margin-bottom:64px">
     <div style="background:#eee;margin-bottom:8px;padding:4px 8px">
-      "Sent on " <b> std:date(sentAt) </b> " by " <b> sentBy.name </b> <div style="float:right"><a href=url>"Download as PDF..."</a></div>
+        i("Sent on {} by {sentByName}") {<b> std:date(sentAt) </b>} sentByName{<b> sentBy.name </b>}
+        <div style="float:right"><a href=url role="button">i("Download as PDF...")</a></div>
     </div>
     std:text:document(text)
   </div>

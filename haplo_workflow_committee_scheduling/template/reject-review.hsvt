@@ -1,7 +1,7 @@
-pageTitle("Reject review request")
+pageTitle(i("Reject review request"))
 backLink(std:object:url(M.entities.object))
 
 <form method="POST"> std:form:token()
     std:form(form)
-    <p> <input type="submit" value="Confirm"> </p>
+    <p> <input type="submit" value=i("Confirm")> </p>
 </form>

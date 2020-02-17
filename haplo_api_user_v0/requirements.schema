@@ -1,0 +1,7 @@
+
+group haplo:group:api-v0:user-api as UserAPI
+    title: API v0: User
+
+service-user haplo:service-user:api-v0:user
+    title: API v0: User
+    group haplo:group:api-v0:user-api

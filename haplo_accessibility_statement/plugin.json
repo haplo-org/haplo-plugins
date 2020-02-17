@@ -1,0 +1,24 @@
+{
+  "pluginName": "haplo_accessibility_statement",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Accessibility Statement",
+  "displayDescription": "Plugin to show accessibility statements",
+  "apiVersion": 4,
+  "privilegesRequired": ["pDatabase"],
+  "depend": [
+    "std_i18n_locales",
+    "std_action_panel",
+    "std_document_store"
+  ],
+  "use": [
+    "std:document_store"
+  ],
+  "load": [
+      "js/haplo_accessibility_statement.js"
+    ],
+  "respond": [
+    "/do/accessibility-statement",
+    "/do/haplo-accessibility-statement"
+  ]
+}

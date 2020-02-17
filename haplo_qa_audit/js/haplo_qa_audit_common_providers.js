@@ -145,6 +145,19 @@ P.implementService("haplo:qa-audit:identify-issues", function(audit) {
 
     // Basic checks on forms
     var formSpecifications = audit.getInformation("formSpecifications");
+
+    var checkFormSpecification = function(audit, pluginName, formId, specification) {
+        if(!specification) { return ; }
+        if(!specification["formTitle"]) {
+            audit.issue(
+                "form-title-missing/"+pluginName+"/"+formId,
+                "All forms must include the formTitle element",
+                "Plugin: "+pluginName+", form: "+formId+"\n"+
+                "To resolve, add the formTitle element to the form."
+            );
+        }
+    };
+
     var checkFormElements = function(audit, pluginName, formId, elements) {
         if(!elements) { return; }
         for(var i = 0; i < elements.length; ++i) {
@@ -174,6 +187,15 @@ P.implementService("haplo:qa-audit:identify-issues", function(audit) {
                         "To resolve, follow the example in the documentation: https://docs.haplo.org/dev/plugin/form/specification/boolean"
                     );
                 }
+            } else if(element.type === "choice" && (typeof element.choices !== "string") &&
+                _.some(element.choices, function(e) { return (typeof e === "string"); })) {
+                audit.issue(
+                    "bad-choice-specification-string/"+pluginName+"/"+element.path,
+                    "Choice specification is not configured correctly",
+                    "Array of choices contains one or more strings, which is not recommended.\n"+
+                    "Plugin: "+pluginName+", form: "+formId+", path: "+element.path+"\n"+
+                    "To resolve, specify ids for the choices: https://docs.haplo.org/plugin/form/specification/choice. Do not suppress this issue."
+                );
             }
             // Recurse into sections
             checkFormElements(audit, pluginName, formId, element.elements);
@@ -181,6 +203,7 @@ P.implementService("haplo:qa-audit:identify-issues", function(audit) {
     };
     _.each(formSpecifications, function(forms, pluginName) {
         _.each(forms, function(specification, formId) {
+            checkFormSpecification(audit, pluginName, formId, specification);
             checkFormElements(audit, pluginName, formId, specification.elements);
         });
     });

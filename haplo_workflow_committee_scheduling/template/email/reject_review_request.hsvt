@@ -1,14 +1,14 @@
-emailSubject("Pre-meeting review")
+emailSubject(i("Pre-meeting review"))
 
-<p> "Dear " toUser.nameFirst </p>
+<p> i("Dear {}") { toUser.nameFirst } </p>
 
-<p> reviewer.title " has indicated they cannot review the following application:" </p>
+<p> i("{} has indicated they cannot review the following application:") { reviewer.title } </p>
 
 std:object:link(M.entities.object)
 
 if(reasoning.reasons) {
-    <p> "The following reasoning was given:" </p>
+    <p> i("The following reasoning was given:") </p>
     std:text:paragraph(reasoning.reasons)
 } else {
-    <p> "No reasoning was given." </p>
+    <p> i("No reasoning was given.") </p>
 }

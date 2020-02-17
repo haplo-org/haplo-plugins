@@ -24,20 +24,68 @@ P.implementService("haplo:data-import-framework:admin-ui:add-documentation-links
     });
 });
 
+P.db.table("control", {
+    created: {type:"datetime"},
+    digest: {type:"text"},
+    fileSize: {type:"int"},
+    comment: {type:"text"}
+});
+
 // --------------------------------------------------------------------------
 
 var CanAdministrateSync = O.action("haplo_user_sync:administer_sync");
 
-P.respond("GET", "/do/haplo-user-sync-generic/control-file", [
+P.respond("GET", "/do/haplo-user-sync-generic/control-files", [
 ], function(E) {
     CanAdministrateSync.enforce();
-    if(!P.data.controlDigest) { O.stop("No control file uploaded"); }
-    let file = O.file(P.data.controlDigest, P.data.controlFileSize);
-    let control = JSON.parse(file.readAsString("utf-8"));
     E.render({
-        json: JSON.stringify(control, undefined, 2),
+        controlFiles: _.map(P.db.control.select().order("created",true), (row) => {
+            return {
+                digestTruncated: row.digest.substring(0,10),
+                row: row
+            };
+        })
+    });
+});
+
+P.respond("GET", "/do/haplo-user-sync-generic/control-file", [
+    {pathElement:0, as:"db", table:"control", optional:true}
+], function(E, control) {
+    CanAdministrateSync.enforce();
+    let json;
+    if(!control) {
+        let file = O.file(P.data.controlDigest, P.data.controlFileSize);
+        json = JSON.parse(file.readAsString("utf-8"));
+    } else {
+        json = JSON.parse(O.file(control.digest, control.fileSize).readAsString("utf-8"));
+    }
+    E.render({
+        json: JSON.stringify(json, undefined, 2),
         files: P.data.expectedFiles
     });
+});
+
+var NewControlFileForm = P.form("new-control-file", "form/new-control-file.json");
+
+P.respond("GET,POST", "/do/haplo-user-sync-generic/upload-control-file", [
+], function(E) {
+    CanAdministrateSync.enforce();
+    let document = {},
+        form = NewControlFileForm.handle(document, E.request);
+    if(form.complete) {
+        let control = P.db.control.create({
+            created: new Date(),
+            digest: document.file.digest,
+            fileSize: document.file.fileSize,
+            comment: document.comment
+        });
+        control.save();
+        P.data.controlDigest = document.file.digest;
+        P.data.controlFileSize = document.file.fileSize;
+        O.serviceMaybe("haplo_user_sync:set_control_file_in_current_sync", "_control", document.file);
+        return E.response.redirect("/do/haplo-user-sync-generic/control-file/"+control.id);
+    }
+    E.render({form:form});
 });
 
 // --------------------------------------------------------------------------

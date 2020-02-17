@@ -282,3 +282,20 @@ P.implementService("haplo_user_sync:backwards_compatible_sync", function(dataFil
     return sync;
 });
 
+P.implementService("haplo_user_sync:set_control_file_in_current_sync", function(name, uploadedFile) {
+    var impl = P.getImplementation();
+
+    // Find or create a new sync group
+    var sync = findOrCreateSyncGroup();
+    var file = O.file(uploadedFile);
+    var files = sync.files;
+    files[name] = {
+        digest: file.digest,
+        fileSize: file.fileSize,
+        filename: file.filename
+    };
+    sync.filesJSON = JSON.stringify(files);
+    if(impl.allFilesUploaded(files)) { sync.status = P.SYNC_STATUS.ready; }
+    sync.save();
+});
+

@@ -5,54 +5,58 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
 
-/*
-*   Haplo iCalendar Exporter
-*
-*   Usage: get a 'CalendarExporter' object by calling
-*
-*   O.service("haplo_icalendar_support:exporter", {
-*       title: "Title",
-*       events: [{}, {}, ...]
-*   });
-*
-*   Spec properties:
-*
-*   title (optional): Sets X-WR-CALNAME and used for default filename
-*   events (optional): A list of "event" objects that require certain properties
-*   
-*   Event properties:
-*
-*   NOTE: a minimum event definition has akind, id, title, and start 
-*
-*   kind (string): internal string denoting the 'kind' of event, used for uid's
-*   id (string-able, required): unique identifying id that must be toString-able, *MUST* be unique
-*       for the 'kind' of object on a given application
-*       for events related to objects, passing a ref is recommended
-*   title (string, required): the event text to be displayed in the users calendar
-*       'summary' is the ical name for this, and can be used as an alias of title
-*   description (string, optional): longer description of the event
-*   location (string, optional): loction where the event will take place
-*   status (string, optional): One of: "CONFIRMED", "TENTATIVE", "CANCELLED"
-*       defaults to "CONFIRMED" if not set
-*   start (Date, required): when the calendar event should begin
-*   end (Date, optional): when the calendar event should end
-*   created (Date, optional): when the event was created 
-*   lastModified (Date, optional): when the event was last updated or changed
-*   categories ([string], optional): array of strings that represent categories the event is under
-*
-*   CalendarExporter properties:
-*
-*   toString() - returns ics formatted calendar as string
-*   toBinaryData(filename) - returns a binaryData object with optional filename specification
-*   repsondWithDownload(E, filename) - shortcut to respond with a .ics file (filename optional)
-*       calls toBinaryData() and sets the response body
-*   addEvent(event) - add an event to the events list. you likely won't need to use this
-*
-*   Limitations/Notes:
-*   
-*   - repeat events are not supported
-*   - "all day" events are not supported
-*
+/*HaploDoc
+node: haplo_icalendar_support
+title: Haplo iCalendar Exporter
+--
+
+Usage: get a @CalendarExporter@ object by calling
+
+<pre>language=javascript
+O.service("haplo_icalendar_support:exporter", {
+   title: "Title",
+   events: [{}, {}, ...]
+});
+</pre>
+
+Spec properties:
+
+* title (optional): Sets X-WR-CALNAME and used for default filename
+* events (optional): A list of "event" objects that require certain properties
+
+Event properties:
+
+NOTE: a minimum event definition has a kind, id, title, and start 
+
+| kind | string | required | internal string denoting the 'kind' of event, used for uid's |
+| id | string-able | required | unique identifying id that must be toString-able, *MUST* be unique \
+for the 'kind' of object on a given application \
+for events related to objects, passing a ref is recommended |
+| title | string | required | the event text to be displayed in the users calendar \
+'summary' is the ical name for this, and can be used as an alias of title |
+| description | string | optional | longer description of the event |
+| location | string | optional | loction where the event will take place |
+| status | string | optional | One of: "CONFIRMED", "TENTATIVE", "CANCELLED" \
+defaults to "CONFIRMED" if not set |
+| start | Date | required | when the calendar event should begin |
+| end | Date | optional | when the calendar event should end |
+| created | Date | optional | when the event was created  |
+| lastModified | Date | optional | when the event was last updated or changed |
+| categories | [string] | optional | array of strings that represent categories the event is under |
+
+@CalendarExporter@ properties:
+
+* toString() - returns ics formatted calendar as string
+* toBinaryData(filename) - returns a binaryData object with optional filename specification
+* respondWithDownload(E, filename) - shortcut to respond with a .ics file (filename optional) \
+calls toBinaryData() and sets the response body
+* addEvent(event) - add an event to the events list. you likely won't need to use this
+
+Limitations/Notes:
+
+* repeat events are not supported
+* "all day" events are not supported
+
 */
 
 // Helper functions for building event strings

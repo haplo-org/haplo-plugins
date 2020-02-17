@@ -1,0 +1,8 @@
+pageTitle(i("Edit accessibility statement"))
+
+<p> i("The accessibility statement is available in all the languages configured for this application.") </p>
+<p> i("Choose a language to edit.") </p>
+
+template:std:ui:choose()
+
+<p> <a href="https://support.haplo.com/accessibility/statement" target="_blank" rel="noopener"> i("Accessibility statement guidance") </a> </p>

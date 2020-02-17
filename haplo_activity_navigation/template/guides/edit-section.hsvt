@@ -1,11 +1,11 @@
 if(row) {
-    pageTitle("Edit guide section: " row.title)
+    pageTitle(i("Edit guide section: {}") { row.title })
 } else {
-    pageTitle("New guide section for " activity.title)
+    pageTitle(i("New guide section for {}") { activity.title })
 }
-backLink("/do/activity/guides/edit-guides/" activity.name) { "Cancel" }
+backLink("/do/activity/guides/edit-guides/" activity.name) { i("Cancel") }
 
 <form method="POST"> std:form:token()
     std:form(form)
-    <p> <input type="submit" value="Save guides"> </p>
+    <p> <input type="submit" value=i("Save guides")> </p>
 </form>

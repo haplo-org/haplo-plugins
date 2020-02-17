@@ -5,42 +5,51 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
 
-/*
-*   Haplo Calendar Access
-*
-*   Handles creation and access to calendar subscription URL/tokens
-*
-*   Services:
-*
-*   "haplo_calendar_access:get_url_for_user"
-*   Gets the URL for a subscription, creating one if one does not exist
-*   
-*   arguments:
-*   - implementation (string): implementation to use, eg, which services to call
-*   - user (securityPrincipal): which user this feed belongs to
-*   - config (object): JSONable data structure that is used to enable/disable/configure
-*       the feed generation
-*
-*   "haplo_calendar_access:generate_new_url_for_user"
-*   Deletes/revokes any existing subscription URLs
-*   Same arguments as get_url_for_user above.
-*
-*   Feed generation:
-*
-*   Consuming plugin *MUST* implement the service:
-*       "haplo_calendar_access:IMPLEMENTATION_NAME:build"
-*   which is called in the context of the user who owns the identifier used
-*   so permissions are restricted to what that user is able to accesss
-*
-*   which is passed the arguments:
-*   - config (object) data structure used to configure the feed generation
-*
-*   and returns an object representing a Calendar spec for haplo_icalender_support:exporter
-*   eg: {title: "Calendar", events:[...]}
-*   This plugin then handles conversion to ICS and responding.
-*
-*   NOTE: use O.currentUser inside the :build service call to get the user who's subscription this is
-*
+/*HaploDoc
+node: haplo_calendar_access
+title: Haplo Calendar Access
+--
+
+Handles creation and access to calendar subscription URL/tokens.
+
+Depends on "@haplo_icalendar_support@":/haplo-plugins/haplo_icalendar_support
+
+h3(service). "haplo_calendar_access:get_url_for_user"
+
+Gets the URL for a subscription, creating one if one does not exist
+
+arguments:
+* implementation (string): implementation to use, eg, which services to call
+* user (securityPrincipal): which user this feed belongs to
+* config (object): JSONable data structure that is used to enable/disable/configure \
+the feed generation
+
+h3(service). "haplo_calendar_access:generate_new_url_for_user"
+
+Deletes/revokes any existing subscription URLs
+Same arguments as @get_url_for_user@ above.
+
+h3. Feed generation
+
+Consuming plugin *MUST* implement the service:
+
+   @"haplo_calendar_access:IMPLEMENTATION_NAME:build"@
+
+which is called in the context of the user who owns the identifier used \
+so permissions are restricted to what that user is able to access.
+
+This service is passed the arguments:
+
+* config (object) data structure used to configure the feed generation
+
+and returns an object representing a @Calendar@ spec for @haplo_icalender_support:exporter@
+
+eg: @{title: "Calendar", events:[...]}@
+
+This plugin then handles conversion to ICS and responding.
+
+NOTE: use @O.currentUser@ inside the @:build@ service call to get the user who's subscription this is
+
 */
 
 P.db.table("calendars", {

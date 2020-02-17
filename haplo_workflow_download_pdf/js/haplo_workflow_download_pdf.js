@@ -38,6 +38,7 @@ When generating a PDF, calls services named:
 
 with a pdf object, which has functions:
 
+* headerFieldList(list)
 * headerField(sort, name, value)
 * section(sort, title, deferred)
 * file(file)
@@ -71,7 +72,7 @@ P.workflow.registerWorkflowFeature("haplo:download_pdf",
                     M, name, O.currentUser, 'viewDraft');
                 return (instance.hasCommittedDocument || canViewDraft);
             });
-            if(canDownload || spec.pluginDocstore) {
+            if(canDownload || (spec.canDownloadPDF && M.hasAnyRole(O.currentUser, spec.canDownloadPDF))) {
                 builder.panel(1498).link("default", "/do/haplo-workflow-download-pdf/download/"+M.workUnit.ref+"/"+M.workUnit.id, "Download printable PDF...");
             }
         });
@@ -86,6 +87,7 @@ P.respond("GET,POST", "/do/haplo-workflow-download-pdf/download", [
 ], function(E, application, workUnit) {
     var workflow = O.service("std:workflow:definition_for_name", workUnit.workType);
     var M = workflow.instance(workUnit);
+    var i = P.locale().text("template");
     if(E.request.method === "POST") {
         var attachingFiles = !!(E.request.parameters.attachments);
         var pipeline = O.fileTransformPipeline();
@@ -94,9 +96,9 @@ P.respond("GET,POST", "/do/haplo-workflow-download-pdf/download", [
         // ---- Download file
         var urlForOutput = pipeline.urlForOutputWaitThenDownload("output", 
             M.title.replace(/[^a-zA-Z0-9]+/g,'-')+".pdf", {
-                pageTitle: "Download "+M.title,
+                pageTitle: O.interpolateString(i["Download {title}"], {title: M.title}),
                 backLink: M.url,
-                backLinkText: "Back"
+                backLinkText: i["Back"]
             });
         pipeline.execute();
         E.response.redirect(urlForOutput);
@@ -104,10 +106,10 @@ P.respond("GET,POST", "/do/haplo-workflow-download-pdf/download", [
     E.render({
         M: M,
         application: application,
-        text: "Would you like to download this application as a single PDF with, or without, the attached files?",
+        text: i["Would you like to download this application as a single PDF with, or without, the attached files?"],
         options: [
-            { label: "Forms only" },
-            { label: "With attachments", parameters:{attachments:"1"} }
+            { label: i["Forms only"] },
+            { label: i["With attachments"], parameters:{attachments:"1"} }
         ]
     });
 });
@@ -126,6 +128,7 @@ P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
         var spec = registeredWorkflows[workUnit.workType];
         var files = [];
         var headerFields = {};
+        var headerFieldList = [];
         var sections = [];
         var css = [ P.loadFile("default.css") ];
 
@@ -134,6 +137,17 @@ P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
             M: M,
             specification: spec,
             attachingFiles: attachingFiles,
+            headerFieldList: function(list){
+                let innerList = list.slice();
+                if(headerFieldList.length > 0){
+                    _.each(innerList, function(name) {
+                        if(!(_.contains(headerFieldList, name))){
+                            headerFieldList.push(name);
+                        }
+                    });
+                }
+                else { headerFieldList = innerList; }
+            },
             headerField: function(sort, name, value) {
                 if(!(name in headerFields)) {
                     headerFields[name] = [];
@@ -221,12 +235,14 @@ P.implementService("haplo:workflow:download-pdf:setup-pipeline-for-workflow",
         // ---- Generate headers
         var headerTable = [];
         _.each(headerFields, function(values, name) {
-            headerTable.push({
-                name: name,
-                sort: values[0].sort,
-                first: values[0],
-                rest: values.slice(1)
-            });
+            if((_.contains(headerFieldList, name)) || (headerFieldList.length === 0)){
+                headerTable.push({
+                    name: name,
+                    sort: values[0].sort,
+                    first: values[0],
+                    rest: values.slice(1)
+                });
+            }
         });
 
         // ---- Generate HTML for documents etc

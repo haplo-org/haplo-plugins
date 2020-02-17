@@ -98,6 +98,13 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
 
     // ----------------------------------------------------------------------
 
+    var hasPermission = function(M, viewArray) {
+        return _.every(viewArray, function(v) {
+            let can = v.selector ? (M.hasAnyRole(O.currentUser, v.roles) && M.selected(v.selector)) : M.hasAnyRole(O.currentUser, v.roles);
+            return v.action === "deny" ? !can : can;
+        });
+    };
+
     // Display links to the form on the action panel
     if("panel" in spec) {
         workflow.actionPanel({}, function(M, builder) {
@@ -106,7 +113,8 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
                 where("formId", "=", form.formId).
                 limit(1).
                 count();
-            if(haveDecision) {
+            let shouldAllow = spec.view ? hasPermission(M, spec.view) : true;
+            if(haveDecision && shouldAllow) {
                 builder.panel(spec.panel).
                     link(spec.priority || "default", spec.path+'/'+M.workUnit.id, form.formTitleShort);
             }
@@ -117,6 +125,10 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
         ], function(E, workUnit) {
             E.setResponsiblePlugin(P); // take over as source of templates, etc
             let M = workflow.instance(workUnit);
+            if(!(!spec.view || hasPermission(M, spec.view))) {
+                O.stop( { message: "You are not permitted to view this decision.", 
+                          pageTitle: "Unauthorised Access" });
+            }
             let formsQuery = plugin.db.decisionFormStorage.select().
                 where("workUnitId", "=", M.workUnit.id).
                 where("formId", "=", form.formId).
@@ -147,5 +159,4 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
             E.render(view, "view-forms");
         });
     }
-
 });

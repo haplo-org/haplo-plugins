@@ -27,7 +27,7 @@ backLink("/do/haplo-data-import-batch/batches")
     <td>
       batch.state
       ifAny(state-complete state-dry-run) {
-        " &nbsp; " <a href="#import-log"> "view log below..." </a>
+        " &nbsp; " <a href="#import-log" role="button"> "view log below..." </a>
       }
     </td>
   </tr>

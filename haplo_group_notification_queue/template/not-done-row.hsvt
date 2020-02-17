@@ -14,7 +14,7 @@
             std:form:token()
             <input type="hidden" name="group" value=group>
             <input type="hidden" name="action" value="done">
-            <input type="submit" value="Mark as done">
+            <input type="submit" value=i("Mark as done")>
         </form>
     </td>
 </tr>

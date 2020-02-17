@@ -1,4 +1,4 @@
-pageTitle("Download as PDF: " M.title)
+pageTitle(i("Download as PDF: {}") { M.title })
 backLink(M.url)
 std:object(application "linkedheading")
 <p> "&nbsp;" </p>

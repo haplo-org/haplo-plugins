@@ -58,5 +58,15 @@
             "description": "Convert a string to upper case.",
             "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/to-upper-case"
         }
+    },
+    "haplo:data-import-framework:filter:haplo:username-to-ref": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "haplo:username-to-ref",
+            "description": "Convert username of user into the Ref value of the profile.",
+            "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/username-to-ref"
+        }
     }
 }

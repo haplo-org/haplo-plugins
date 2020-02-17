@@ -1,0 +1,29 @@
+{
+  "pluginName": "haplo_api_user_v0",
+  "pluginAuthor": "Haplo Services Ltd",
+  "pluginVersion": 1,
+  "displayName": "API v0: Users",
+  "displayDescription": "JSON REST API for user management",
+  "apiVersion": 4,
+  "loadPriority": 3000,
+  "privilegesRequired": [
+      "pCreateUser",
+      "pUserSetDetails",
+      "pUserSetRef",
+      "pUserActivation",
+      "pSetUserLocaleId",
+      "pSetupSystem",
+      "pUserPasswordRecovery",
+      "pUserModifyTags"
+    ],
+  "depend": [
+      "haplo_api_v0"
+    ],
+  "use": [
+      "haplo:api-v0:responder"
+    ],
+  "load": [
+      "js/haplo_api_user_v0.js"
+    ],
+  "respond": ["/api/v0-user"]
+}

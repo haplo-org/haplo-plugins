@@ -134,15 +134,16 @@ P.respond("GET,POST", "/do/subworkflow/manual-start", [
         return E.response.redirect(M.url);
     }
 
+    var i = P.locale().text("template");
     E.render({
         parentM: parentM,
         backLinkText: subworkflowToStart.getBackLinkTextForObject(object),
         object: object,
         confirm: {
-            text: "Would you like to start the "+subworkflowToStart.displayableSubworkflowName+"?",
-            options: [{label:"Start"}],
+            text: O.interpolateString(i["Would you like to start the {name} ?"], {name: subworkflowToStart.displayableSubworkflowName}),
+            options: [{label:i["Start"]}],
             backLink: parentM.url,
-            backLinkText: "Cancel"
+            backLinkText: i["Cancel"]
         }
     });
     

@@ -1,0 +1,14 @@
+{
+  "Duplicate profiles dashboard": "Dangosfwrdd proffiliau dyblyg",
+  "found {} potential duplicates (in {searchSeconds}s)": "canfuwyd {} o ddyblygu posibl (mewn {searchSeconds}s)",
+  "Researcher": "Ymchwilydd",
+  "Duplicate": "Dyblyg",
+  "Identical email": "E-bost unfath",
+  "Merge": "Cyfuno",
+  "Remove from list": "Tynnu o'r rhestr",
+  "Remove": "Tynnu",
+  "Ignoring": "Yn anwybyddu",
+  "Ignoring the following profiles as not duplicates:": "Yn anwybyddu'r proffiliau canlynol fel rhai nad ydynt yn ddyblyg:",
+  "unremove": "dad-dynnu",
+  "remove all from ignore list": "tynnu'r cyfan o'r rhestr anwybyddu"
+}

@@ -1,10 +1,10 @@
-pageTitle("Feedback")
+pageTitle(i("Feedback"))
 std:layout:minimal()
 std:plugin:resources("feedback.css")
 
 <div class="hhff_container">
     if(needsConfig) {
-        std:ui:notice("Please contact your administrator for assistance.")
+        std:ui:notice(i("Please contact your administrator for assistance."))
     }
     if(config.help) {
         unless(formError) { std:text:document(config.help) }
@@ -12,10 +12,10 @@ std:plugin:resources("feedback.css")
     if(form) {
         <form method="POST"> std:form:token()
             if(formError) {
-                std:ui:notice("Please complete all the fields.")
+                std:ui:notice(i("Please complete all the fields."))
             }
             std:form(form)
-            <p><input type="submit" value="Send feedback"></p>
+            <p><input type="submit" value=i("Send feedback")></p>
         </form>
     }
 </div>

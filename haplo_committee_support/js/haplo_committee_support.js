@@ -78,10 +78,11 @@ P.respond("GET,POST", "/do/haplo-committee-support/new-committee-meeting", [
     committee.every(A.Chair, appendAttendee);
     committee.every(A.DeputyChair, appendAttendee);
     committee.every(A.CommitteeMember, appendAttendee);
+    var i = P.locale().text("template");
     meeting.appendTitle(committee.title + " meeting");
     var finishedUrl = back || committee.url();
     E.render({
-        pageTitle: committee.title + ": Schedule new meeting",
+        pageTitle: committee.title + ": "+i["Schedule new meeting"],
         backLink: finishedUrl,
         templateObject: meeting,
         successRedirect: P.template("success-redirect-url").render({finishedUrl:finishedUrl})
@@ -104,18 +105,19 @@ P.respond("GET,POST", "/do/haplo-committee-support/confirm-new-committee-meeting
         else { O.stop("Not a valid choice."); }
     } else {
         let parameters = { ref: meeting.ref, back: back };
+        var i = P.locale().text("template");
         let spec = {
-            pageTitle: "Confirm: new "+meeting.title,
+            pageTitle: i["Confirm: new"]+" "+meeting.title,
             options: [
-                {parameters:_.extend({}, parameters, {"choice":"edit"}), label: "Edit meeting"},
-                {parameters:_.extend({}, parameters, {"choice":"continue"}), label: "Continue"}
+                {parameters:_.extend({}, parameters, {"choice":"edit"}), label: i["Edit meeting"]},
+                {parameters:_.extend({}, parameters, {"choice":"continue"}), label: i["Continue"]}
             ]
         };
         if(!meeting.first(A.Date)) {
-            spec.text = "You have not entered a meeting date. Would you like to continue?";
+            spec.text = i["You have not entered a meeting date. Would you like to continue?"];
             E.render(spec, "std:ui:confirm");
         } else if(meeting.first(A.Date).start < new Date()) {
-            spec.text = "You have entered a meeting date in the past, so you will not be able to schedule items to be discussed at this meeting. Would you like to continue?";
+            spec.text = i["You have entered a meeting date in the past, so you will not be able to schedule items to be discussed at this meeting. Would you like to continue?"];
             E.render(spec, "std:ui:confirm");
         } else {
             return E.response.redirect(back);

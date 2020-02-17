@@ -62,11 +62,11 @@ P.respond("GET", "/do/haplo-workflow-review-documents/review", [
     if(!reviewUI) {
         return E.response.redirect(forwardUrl);
     }
-
+    var i = P.locale().text("template");
     E.renderIntoSidebar({
         elements: [{
             href: forwardUrl, 
-            label: "Continue",
+            label: i["Continue"],
             indicator: "primary"
         }]
     }, "std:ui:panel");

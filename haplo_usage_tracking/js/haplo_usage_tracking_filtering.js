@@ -4,35 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
+P.data.migrated = 0;
+P.data.robots = 0;
+P.data.seen = 0;
+P.data.migrationStarted = false;
 
-var earliestId;
-var latestId;
-
-P.implementService("haplo_usage_tracking:notify:event", function(event) {
-    latestId = event.id;
-});
-
-var requestIsDuplicate = P.requestIsDuplicate = function(userAgent, object, kind, datetime) {
-    if(!latestId) {
-        let latestEvent = P.db.events.select().order('id', true).limit(1)[0];
-        latestId = latestEvent ? latestEvent.id : 1;
-    }
-    if(!earliestId) {
-        let tenMinutesAgo = new XDate(datetime).addMinutes(-10);
-        let earliestEvent = P.db.events.select().where("id", ">", latestId - 2000).where("datetime", ">=", new Date(tenMinutesAgo)).order('id').limit(1);
-        if(earliestEvent.length > 0) {
-            earliestId = earliestEvent[0].id;
-        } else {
-            earliestId = latestId;
-        }
-    }
-    let userAgentString = userAgent ? userAgent[0] : null;
+var requestIsDuplicate = P.requestIsDuplicate = function(userAgent, object, kind, datetime, ip) {
+    let thirtySecondsAgo = new XDate(datetime).addSeconds(-30);
     let countOfRecentEvents = P.db.events.select().
-                                where("userAgent", "=", userAgentString).
+                                where("userAgent", "=", userAgent).
                                 where("kind", "=", kind).
                                 where("object", "=", object || null).
-                                where("id", ">=", earliestId).
-                                where("classification", "<>", 2).
+                                where("datetime", ">=", thirtySecondsAgo.toDate()).
+                                where("datetime", "<", new Date(datetime)).
+                                where("remoteAddress", "=", ip).
                                 count();
     return countOfRecentEvents > 0;
 };
@@ -52,18 +37,18 @@ P.hook("hScheduleDailyEarly", function(response, year, month, dayOfMonth) {
 //List taken from https://github.com/atmire/COUNTER-Robots
 var ROBOTS_LIST = [
     "bot",
+    "^Buck\\/[0-9]",
     "spider",
     "crawl",
     "^.?$",
     "[^a]fish",
     "^IDA$",
     "^ruby$",
-    "^voyager\\/",
     "^@ozilla\\/\\d",
     "^脝脝陆芒潞贸碌脛$",
     "^破解后的$",
     "AddThis",
-    "A6\\-Indexer",
+    "A6-Indexer",
     "ADmantX",
     "alexa",
     "Alexandria(\\s|\\+)prototype(\\s|\\+)project",
@@ -88,11 +73,11 @@ var ROBOTS_LIST = [
     "binlar",
     "bjaaland",
     "Blackboard[\\+\\s]Safeassign",
-    "blaiz\\-bee",
+    "blaiz-bee",
     "bloglines",
     "blogpulse",
-    "boitho\\.com\\-dc",
-    "bookmark\\-manager",
+    "boitho\\.com-dc",
+    "bookmark-manager",
     "Brutus\\/AET",
     "BUbiNG",
     "bwh3_user_agent",
@@ -113,6 +98,7 @@ var ROBOTS_LIST = [
     "ContentSmartz",
     "convera",
     "core",
+    "Cortana",
     "CoverScout",
     "curl\\/",
     "cursor",
@@ -138,6 +124,7 @@ var ROBOTS_LIST = [
     "facebookexternalhit\\/",
     "favorg",
     "FDM(\\s|\\+)\\d",
+    "Feedbin",
     "feedburner",
     "FeedFetcher",
     "feedreader",
@@ -191,6 +178,7 @@ var ROBOTS_LIST = [
     "libhttp",
     "libwww",
     "lilina",
+    "^LinkAnalyser",
     "link.?check",
     "LinkLint-checkonly",
     "^LinkParser\\/",
@@ -206,8 +194,8 @@ var ROBOTS_LIST = [
     "lwp",
     "lycos[_+]",
     "mail.ru",
-    "MarcEdit.5.2.Web.Client",
-    "mediapartners\\-google",
+    "MarcEdit",
+    "mediapartners-google",
     "megite",
     "MetaURI[\\+\\s]API\\/\\d\\.\\d",
     "Microsoft(\\s|\\+)URL(\\s|\\+)Control",
@@ -235,7 +223,7 @@ var ROBOTS_LIST = [
     "netcraft",
     "netluchs",
     "ng\\/2\\.",
-    "Ning",
+    "^Ning\\/\\d",
     "no_user_agent",
     "nomad",
     "nutch",
@@ -248,10 +236,11 @@ var ROBOTS_LIST = [
     "OurBrowser",
     "panscient",
     "parsijoo",
-    "Pcore\\-HTTP",
+    "Pcore-HTTP",
     "pear.php.net",
     "perman",
     "PHP\\/",
+    "pidcheck",
     "pioneer",
     "playmusic\\.com",
     "playstarmusic\\.com",
@@ -272,6 +261,7 @@ var ROBOTS_LIST = [
     "scirus",
     "scooter",
     "Scrapy\\/\\d",
+    "ScoutJet",
     "^scrutiny\\/\\d",
     "SearchBloxIntra",
     "shoutcast",
@@ -296,10 +286,12 @@ var ROBOTS_LIST = [
     "ultraseek",
     "^undefined$",
     "^unknown$",
+    "Unpaywall",
     "URL2File",
     "urlaliasbuilder",
     "urllib",
     "^user.?agent$",
+    "^User-Agent",
     "validator",
     "virus.detector",
     "voila",
@@ -316,6 +308,7 @@ var ROBOTS_LIST = [
     "Webmetrics",
     "webmirror",
     "webmon",
+    "weborama-fetcher",
     "webreaper",
     "WebStripper",
     "WebZIP",
@@ -323,12 +316,13 @@ var ROBOTS_LIST = [
     "wordpress",
     "worm",
     "www\\.gnip\\.com",
-    "WWW\\-Mechanize",
+    "WWW-Mechanize",
     "xenu",
     "y!j",
     "yacy",
     "yahoo",
     "yandex",
+    "Yeti\\/\\d",
     "zeus",
     "zyborg"
 ];

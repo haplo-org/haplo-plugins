@@ -1,0 +1,8 @@
+pageTitle("Upload user sync control file")
+backLink("/do/haplo-user-sync/admin")
+
+<form method="POST"> std:form:token()
+    std:form(form)
+    <p> <input type="submit" value="Upload file"> </p>
+</form>
+

@@ -14,26 +14,37 @@ var createNewApprovalLookup = function(allApprovers) {
     return lookup;
 };
 
+var checkifTransitionArrayReturnCorrectTimeline = function(forwardTransition, timeline) {
+    if(_.isArray(forwardTransition)) {
+        return timeline.or( (select) => {
+            _.each(forwardTransition, (ft) => 
+                select.where("action","=", ft));
+            });
+    } else {
+        return timeline.where("action","=", forwardTransition);
+    }
+};
+
 P.workflow.registerWorkflowFeature("haplo:list_approval",
     function(workflow, spec) {
-
         var createLookup = function(M) {
             var timeline = M.timelineSelect().where("previousState","=",spec.state).order("datetime");
-            if(!spec.resetTransition) {
-                timeline.where("action","=",spec.forwardTransition);
-            } else {
-                timeline.or(function(select) {
-                    select.where("action","=",spec.forwardTransition).
-                        where("action","=",spec.resetTransition);
-                });
-            }
             var allApprovers = M.entities[spec.listEntity+"_refList"];
             var approvedLookup = createNewApprovalLookup(allApprovers);
+
+            if(!spec.resetTransition) {
+                checkifTransitionArrayReturnCorrectTimeline(spec.forwardTransition, timeline);
+            } else {
+                timeline.or( function(select) {
+                    checkifTransitionArrayReturnCorrectTimeline(spec.forwardTransition, select)
+                    .where("action", "=", spec.resetTransition);
+                });
+            }
+
             _.each(timeline, function(e) {
                 var userRef = e.user.ref;
                 if(userRef) { approvedLookup.set(userRef, true); }
-                if(
-                    approvedLookup.length === allApprovers.length ||
+                if(approvedLookup.length === allApprovers.length ||
                     (spec.resetTransition && spec.resetTransition === e.action)
                 ) {
                     // This means all users have previously approved but this is running
@@ -97,7 +108,8 @@ P.workflow.registerWorkflowFeature("haplo:list_approval",
 
         workflow.setWorkUnitProperties({state:spec.state}, function(M, transition) {
             var targetRef;
-            if(transition === spec.forwardTransition) {
+            let isInForwardTransitions = _.isArray(spec.forwardTransition) ? _.contains(spec.forwardTransition, transition) : false;
+            if(isInForwardTransitions || (transition === spec.forwardTransition)) {
                 targetRef = getNext(M);
             } else {
                 // if AUTOMOVE is running, we don't want it to go to the next one
@@ -110,7 +122,8 @@ P.workflow.registerWorkflowFeature("haplo:list_approval",
         });
 
         workflow.resolveTransitionDestination({state:spec.state}, function(M, name, destinations) {
-            if(name === spec.forwardTransition) {
+            let isInForwardTransitions = _.isArray(spec.forwardTransition) ? _.contains(spec.forwardTransition, name) : false;
+            if(isInForwardTransitions || (name === spec.forwardTransition)) {
                 var next = getNext(M);
                 if(next) {
                     return destinations[0];
@@ -122,5 +135,52 @@ P.workflow.registerWorkflowFeature("haplo:list_approval",
             }
         });
 
+        let includesAllNecessaryDecisionReviewProperties = spec.includeDecisionReview ? spec.includeDecisionReview.path && spec.includeDecisionReview.selector && _.isArray(spec.forwardTransition) : false;
+
+        if(includesAllNecessaryDecisionReviewProperties) {
+
+            //panel 200 should be Application panel
+            workflow.actionPanel({}, function(M, builder) {
+                let panelName = spec.includeDecisionReview.panelName ? spec.includeDecisionReview.panelName : "Review prior decisions";
+                builder.panel(spec.includeDecisionReview.panel || 200).link(spec.includeDecisionReview.inPanelPriority || 100, 
+                    spec.includeDecisionReview.path+"/decision-review/"+M.workUnit.id, 
+                       panelName );
+            });
+
+            workflow.plugin.respond("GET,POST", spec.includeDecisionReview.path+"/decision-review", [
+                {pathElement:0, as:"workUnit"}
+            ], function(E, workUnit) {
+                E.setResponsiblePlugin(P); // take over as source of templates, etc
+                let M = workflow.instance(workUnit);
+                if(!M.selected(spec.includeDecisionReview.selector) && !M.workUnit.isActionableBy(O.currentUser) || !spec.includeDecisionReview) {
+                    O.stop( { message: "You are not permitted to view these decisions.", pageTitle: "Unauthorised Access" });
+                }
+
+                let timelineQuery = M.timelineSelect().where("state", "=", spec.state).order("datetime", true),
+                    FTisArray = _.isArray(spec.forwardTransition),
+                    decisions = {};
+
+                _.each(timelineQuery, (tq) => {
+                    let isForwardTransition = FTisArray ? _.contains(spec.forwardTransition, tq.action) : spec.forwardTransition === tq.action;
+                    if(tq.action === "NOTE" || isForwardTransition) {
+                        let existingDecision = decisions[tq.user.id] ? decisions[tq.user.id] : false,
+                            decisionInfo = { 
+                                user: tq.user.name, 
+                                datetime: tq.datetime, 
+                                transition: { 
+                                    label: M.getTextMaybe("transition:"+tq.action), 
+                                    indicator: M.getTextMaybe("transition-indicator:"+tq.action), 
+                                    notes: M.getTextMaybe("transition-notes:"+tq.action)
+                                }
+                            };
+                        if(tq.action === "NOTE") { decisionInfo = JSON.parse(tq.json).private ? { private: JSON.parse(tq.json).text } : { notes: JSON.parse(tq.json).text }; }
+                        if(existingDecision) { _.extend(decisions[tq.user.id], decisionInfo); }
+                        else { decisions[tq.user.id] = decisionInfo; }
+                    }
+                });
+                let view = { M: M, decisions: _.toArray(decisions) };
+                E.render(view, "view-decisions");
+            });
+        }
     }
 );

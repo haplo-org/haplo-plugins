@@ -18,7 +18,7 @@ P.db.table('events', {
     kind: { type:'smallint' },     // 'view', 'download'
     user: { type:'int' },
     publication: { type:'text', nullable:true },    // null => internal
-    object: { type:'ref', nullable:true },
+    object: { type:'ref', nullable:true, indexed:true },
     file: { type:'text', nullable:true } // digest
 });
 
@@ -50,7 +50,7 @@ var addEvent = function(request, kind, publication, obj, file) {
     // is more useful that having an accurate track of doubleclicks/duplicates (e.g. for wiping robot entries each month)
     // For this reason, the check for robot-ness happens last, and overwrites everything before. 
     let classification = CLASSIFICATION_ENUM['default'];
-    if(P.requestIsDuplicate(request.headers["User-Agent"], object, KIND_ENUM[kind], new Date())) { classification = CLASSIFICATION_ENUM['duplicate']; }
+    if(P.requestIsDuplicate(request.headers["User-Agent"] ? request.headers["User-Agent"][0] : null, object, KIND_ENUM[kind], new Date(), request.remote.address)) { classification = CLASSIFICATION_ENUM['duplicate']; }
     if(P.userAgentIsRobot(request.headers["User-Agent"])) { classification = CLASSIFICATION_ENUM['robot']; }
     let e = P.db.events.create({
         datetime: new Date(),

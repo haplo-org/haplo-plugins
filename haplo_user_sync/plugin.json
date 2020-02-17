@@ -17,7 +17,9 @@
         "pSetupSystem",
         "pUserActivation",
         "pReportHealthEvent",
-        "pUserSetRef"],
+        "pUserSetRef",
+        "pUserModifyTags"
+    ],
     "depend": [
         "std_document_store",
         "std_reporting"],

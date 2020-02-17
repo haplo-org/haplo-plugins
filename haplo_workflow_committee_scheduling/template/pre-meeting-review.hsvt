@@ -1,9 +1,9 @@
-pageTitle("Pre-meeting review")
+pageTitle(i("Pre-meeting review"))
 backLink(std:object:url(app))
 
-<p> "Reviewers will be emailed to request a review of the application in preparation for discussion at the meeting on " <b> std:date(date.start) </b> "." </p>
+<p> i("Reviewers will be emailed to request a review of the application in preparation for discussion at the meeting on {}.") { <b> std:date(date.start) </b> }  </p>
 
 <form method="POST"> std:form:token()
     std:form(form)
-    <p> <input type="submit" value="Confirm"> </p>
+    <p> <input type="submit" value=i("Confirm")> </p>
 </form>

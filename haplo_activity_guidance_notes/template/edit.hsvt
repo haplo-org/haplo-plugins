@@ -1,4 +1,4 @@
-pageTitle("Edit " activity.title " guidance notes")
+pageTitle(i("Edit {} guidance notes") { activity.title })
 backLink("/do/activity/" activity.name)
 
 each(notes) {

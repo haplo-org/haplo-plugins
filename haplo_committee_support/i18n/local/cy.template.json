@@ -1,0 +1,18 @@
+{
+  "Committees": "Pwyllgorau",
+  "Dear {}": "Annwyl {}",
+  "This is a reminder about the {committeeTitle} meeting on {} at {location}.": "Mae hwn yn nodyn atgoffa am gyfarfod y {committeeTitle} ar {} yn {location}.",
+  "This is a reminder about the {committeeTitle} meeting on {}.": "Mae hwn yn nodyn atgoffa am gyfarfod y {committeeTitle} ar {}.",
+  "The following applications will be discussed during this meeting:": "Bydd y ceisiadau canlynol yn cael eu trafod yn ystod y cyfarfod hwn:",
+  "Reviewed by": "Adolygwyd gan",
+  "More information:": "Rhagor o wybodaeth:",
+  "Committee Meeting Details and Applications": "Manylion y Cyfarfod Pwyllgor a Cheisiadau",
+  "Please note there are no attendees listed on the committee meeting so this notification has only been sent to the committee representatives. Please notify other members as necessary.": "Nodwch nad oes neb wedi eu rhestru i fynychu cyfarfod y pwyllgor felly mae'r hysbysiad hwn ond wedi ei anfon at gynrychiolwyr y pwyllgor. Hysbyswch yr aelodau eraill lle bo angen.",
+  "Upcoming committee meetings": "Cyfarfodydd y pwyllgor yn y dyfodol",
+  "Schedule new meeting": "Trefnu cyfarfod newydd",
+  "Confirm: new": "Cadarnhau: newydd",
+  "Edit meeting": "Golygu'r cyfarfod",
+  "Continue": "Parhau",
+  "You have not entered a meeting date. Would you like to continue?": "Nid ydych wedi nodi dyddiad cyfarfod. A hoffech chi fwrw ymlaen?",
+  "You have entered a meeting date in the past, so you will not be able to schedule items to be discussed at this meeting. Would you like to continue?": "Rydych chi wedi nodi dyddiad cyfarfod yn y gorffennol, felly ni fyddwch yn gallu trefnu eitemau i'w trafod yn y cyfarfod hwn. A hoffech chi fwrw ymlaen?"
+}

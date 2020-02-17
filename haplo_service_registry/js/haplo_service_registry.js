@@ -24,11 +24,11 @@ title: ServiceMetadata
 sort: 1
 --
 
-An object representing a service listed in the service regitry.
+An object representing a service listed in the service registry.
 
 h3(key). name
 
-The name of the service. Use this to call the service function wity @O.service(serviceMetadata.name, ... args ... )@.
+The name of the service. Use this to call the service function with @O.service(serviceMetadata.name, ... args ... )@.
 
 h3(key). metadata
 
@@ -38,6 +38,21 @@ var ServiceMetadata = function(name) {
     this.name = name;
     this.metadata = {};
     this.$statements = {};
+};
+
+/*HaploDoc
+node: /haplo_service_registry/service_metadata
+title: ServiceMetadata
+sort: 4
+--
+
+h3(function). matchesStatements(statements)
+
+Returns @true@ if the service matches all of the @statements@ supplied. Useful for filtering \
+further the results returned from the @"haplo:service-registry:query"@ service.
+*/
+ServiceMetadata.prototype.matchesStatements = function(statements) {
+    return this._matchesStatements(statements);
 };
 
 ServiceMetadata.prototype._add = function(info) {

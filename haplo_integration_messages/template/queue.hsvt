@@ -29,12 +29,12 @@ if(showSendButton) {
           <i> "waiting" </i>
         }
       </td>
-      <td> <a href=["/do/haplo-integration-messages/message/" ^{group.group} "/" id]> "Info..." </a> </td>
+      <td> <a href=["/do/haplo-integration-messages/message/" ^{group.group} "/" id] role="button"> "Info..." </a> </td>
     </tr>
   }
 </table>
 if(lastDisplayId) {
-    <p> <a href=[? last=lastDisplayId]> "Previous" </a> </p>
+    <p> <a href=[? last=lastDisplayId] role="button"> "Previous" </a> </p>
 }
 
 <p> "&nbsp;" </p>

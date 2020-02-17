@@ -25,4 +25,12 @@ if("std:type:person" in TYPE) {
 
     });
 
+    P.implementService("haplo:data-import-framework:filter:haplo:username-to-ref", function() {
+        return function(value) {
+            var q = O.usersByTags({"username": value.toLowerCase()});
+            var user = q.length ? q[0] : undefined;
+            return user ? (user.ref||undefined) : undefined;
+        };
+    });
+
 }
