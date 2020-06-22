@@ -1,0 +1,7 @@
+
+group haplo:group:api-v0:object-api as ObjectAPI
+    title: API v0: Object
+
+service-user haplo:service-user:api-v0:object
+    title: API v0: Object
+    group haplo:group:api-v0:object-api

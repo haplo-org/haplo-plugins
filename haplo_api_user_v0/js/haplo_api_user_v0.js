@@ -20,7 +20,7 @@ var withUser = function(api, userId, fn) {
     try {
         user = O.securityPrincipal(userId);
     } catch(e) {
-        return api.error("haplo:api-v0:user:no-such-user", "User ID "+userId+" does not exist");
+        return api.error("haplo:api-v0:user:no-such-user", "User ID "+userId+" does not exist", HTTP.NOT_FOUND);
     }
     if(user) {
         fn(user);
@@ -63,10 +63,10 @@ var getUsersByTagsFromParameters = function(api, parameters, singleUser) {
                 memo = memo+", "+str;
             }).value();
     if(users.length === 0) {
-        return api.error("haplo:api-v0:user:no-user-found", "Tag query "+queryString+" returned no users.");
+        return api.error("haplo:api-v0:user:no-user-found", "Tag query "+queryString+" returned no users.", HTTP.NOT_FOUND);
     }
     if(singleUser && users.length > 1) {
-        return api.error("haplo:api-v0:user:multiple-users-found", "Tag query "+queryString+" returned more than one result.");
+        return api.error("haplo:api-v0:user:multiple-users-found", "Tag query "+queryString+" returned more than one result.", HTTP.NOT_FOUND);
     }
     if(singleUser) {
         return users[0];
@@ -174,6 +174,13 @@ var updateUserTags = function(user, tags) {
     if(tagsNeedSaving) { user.saveTags(); }
 };
 
+var usernameUnique = function(username, user) {
+    let normalisedUsername = username.toLowerCase();
+    if(user && user.tags.username === normalisedUsername) { return true; }
+    let usersWithUsername = O.usersByTags({username: normalisedUsername});
+    return usersWithUsername.length === 0;
+};
+
 // --------------------------------------------------------------------------
 // Reponse handlers
 // --------------------------------------------------------------------------
@@ -242,8 +249,12 @@ P.respondToAPI("POST", "/api/v0-user/id", [
                 actions.push(() => user.setGroupMemberships(groupIds));
                 delete newDetails.directGroupMembership;
             } else if(key === "tags") {
-                actions.push(() => updateUserTags(user, value));
-                delete newDetails.tags;
+                if(value.username && !usernameUnique(value.username, user)) {
+                    error = "Could not set username tag to "+value.username+" for user "+userId+" as a user already exists with that username.";
+                } else {
+                    actions.push(() => updateUserTags(user, value));
+                    delete newDetails.tags;
+                }
             } else {
                 newDetails[key] = value;
                 setDetailsNeeded = true;
@@ -272,6 +283,9 @@ P.respondToAPI("POST", "/api/v0-user/create", [
     if(details.email && O.user(details.email)) {
         return api.error("haplo:api-v0:user:creation-failed", "Could not create new user, as user already exists with email address "+details.email);
     }
+    if(details.tags && details.tags.username && !usernameUnique(details.tags.username)) {
+        return api.error("haplo:api-v0:user:creation-failed", "Could not create new user, as user already exists with username tag "+details.tags.username);
+    }
 
     let setupDetails = _.clone(details);
     if(details.ref) {
@@ -287,9 +301,7 @@ P.respondToAPI("POST", "/api/v0-user/create", [
     delete setupDetails.directGroupMembership;
     setupDetails.groups = getGroupsForUpdate(user, details.directGroupMembership);
 
-    delete setupDetails.localeId;
     user = O.setup.createUser(setupDetails);
-    if(details.localeId) { user.setLocaleId(details.localeId); }
     if(user) {
         if(welcomeLink) {
             api.respondWith("welcomeLink", user.generateWelcomeURL());

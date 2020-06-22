@@ -12,7 +12,7 @@ t.test(function() {
     t.assert(textTransform("xyz") === "xyz");
     t.assert(textTransform(42) === "42");
 
-    var dateTransform = make["date"](undefined, {dateFormat:"yyyy-MM-dd"}, "test");
+    var dateTransform = make["datetime"](undefined, {dateFormat:"yyyy-MM-dd"}, "test");
     t.assert(dateTransform("2018-02-10") instanceof Date);
     t.assert(dateTransform("2018-02-10").toString() === "Sat Feb 10 2018 00:00:00 GMT-0000 (UTC)");
     t.assert(dateTransform(undefined) === undefined);

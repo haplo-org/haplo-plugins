@@ -1,0 +1,19 @@
+{
+  "pluginName": "haplo_publication_common",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Publication Common",
+  "displayDescription": "Common publication features for use with web publisher",
+  "installSecret": "7fdb8773a9ebc29c6fd31f02b001f178b7333d8f",
+  "apiVersion": 4,
+  "depend": [
+    "std_web_publisher",
+    "hres_schema"
+  ],
+  "use": ["std:web-publisher"],
+  "load": [
+      "js/haplo_publication_common.js",
+      "js/haplo_publication_templates.js"
+    ],
+  "respond": ["/do/haplo-publication-common"]
+}

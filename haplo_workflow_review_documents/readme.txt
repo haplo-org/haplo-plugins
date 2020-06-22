@@ -1,4 +1,4 @@
-title: Haplo Workflow Review Documents
+title: Workflow review documents
 --
 
 h2. Background
@@ -60,7 +60,7 @@ h4. Usage
 Call the service with:
 
 * *REQUIRED:* @arg1@ being a @WorkflowInstance@ object
-* *REQUIRED:* @arg2@ being a @SecurityPrinciple@ object.
+* *REQUIRED:* @arg2@ being a @SecurityPrincipal@ object.
 
 Example:
 

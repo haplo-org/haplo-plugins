@@ -16,6 +16,7 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
     if(!form) { throw new Error("form must be specified."); }
     let blankDocumentForKey = spec.blankDocumentForKey;
     let prepareFormInstance = spec.prepareFormInstance;
+    let onTransitionCallback = spec.onTransition;
 
     // ----------------------------------------------------------------------
 
@@ -42,6 +43,12 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
         if(!state) {
             let document = blankDocumentForKey ? blankDocumentForKey(M) : {};
             let instance = form.instance(document);
+            // mimic docstore workflow feature behaviour of setting std_document_store:key
+            // so that things like global template functions can access M
+            instance.externalData({
+                "std_document_store:key": M,
+                requestedTransition: ui.requestedTransition
+            });
             if(prepareFormInstance) { prepareFormInstance(M, instance); }
             instance.update(E.request);
             state = ui.__transitionDecisionFormState = [instance, document];
@@ -63,6 +70,7 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
     });
 
     // Save the data to the database when the transition is confirmed
+    // If an onTransition function is used, call it just before the transition is committed.
     workflow.transitionFormPreTransition(selector, function(M, E, ui) {
         withForm(M, E, ui, (instance, document) => {
             if(!_.isEmpty(document)) {
@@ -76,6 +84,9 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
                 }).save();
             }
         });
+        if(onTransitionCallback) {
+            onTransitionCallback(M, ui.transitionData);
+        }
     });
 
     // Prevent the transition from happening if the form is not complete.
@@ -116,7 +127,7 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
             let shouldAllow = spec.view ? hasPermission(M, spec.view) : true;
             if(haveDecision && shouldAllow) {
                 builder.panel(spec.panel).
-                    link(spec.priority || "default", spec.path+'/'+M.workUnit.id, form.formTitleShort);
+                    link(spec.priority || "default", spec.path+'/'+M.workUnit.id, spec.formCustomTitle || form.formTitleShort);
             }
         });
 
@@ -135,6 +146,10 @@ P.workflow.registerWorkflowFeature("haplo:transition_decision_form", function(wo
                 order("datetime", true);
             let forms = _.map(formsQuery, function(row) {
                 let instance = form.instance(row.document);
+                instance.externalData({
+                    "std_document_store:key": M,
+                    requestedTransition: row.transition
+                });
                 if(prepareFormInstance) { prepareFormInstance(M, instance); }
                 return {
                     row: row,

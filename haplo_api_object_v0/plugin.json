@@ -1,0 +1,20 @@
+{
+  "pluginName": "haplo_api_object_v0",
+  "pluginAuthor": "Haplo Services Ltd",
+  "pluginVersion": 1,
+  "displayName": "API v0: Objects",
+  "displayDescription": "JSON REST API for objects and associated information",
+  "apiVersion": 4,
+  "loadPriority": 3000,
+  "depend": [
+      "std_serialisation",
+      "haplo_api_v0"
+    ],
+  "use": [
+      "haplo:api-v0:responder"
+    ],
+  "load": [
+      "js/haplo_api_object_v0.js"
+    ],
+  "respond": ["/api/v0-object"]
+}

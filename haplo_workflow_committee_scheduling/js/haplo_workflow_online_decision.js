@@ -647,7 +647,6 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
                 document.declined = declined;
                 onlineDecision.document = JSON.stringify(document);
                 onlineDecision.save();
-                wu.deleteObject();
                 // rep may want to know if someone has declined to participate
                 var M = workflow.instanceForRef(app.ref);
                 var committeeRepRef = M.entities[stateInfo.committeeEntityName+"Rep_refMaybe"];
@@ -656,11 +655,12 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
                     var researcher = wu.actionableBy.ref.load();
                     var view = {
                         researcher: researcher,
-                        decisionUrl: O.application.url+spec.path+"/online-decision"/+onlineDecision.id
+                        decisionUrl: O.application.url+spec.path+"/online-decision/"+onlineDecision.id
                     };
                     sendNotificationEmail(M, committeeRepUser, "email/online-decision-declined",
                        NAME("Online decision")+" invitation declined ("+app.title+")", app, view);
                 }
+                wu.deleteObject();
                 return E.response.redirect(app.url());
             }
         }

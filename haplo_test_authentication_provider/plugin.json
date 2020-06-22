@@ -2,6 +2,7 @@
   "pluginName": "haplo_test_authentication_provider",
   "pluginAuthor": "Haplo Services",
   "pluginVersion": 1,
+  "loadPriority": 99999999,
   "displayName": "Test Authentication Providers",
   "displayDescription": "Provide a UI for testing authentication providers. A keychain entry called 'login' must exist, unless otherwise set in configuration data.",
   "apiVersion": 4,

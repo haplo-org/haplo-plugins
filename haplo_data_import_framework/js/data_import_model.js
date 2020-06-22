@@ -262,18 +262,6 @@ DestinationDictionary.prototype._checkTarget = function(target, transformation) 
 
 var DestinationObject = makeDestinationKind('object');
 
-var TYPECODE_TO_DATA_TYPE = {}; // names should match schema requirements
-TYPECODE_TO_DATA_TYPE[O.T_DATETIME] =                       "date";
-TYPECODE_TO_DATA_TYPE[O.T_TEXT] =                           "text";
-TYPECODE_TO_DATA_TYPE[O.T_TEXT_PERSON_NAME] =               "person-name";
-TYPECODE_TO_DATA_TYPE[O.T_TEXT_PARAGRAPH] =                 "text-paragraph";
-TYPECODE_TO_DATA_TYPE[O.T_TEXT_MULTILINE] =                 "text-multiline";
-TYPECODE_TO_DATA_TYPE[O.T_IDENTIFIER_CONFIGURATION_NAME] =  "configuration-name";
-TYPECODE_TO_DATA_TYPE[O.T_IDENTIFIER_POSTAL_ADDRESS] =      "postal-address";
-TYPECODE_TO_DATA_TYPE[O.T_IDENTIFIER_EMAIL_ADDRESS] =       "email-address";
-TYPECODE_TO_DATA_TYPE[O.T_IDENTIFIER_URL] =                 "url";
-TYPECODE_TO_DATA_TYPE[O.T_IDENTIFIER_TELEPHONE_NUMBER] =    "telephone-number";
-
 DestinationObject.prototype._setup = function() {
 };
 
@@ -296,7 +284,7 @@ DestinationObject.prototype._getNameDefinitions = function() {
                     props.type = "ref";
                     props.refTypes = attr.types;
                 } else {
-                    let dataType = TYPECODE_TO_DATA_TYPE[typecode];
+                    let dataType = O.TYPECODE_TO_NAME[typecode];
                     if(dataType) {
                         props.type = dataType;
                     } else {

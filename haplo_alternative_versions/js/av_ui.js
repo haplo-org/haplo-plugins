@@ -24,6 +24,7 @@ P.element("alternative_versions", "Alternative versions of objects", function(L)
     if(alternatives.length) {
         let tabs = [];
         _.each(alternatives, (alt) => {
+            if(!O.currentUser.canRead(alt)) { return; }
             let source = O.serviceMaybe("haplo_alternative_versions:source_for_alternative_object", alt);
             tabs.push({
                 href: alt.url(),

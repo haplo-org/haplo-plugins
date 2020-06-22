@@ -1,0 +1,8 @@
+
+switch(type) { value }
+    ref {
+        std:object:link(value)
+    }
+    date {
+        std:date(value)
+    }

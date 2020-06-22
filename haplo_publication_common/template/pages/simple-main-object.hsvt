@@ -1,0 +1,16 @@
+
+// WARNING: REPLACEABLE =====================================================
+
+pageTitle(object.title)
+
+std:web-publisher:block("below") {
+  <div class="card border-0 bg-light">
+    <div class="card-body">
+      <div class="detail-table card border-0 bg-light">
+        <div class="card-body px-0 px-sm-2 pt-0">
+          render(object.asTable)
+        </div>
+      </div>
+    </div>
+  </div>
+}

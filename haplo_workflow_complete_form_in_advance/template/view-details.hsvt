@@ -1,0 +1,9 @@
+pageTitle(
+    i("View details")
+    if(pageTitle) { ": " pageTitle }
+)
+
+backLink(std:object:url(project))
+
+<h1> formTitle </h1>
+render(form)

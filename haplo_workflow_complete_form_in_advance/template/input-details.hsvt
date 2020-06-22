@@ -1,14 +1,25 @@
-pageTitle("Enter details")
+pageTitle(
+    i("Enter details")
+    if(pageTitle) { ": " pageTitle }
+)
 backLink(std:object:url(project))
 if(overlay) {
     std:layout:minimal()
 }
 
 if(showConfirmation) {
-    std:ui:notice("Saved")
+    if(submitted) { std:ui:notice(i("Submitted")) }
+    else { std:ui:notice(i("Saved for later")) }
+    std:plugin:resources("close-overlay.js")
 }
 
 <form method="POST"> std:form:token()
     std:form(form)
-    <input type="submit" value="Save">
+    <input type="submit" name="__submit" value=i("Submit")>
+    if(saveForLater) {
+        "&nbsp; &nbsp;"
+        <button name="__later" value="s">
+            i("Save for later")
+        </button>
+    }
 </form>

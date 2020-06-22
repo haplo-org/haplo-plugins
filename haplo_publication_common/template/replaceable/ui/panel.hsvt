@@ -1,0 +1,13 @@
+
+// WARNING: REPLACEABLE =====================================================
+
+<div class="card p-0 border-0 mb-4 rounded-0">
+  ifHasBlock:heading() {
+    <div class="card-header bg-transparent border-0">
+      <h2> yield:heading() </h2>
+    </div>
+  }
+  <div class="card-body">
+    yield()
+  </div>
+</div>

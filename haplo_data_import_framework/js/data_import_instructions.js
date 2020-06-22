@@ -161,7 +161,7 @@ constructors["if-value-one-of"] = function(batch, instruction) {
     return function(transformation, context) {
         let value = context[source];
         transformation._executeInstructionList(
-            (value && (-1 !== values.indexOf(value))) ? thenList : elseList,
+            ((source in context) && (-1 !== values.indexOf(value))) ? thenList : elseList,
             context
         );
     };

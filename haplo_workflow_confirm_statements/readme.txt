@@ -1,4 +1,4 @@
-title: Haplo Workflow Confirm Statements
+title: Workflow confirm statements
 --
 The user must agree with one or more statements before they can make a transition through the workflow UI.
 

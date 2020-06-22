@@ -5,6 +5,7 @@
   "displayName": "Haplo Direct To Transitions",
   "displayDescription": "Support for displaying available transitions on main workflow page",
   "installSecret": "306e533b97f23a0fe0d0cea9c0b0e80820ace62c",
+  "loadPriority": 99999,
   "apiVersion": 4,
   "use": ["std:workflow"],
   "load": [

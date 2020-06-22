@@ -41,9 +41,11 @@ P.requestBeforeHandle = function(E) {
 
 // --------------------------------------------------------------------------------------------------
 
+var SYNC_REPORTING_API = O.application.config["haplo_user_sync:sync_report_endpoint"];
+
 P.sendSyncReport = function() {
-    if(!(P.data.config.email)) {
-        console.log("No email address configured for sync report");
+    if(!(P.data.config.email || SYNC_REPORTING_API)) {
+        console.log("No email address or api endpoint configured for sync report");
         return;
     }
     var sync = P.db.sync.select().order("created", true).limit(2);
@@ -59,10 +61,26 @@ P.sendSyncReport = function() {
         log: sync[0].log
     };
     var body = P.template("email/report-email").render(view);
-    _.each(P.data.config.email.split(/\s*,\s*/), function(email) {
+    _.each((P.data.config.email || "").split(/\s*,\s*/), function(email) {
         O.email.template("haplo:email-template:user-sync-report").deliver(email, "User feed", subject, body);
     });
+    if(SYNC_REPORTING_API) {
+        O.httpClient(SYNC_REPORTING_API).
+            method("POST").
+            useCredentialsFromKeychain("Haplo user sync monitoring").
+            bodyParameter("hostname", O.application.hostname).
+            bodyParameter("status", STATUS_TEXT[sync[0].status]).
+            bodyParameter("syncTime", sync[0].created.toString()).
+            bodyParameter("errors", sync[0].errors).
+            bodyParameter("errorDelta", errorDelta).
+            request(SyncReporting, {});
+    }
 };
+
+var SyncReporting = P.callback("sync_reporting", function(data, client, result) {
+    console.log("User sync reporting success: ", result.successful);
+    console.log("User sync reporting response body: ", result.body.readAsString());
+});
 
 // --------------------------------------------------------------------------------------------------
 
@@ -98,7 +116,8 @@ P.db.table("lastUserData", {
 
 P.implementService("haplo_user_sync:username_to_user", function(username) {
     var q = O.usersByTags({"username": username.toLowerCase()});
-    return q.length ? q[0] : undefined;
+    // Before moving to tags, only active users were found - keep that behaviour to avoid breaking assumptions
+    return (q.length && q[0].isActive) ? q[0] : undefined;
 });
 
 P.implementService("haplo_user_sync:user_to_username", function(user) {

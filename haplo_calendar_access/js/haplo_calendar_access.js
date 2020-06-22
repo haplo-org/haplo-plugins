@@ -7,7 +7,7 @@
 
 /*HaploDoc
 node: haplo_calendar_access
-title: Haplo Calendar Access
+title: Calendar access
 --
 
 Handles creation and access to calendar subscription URL/tokens.

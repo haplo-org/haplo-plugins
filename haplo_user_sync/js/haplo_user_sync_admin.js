@@ -23,12 +23,14 @@ P.implementService("haplo:integration:admin-ui:add-options", function(options) {
 
 // --------------------------------------------------------------------------------------------------
 
+const SHOW_EDIT_ACCESS_CONTROL = O.application.config["haplo_user_sync:show_edit_access_control"] || false;
+
 // Add UI to user page in system management to prevent 'accidental' modifications
 P.hook('hUserAdminUserInterface', function(response, user) {
     var userQuery = P.db.users.select().where("userId","=",user.id);
     if(userQuery.length === 0) { return; }  // Not managed by user sync
     var info = userQuery[0];
-    response.information.push([null, "This user is managed by the user sync and may not be changed."]);
+    response.information.push([null, "This user is managed by the user sync and should not be changed."]);
     response.information.push([null, "Username: "+info.username]);
     if(info.inFeed === false) {
         response.information.push([null, "This user cannot log in because their information does not appear in the user feed."]);
@@ -37,7 +39,7 @@ P.hook('hUserAdminUserInterface', function(response, user) {
         response.information.push(["/do/haplo-user-sync/admin/user-info?lookup="+info.username, "View sync status..."]);
     }
     // Prevent everyone other than SUPPORT from using the admin UI 
-    if(!O.currentUser.isSuperUser) {
+    if(!O.currentUser.isSuperUser && !SHOW_EDIT_ACCESS_CONTROL) {
         response.showEditAccessControl = false;
     }
 });

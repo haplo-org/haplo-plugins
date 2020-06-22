@@ -1,0 +1,13 @@
+{
+  "pluginName": "haplo_form_read_only_data",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Form Read Only Data",
+  "displayDescription": "Support for adding read only data from other parts of the system to forms",
+  "installSecret": "2c41f029ab3e8302ca5838b8e4ddcbc6b687371a",
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_form_read_only_data.js"
+    ],
+  "respond": ["/do/haplo-form-read-only-data"]
+}

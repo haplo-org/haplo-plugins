@@ -832,3 +832,7 @@ P.db.table("state", {
     object: {type: "ref"},
     state: {type: "json"}
 });
+
+P.implementService("haplo:date_rule_engine:get_project_state_table", function(projectRef) {
+    return P.db.state.select().where("object", "=", projectRef);
+});

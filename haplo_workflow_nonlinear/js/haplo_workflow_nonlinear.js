@@ -226,6 +226,15 @@ var setupSubworkflow = function(subworkflow, info) {
         return workUnit ? workflowDefn.instance(workUnit) : undefined;
     });
 
+    subworkflow.implementWorkflowService("haplo:nonlinear:get_other_instance_for_name", function(M, workflowName) {
+        let workflow = O.service("std:workflow:definition_for_name", workflowName);
+        let workUnit = O.work.query(workflowName).
+            isEitherOpenOrClosed().
+            tag("_nonlinearparent", M.workUnit.tags._nonlinearparent).
+            latest();
+        return workUnit ? workflow.instance(workUnit) : undefined;
+    });
+
     subworkflow.implementWorkflowService("haplo:nonlinear:is_subsequent", function(M) {
         return isSubworkflowWorkUnitSubsequent(M.workUnit);
     });
@@ -251,6 +260,12 @@ P.implementService("haplo:nonlinear:get_parent_workflow_of_subworkflow", functio
 
 // Deprecated.
 P.implementService("haplo:nonlinear:create_subworkflow", function(workflowDefn, parentM, additionalProperties) {
+    return startSubworkflow(parentM, workflowDefn, additionalProperties);
+});
+
+// Deprecated.
+P.implementService("haplo:nonlinear:create_subworkflow_for_name", function(workflowName, parentM, additionalProperties) {
+    let workflowDefn = O.service("std:workflow:definition_for_name", workflowName);
     return startSubworkflow(parentM, workflowDefn, additionalProperties);
 });
 

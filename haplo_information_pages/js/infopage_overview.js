@@ -6,7 +6,7 @@
 
 /*HaploDoc
 node: /haplo_information_pages
-title: Haplo Information Pages
+title: Information pages
 sort: 60
 module_owner: Ben
 --

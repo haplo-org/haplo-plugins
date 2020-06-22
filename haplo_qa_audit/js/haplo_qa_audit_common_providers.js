@@ -8,14 +8,13 @@
 // This provider uses platform internal interfaces, but it's not a production plugin and checks things are as expected,
 // so it should be OK.
 
-var root = (function() { return this; })();
-
 P.implementService("haplo:qa-audit:gather-information", function(audit) {
     // Plugins & forms
+    var pluginList = O.application.plugins;
     var plugins = {};
     var formSpecifications = {};
-    _.each(O.application.plugins.slice(0).sort(), function(pluginName) {
-        var plugin = root[pluginName];
+    _.each(pluginList.slice(0).sort(), function(pluginName) {
+        var plugin = O.getPluginInstance(pluginName);
         if(plugin) {
             var formSpecs = formSpecifications[pluginName] = {},
                 formIds = _.keys(plugin.$formLookupById || {}).sort();
@@ -48,10 +47,12 @@ P.implementService("haplo:qa-audit:gather-information", function(audit) {
         var details = services[name] = {};
         list.forEach(function(i) {
             if(typeof(i[0]) !== "function") {
-                throw new Error("Expected platform internals do not contain expected type of data: Function");
+                console.log("Expected platform internals for "+name+" do not contain expected type of data: Function. Type found: "+typeof(i[0])+". Check whether you are using a variable before it is defined.");
+                throw new Error("Expected platform internals for "+name+" do not contain expected type of data: Function. Type found: "+typeof(i[0])+". Check whether you are using a variable before it is defined.");
             }
             if(!(i[1] instanceof $Plugin)) {
-                throw new Error("Expected platform internals do not contain expected type of data: Plugin");
+                console.log("Expected platform internals for "+name+" do not contain expected type of data: Plugin");
+                throw new Error("Expected platform internals for "+name+" do not contain expected type of data: Plugin");
             }
             var p = i[1].pluginName;
             details[p] = (p in details) ? (details[p]+1) : 1;
@@ -81,8 +82,8 @@ P.implementService("haplo:qa-audit:gather-information", function(audit) {
     audit.addInformation("workUnitTypes", "Types of WorkUnit defined by plugins", workUnits);
 
     // std_workflow
-    var std_workflow = root.std_workflow;
-    if(std_workflow) {
+    if(-1 != pluginList.indexOf("std_workflow")) {
+        var std_workflow = O.getPluginInstance("std_workflow");
         if(!std_workflow.allWorkflows) {
             throw new Error("Expected std_workflow internals not found");
         }
@@ -101,12 +102,6 @@ P.implementService("haplo:qa-audit:gather-information", function(audit) {
             }
         });
         audit.addInformation("std_workflow", "std_workflow definitions", stdWorkflow);
-    }
-
-    // Activities
-    var haplo_activity_navigation = root.haplo_activity_navigation;
-    if(haplo_activity_navigation) {
-        var activities = {};
     }
 
     // Add the plugins summary at the end
@@ -195,6 +190,15 @@ P.implementService("haplo:qa-audit:identify-issues", function(audit) {
                     "Array of choices contains one or more strings, which is not recommended.\n"+
                     "Plugin: "+pluginName+", form: "+formId+", path: "+element.path+"\n"+
                     "To resolve, specify ids for the choices: https://docs.haplo.org/plugin/form/specification/choice. Do not suppress this issue."
+                );
+            } else if(element.type === "display-value") {
+                audit.issue(
+                    "deprecated-element-type-display-value/"+pluginName+"/"+element.path,
+                    "Use of deprecated 'display-value' element type in form",
+                    "You've included a display-value element in your form, but haplo-form-read-only-data provides a nicer user experience and is likely to be shorter to implement.\n"+
+                    "Plugin: "+pluginName+", form: "+formId+", path: "+element.path+"\n"+
+                    "To resolve, follow the example in the internal documentation for the haplo-form-read-only-data plugin. If this form went live pre-2020 you may wish "+
+                    "to simply suppress this message to avoid making unnecessary user-facing changes"
                 );
             }
             // Recurse into sections

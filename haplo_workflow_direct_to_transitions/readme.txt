@@ -1,4 +1,4 @@
-title: Haplo Workflow Direct to Transitions
+title: Workflow direct to transitions
 --
 This plugin implements the @"haplo:directToTransitions"@ feature to add transition panels to main page of workflow ui.
 

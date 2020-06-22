@@ -188,7 +188,7 @@ P.respond("GET,POST", "/do/haplo-data-import/generate-control-file", [
                         case "telephone-number":
                             inst.country = "GB";
                             break;
-                        case "date":
+                        case "datetime":
                             inst.dateFormat = "yyyy-MM-dd";
                             break;
                         case "url":

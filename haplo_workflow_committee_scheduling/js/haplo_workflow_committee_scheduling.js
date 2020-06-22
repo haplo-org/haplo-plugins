@@ -6,7 +6,7 @@
 
 /*HaploDoc
 node: /haplo_workflow_committee_scheduling
-title: Haplo Committee Scheduling
+title: Committee scheduling
 sort: 45
 --
 

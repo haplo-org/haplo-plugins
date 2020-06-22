@@ -49,9 +49,20 @@ var copyDataFromAltToOther = function(alternateVersion, other, keepAdditionalAtt
             }
         });
         _.each(_.uniq(toRemove), (d) => other.remove(d));
-        alternateVersion.every((v,d,q) => {
+        alternateVersion.every((v,d,q,x) => {
             if(d !== A.AuthoritativeVersion) {
-                other.append(v,d,q);
+                if(x) {
+                    let newGroup = other.newAttributeGroup(x.desc);
+                    let oldGroup = alternateVersion.extractSingleAttributeGroup(x.groupId);
+                    oldGroup.every((v,d,q) => {
+                        // Type of attribute group shown as attribute title
+                        if(d != A.Type) {
+                            other.append(v,d,q,newGroup);
+                        }
+                    });
+                } else {
+                    other.append(v,d,q);
+                }
             }
         });
         other.save();

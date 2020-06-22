@@ -15,8 +15,6 @@
 
 t.test(function() {
 
-
-
     // --------------------------------------------------------------------------
     // Set up test user and groups
     // --------------------------------------------------------------------------
@@ -140,6 +138,26 @@ t.test(function() {
             "kind": "haplo:api-v0:user:creation-failed",
             "error": {
                 "message": "Could not create new user, as user already exists with email address "+testEmail
+            }
+        });
+
+        let existingTagsResponse = t.request("POST", "/api/v0-user/create", {}, {
+            kind: "json",
+            body: {
+                nameFirst: "Test",
+                nameLast: "User",
+                email: O.security.random.identifier()+"@example.com",
+                localeId: "en",
+                tags: {
+                    username: "testuser"
+                }
+            }
+        });
+        t.assertJSONBody(existingTagsResponse, {
+            "success": false,
+            "kind": "haplo:api-v0:user:creation-failed",
+            "error": {
+                "message": "Could not create new user, as user already exists with username tag testuser"
             }
         });
 
@@ -677,6 +695,22 @@ t.test(function() {
             "kind": "haplo:api-v0:user:update-failed",
             "error": {
                 "message": "User "+serviceUser.id+" cannot be updated to have email "+testEmail+" as another user already has that email"
+            }
+        });
+
+        let duplicateUsernameFailedResponse = t.request("POST", "/api/v0-user/id/"+serviceUser.id, {}, {
+            kind:"json",
+            body:{
+                tags:{
+                    username:"testuser"
+                }
+            }
+        });
+        t.assertJSONBody(duplicateUsernameFailedResponse, {
+            "success": false,
+            "kind": "haplo:api-v0:user:update-failed",
+            "error": {
+                "message": "Could not set username tag to testuser for user "+serviceUser.id+" as a user already exists with that username."
             }
         });
 

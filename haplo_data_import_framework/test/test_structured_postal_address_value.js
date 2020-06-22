@@ -72,7 +72,7 @@ t.test(function() {
     t.assert(_.isEqual(errors, [
         "Missing or invalid country code in postal address, must be two letter ISO code: {} (record 2)",
         "Missing or invalid country code in postal address, must be two letter ISO code: {\"street1\":\"1 High Street\",\"city\":\"New Town\",\"postcode\":\"NT1 1TN\",\"country\":\"England\"} (record 3)",
-        "Invalid postal address: {\"street1\":\"1 High Street\",\"city\":\"New Town\",\"postcode\":\"NT1 1TN\",\"country\":\"XX\"} (Postal addresses must use a recognised country) (record 4)"
+        "Invalid postal address: {\"street1\":\"1 High Street\",\"city\":\"New Town\",\"postcode\":\"NT1 1TN\",\"country\":\"XX\"} (org.jruby.exceptions.RuntimeError: (RuntimeError) Postal addresses must use a recognised country) (record 4)"
     ]));
 
     t.assertEqual(5, people.length);

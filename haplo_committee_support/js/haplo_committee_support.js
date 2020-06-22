@@ -268,11 +268,25 @@ P.respond("GET", "/do/haplo-committee-support/upcoming-meetings", [
     });
 });
 
+P.respond("GET", "/do/haplo-committee-support/past-meetings", [
+], function(E) {
+    var committeeMeetings = O.query().
+        link(T.CommitteeMeeting, A.Type).
+        dateRange(null, new Date()).
+        sortByDate().
+        execute();
+    E.render({
+        committeeMeetings: committeeMeetings
+    });
+});
+
 P.hook("hNavigationPosition", function(response, name) {
     if(name === "haplo:committee-information" && !O.application.config["haplo_committee_support:hide_committee_navigation"] ) {
+        var i = P.locale().text("template");
         var navigation = response.navigation;
         navigation.separator();
-        navigation.link("/do/haplo-committee-support/committees", "Committees").
-            link("/do/haplo-committee-support/upcoming-meetings", "Upcoming meetings");
+        navigation.link("/do/haplo-committee-support/committees", i["Committees"]).
+            link("/do/haplo-committee-support/upcoming-meetings", i["Upcoming meetings"]).
+            link("/do/haplo-committee-support/past-meetings", i["Past meetings"]);
     }
 });

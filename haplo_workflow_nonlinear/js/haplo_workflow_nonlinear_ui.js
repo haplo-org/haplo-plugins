@@ -140,7 +140,7 @@ P.respond("GET,POST", "/do/subworkflow/manual-start", [
         backLinkText: subworkflowToStart.getBackLinkTextForObject(object),
         object: object,
         confirm: {
-            text: O.interpolateString(i["Would you like to start the {name} ?"], {name: subworkflowToStart.displayableSubworkflowName}),
+            text: O.interpolateString(i["Would you like to start the {name}?"], {name: subworkflowToStart.displayableSubworkflowName}),
             options: [{label:i["Start"]}],
             backLink: parentM.url,
             backLinkText: i["Cancel"]

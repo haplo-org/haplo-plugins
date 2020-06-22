@@ -1,8 +1,8 @@
-title: Haplo Workflow Interview Scheduling
+title: Workflow interview scheduling
 --
 h3(feature). haplo:meeting_scheduling
 
-Adds functionailty for meeting scheduling to workflows. This includes the date forms, UI, and automatic transitioning of the workflow after the meeting has taken place.
+Adds functionality for meeting scheduling to workflows. This includes the date forms, UI, and automatic transitioning of the workflow after the meeting has taken place.
 
 When passing through arranging state for an extra time consider skipping it; we should rethink what this feature does at such stages.
 
@@ -40,7 +40,7 @@ bq. customFormsForKey, customPrepareFormInstance, customBlankDocumentForKey, cus
 
 Sensible UI is provided for when entering an interview date in the past.
 
-History is not viewable.
+History is not viewable by default - provide a history property in the documentStore specification to override this.
 
 Custom text can be implemented using usual document store workflow text system integration.
 

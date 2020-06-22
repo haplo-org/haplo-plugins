@@ -1,0 +1,7 @@
+
+group haplo:group:api-v0:file-api as FileAPI
+    title: API v0: File
+
+service-user haplo:service-user:api-v0:file
+    title: API v0: File
+    group haplo:group:api-v0:file-api

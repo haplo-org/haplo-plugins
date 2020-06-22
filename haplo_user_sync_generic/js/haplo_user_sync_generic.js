@@ -82,6 +82,9 @@ P.respond("GET,POST", "/do/haplo-user-sync-generic/upload-control-file", [
         control.save();
         P.data.controlDigest = document.file.digest;
         P.data.controlFileSize = document.file.fileSize;
+        // don't need try-catch as JSON parsing has already been validated by the form
+        let parsedControl = JSON.parse(O.file(document.file).readAsString("utf-8"));
+        P.data.expectedFiles = _.keys(parsedControl.files).concat('_control').sort();
         O.serviceMaybe("haplo_user_sync:set_control_file_in_current_sync", "_control", document.file);
         return E.response.redirect("/do/haplo-user-sync-generic/control-file/"+control.id);
     }

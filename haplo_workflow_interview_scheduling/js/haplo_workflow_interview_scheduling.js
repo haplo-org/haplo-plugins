@@ -163,7 +163,7 @@ P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow
         getAdditionalUIForEditor: spec.documentStore.customGetAdditionalUIForEditor,
         view: spec.documentStore.view,
         edit: spec.documentStore.edit,
-        history: [],      // no viewable history
+        history: spec.documentStore.history || [], // defaults to no viewable history
         onSetCurrentDocument: function(instance, document, isComplete) {
             if(isComplete && (!instance.hasCommittedDocument || !_.isEqual(document, instance.lastCommittedDocument))) {
                 onSaveCompletedForm(spec, instance.key, instance.key.workUnit.ref.load(), document);

@@ -4,13 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-var root = (function() { return this; })();
-
 P.implementService("haplo:qa-audit:gather-information", function(audit) {
 
     // Activities
-    var haplo_activity_navigation = root.haplo_activity_navigation;
-    if(haplo_activity_navigation) {
+    if(-1 != O.application.plugins.indexOf("haplo_activity_navigation")) {
+        var haplo_activity_navigation = O.getPluginInstance("haplo_activity_navigation");
         var activities = {};
         _.each(O.service("__qa__:haplo_activity_navigation:internals").activities, function(activity) {
             activities[activity.name] = {

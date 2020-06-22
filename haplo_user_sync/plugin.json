@@ -18,7 +18,8 @@
         "pUserActivation",
         "pReportHealthEvent",
         "pUserSetRef",
-        "pUserModifyTags"
+        "pUserModifyTags",
+        "pHTTPClient"
     ],
     "depend": [
         "std_document_store",

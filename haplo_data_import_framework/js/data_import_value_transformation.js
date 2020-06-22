@@ -97,7 +97,7 @@ constructors["text"] = function(batch, specification, sourceDetailsForErrors) {
 
 // --------------------------------------------------------------------------
 
-constructors["date"] = function(batch, specification, sourceDetailsForErrors) {
+constructors["datetime"] = function(batch, specification, sourceDetailsForErrors) {
     if(typeof(specification.dateFormat) !== "string") {
         batch._reportError("Date format not specified for "+sourceDetailsForErrors);
         return;
@@ -271,7 +271,6 @@ var makeSimpleTextValueType = function(dataType, textTypecode) {
         };
     };
 };
-// Remember to add reverse to TYPECODE_TO_DATA_TYPE for object Destination
 makeSimpleTextValueType("text-paragraph",       O.T_TEXT_PARAGRAPH);
 makeSimpleTextValueType("text-multiline",       O.T_TEXT_MULTILINE);
 makeSimpleTextValueType("configuration-name",   O.T_IDENTIFIER_CONFIGURATION_NAME);

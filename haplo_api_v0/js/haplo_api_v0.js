@@ -25,7 +25,7 @@ var respondToAPI = function(methods, path, argDeclarations, handler) {
         let action = this.$apiAllowedAction;
         if(!action) { throw new Error("P.apiAllowedAction() must set allowed action."); }
         if(!O.currentUser.allowed(action)) {
-            return api.error("haplo:api-v0:generic:not-permitted", "User is not permitted to use this API", HTTP.UNAUTHORIZED);
+            return api.error("haplo:api-v0:generic:not-permitted", "User is not permitted to use this API", HTTP.FORBIDDEN);
         }
 
         var handlerArgs = Array.prototype.slice.call(arguments);
@@ -68,9 +68,12 @@ API.prototype._respond = function(response, statusCode) {
 };
 
 API.prototype.success = function(kind) {
-    let response = this.$response;
-    response.success = true;
-    response.kind = kind;
+    // Create new object and then extend to that common properties appear first
+    let response = {
+        success: true,
+        kind: kind
+    };
+    _.extend(response, this.$response);
     this._respond(response);
 };
 

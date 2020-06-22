@@ -1,4 +1,4 @@
-title: Haplo Activity Navigation
+title: Activity navigation
 --
 h2. Concepts
 

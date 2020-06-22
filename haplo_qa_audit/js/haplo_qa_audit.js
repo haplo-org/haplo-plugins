@@ -10,11 +10,6 @@ var CanViewQAAudit = O.action("haplo:qa-audit:can-view-audit").
 
 // --------------------------------------------------------------------------
 
-// Find the root of the JS runtime scope, which allows lookup of plugins by name.
-var root = (function() { return this; })();
-
-// --------------------------------------------------------------------------
-
 var Audit = function() {};
 
 Audit.prototype.run = function() {
@@ -25,7 +20,7 @@ Audit.prototype.run = function() {
     var suppress = this.suppressedCodes = {};
     var qaInformation = {};
     _.each(O.application.plugins, function(pluginName) {
-        var plugin = root[pluginName];
+        var plugin = O.getPluginInstance(pluginName);
         if(plugin) {
             if(plugin.hasFile("__qa__.json")) {
                 var json = JSON.parse(plugin.loadFile("__qa__.json").readAsString());
@@ -95,8 +90,14 @@ var ensureAuditRun = function() {
 
 P.hook('hGetReportsList', function(response) {
     if(O.currentUser.allowed(CanViewQAAudit)) {
-        ensureAuditRun();
-        response.reports.push(["/do/haplo-qa-audit/menu", "QA Audit: "+audit.issues.length+" issues"]);
+        var menuMessage = "QA Audit: ";
+        try {
+            ensureAuditRun();
+            menuMessage += audit.issues.length+" issues";
+        } catch(e) {
+            menuMessage += "ERROR";
+        }
+        response.reports.push(["/do/haplo-qa-audit/menu", menuMessage]);
     }
 });
 

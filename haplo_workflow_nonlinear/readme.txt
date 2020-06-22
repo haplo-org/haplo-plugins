@@ -1,4 +1,4 @@
-title: Haplo Workflow Nonlinear
+title: Nonlinear workflow
 --
 
 Framework for implementing workflows that do not follow a completely linear path i.e. there are branches in the workflow. The framework can also be used to break up a large and complex process into more manageable sub-workflows.
@@ -99,7 +99,7 @@ Note that with the right parent state machine and sub-workflow implementations i
 
 You can leave the sub-workflow as optional as long as you remember to guard against missing the instances of your sub-workflow when trying to read information from it.
 
-**IMPORTANT**: an attempt is made to not finish the parent workflow if a sub-workflow is still open, however it is hard to check if we about to finish the parent workflow if a finish state can be reached by a dispatch state. Ensure you won't have any open workflow lying around when the parent workflow is finished. Usually it's not a problem as you'll wait for the sub-workflows to finish at some point anyway.
+**IMPORTANT**: an attempt is made to not finish the parent workflow if a sub-workflow is still open, however it is hard to check if we are about to finish the parent workflow if a finish state can be reached by a dispatch state. Ensure you won't have any open workflow lying around when the parent workflow is finished. Usually it's not a problem as you'll wait for the sub-workflows to finish at some point anyway.
 
 h3(property). shouldRepeatAfter
 
@@ -216,7 +216,7 @@ You can read your additional properties in the properties parameter of the @Subw
 
 h3(property). submitter
 
-A user @Ref@ or @SecurityPrinciple@. Used by functionality enabled by the @shouldDefineSubmitterRole@ sub-workflow property above.
+A user @Ref@ or @SecurityPrincipal@. Used by functionality enabled by the @shouldDefineSubmitterRole@ sub-workflow property above.
 
 h3(property). actionableRef
 
@@ -242,7 +242,7 @@ You can read your additional properties in the properties parameter of the @Subw
 
 h3(property). submitter
 
-A user @Ref@ or @SecurityPrinciple@. Used by functionality enabled by the @shouldDefineSubmitterRole@ sub-workflow property above.
+A user @Ref@ or @SecurityPrincipal@. Used by functionality enabled by the @shouldDefineSubmitterRole@ sub-workflow property above.
 
 h3(property). actionableRef
 

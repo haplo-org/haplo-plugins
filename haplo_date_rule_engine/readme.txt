@@ -52,6 +52,12 @@ function(inputDates, rulesetName, flags, suspensions, object)
 
 Works as @"haplo:date_rule_engine:update_dates_ignoring_previous_state"@, but crucially doesn't save the recalculated state. Only use where you are not expecting to be saving the dates you are calculating. This service should not be necessary very often, but is not unsafe to use in the same way as @"haplo:date_rule_engine:update_dates_ignoring_previous_state"@.
 
+h3(service).
+@"haplo:date_rule_engine:get_project_state_table"@
+function(projectRef)
+
+Returns an object containing state table(s) for the provided project ref. Multiple implementations/rulesets will result in multiple state tables. Each table will have a 'rulesetName', an 'object' (ref) and 'state'. Each state contains date objects based on project dates containing projectStart, projectEnd, periodLastUpdated, periodFractionLeast, periodFractionMost, periodLengthLeast, periodLengthMost properties.
+
 h2. Defining a ruleset
 
 Rules are defined as objects with keyword keys, used with builder funcitons to define a ruleset.

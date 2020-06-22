@@ -1,4 +1,4 @@
-title: Haplo Integration
+title: Integration
 module_owner: Ben
 --
 

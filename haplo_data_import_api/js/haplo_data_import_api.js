@@ -189,7 +189,7 @@ P.respond("POST", "/api/push-data", [
     }
 
     if(result !== 'success') {
-        E.response.statusCode = (result === "not authorised") ? HTTP.UNAUTHORIZED : HTTP.BAD_REQUEST;
+        E.response.statusCode = (result === "not authorised") ? HTTP.FORBIDDEN : HTTP.BAD_REQUEST;
     }
 });
 

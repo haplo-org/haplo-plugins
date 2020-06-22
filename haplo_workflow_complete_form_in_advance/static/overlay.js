@@ -10,7 +10,14 @@
     $(document).on('click', '._cfiaow_edit', function(evt) {
         evt.preventDefault();
         Haplo.ui.openCovering(this.href, "Close");
-        // TODO should probably close it too once they click save
+        window.advance_form_editor = {
+            onEditClose: function() {
+                window.setTimeout(function() {
+                    Haplo.ui.closeCovering();
+                    window.location.reload(true);
+                }, 1000);
+            }
+        };
     });
 
 })(jQuery);

@@ -1,4 +1,4 @@
-title: Haplo Workflow Transition Decision Form
+title: Workflow transition decision form
 --
 
 h2. Background
@@ -52,6 +52,13 @@ A path to use to declare the handler to display the form.
 h3(property). prepareFormInstance(M, instance)
 
 A function to set up a form instance before it's used.
+
+<b>External data available by default</b>
+This feature provides the following items in the instance's @externalData@ by default for your convenience:
+
+| key | value | Use case |
+| @std_document_store:key@ | M | For example, useful when creating @globalTemplateFunctions@ which need access to M |
+| @requestedTransition@ | transition name as a string | For example, useful when conditionally displaying elements in forms based on the transition selected by the user |
 
 h3(property). blankDocumentForKey(M)
 

@@ -1,0 +1,19 @@
+{
+  "pluginName": "haplo_api_file_v0",
+  "pluginAuthor": "Haplo Services Ltd",
+  "pluginVersion": 1,
+  "displayName": "API v0: Files",
+  "displayDescription": "JSON REST API for file management",
+  "apiVersion": 4,
+  "loadPriority": 3000,
+  "depend": [
+      "haplo_api_v0"
+    ],
+  "use": [
+      "haplo:api-v0:responder"
+    ],
+  "load": [
+      "js/haplo_api_file_v0.js"
+    ],
+  "respond": ["/api/v0-file"]
+}

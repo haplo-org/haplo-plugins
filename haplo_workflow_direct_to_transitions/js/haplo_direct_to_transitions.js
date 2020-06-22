@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
 P.workflow.registerWorkflowFeature("haplo:directToTransitions", function(workflow, spec) {
+
     workflow.actionPanelTransitionUI(spec.selector || {}, function(M, builder) {
         let transitionList = M.transitions.list;
         if(spec.exclude) {

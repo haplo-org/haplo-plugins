@@ -117,15 +117,12 @@ ServiceList.prototype.eachService = function(iterator) {
 
 // --------------------------------------------------------------------------
 
-// Find the root of the JS runtime scope, which allows lookup of plugins by name.
-var root = (function() { return this; })();
-
 var ensureRegistry = function() {
     if(registry) { return; }
 
     let r = {};
     _.each(O.application.plugins, function(pluginName) {
-        let plugin = root[pluginName];
+        let plugin = O.getPluginInstance(pluginName);
         if(plugin) {
             if(plugin.hasFile("__service-metadata__.json")) {
                 let json = JSON.parse(plugin.loadFile("__service-metadata__.json").readAsString());

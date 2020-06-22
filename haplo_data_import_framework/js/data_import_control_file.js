@@ -133,11 +133,17 @@ var instructionExpectedProperties = {
 
 var instructionNested = {
     "if-exists": ["then", "else"],
-    "if-has-any-value": ["then", "else"],
-    "for-each": ["instructions"]
+    "if-value-one-of": ["then", "else"],
+    "if-has-value": ["then", "else"],
+    "for-each": ["instructions"],
+    "within": ["instructions"]
 };
 
-var validateInstructions = function(instructions) {
+var assignmentInstruction = [
+    "field", "field-structured", "set-value"
+];
+
+var validateInstructions = function(instructions, validSingleAssignDestinations) {
     if(!instructions) { return; }
     for(var i = 0; i < instructions.length; ++i) {
         let inst = instructions[i],
@@ -156,9 +162,19 @@ var validateInstructions = function(instructions) {
             if(notFound.length) {
                 return "Expected property not found in "+action+" instruction: "+notFound.join(", ");
             }
+            if(validSingleAssignDestinations) {
+                let usesPermittedDestination = (-1 !== validSingleAssignDestinations.indexOf(inst.destination));
+                if((-1 !== assignmentInstruction.indexOf(action)) && !inst.multivalue && !usesPermittedDestination) {
+                    return "Assigning values within for-each without a new/load statement or setting multivalue property will result "+
+                        "in overwritten data";
+                } else if((-1 !== ["new", "load"].indexOf(action)) && !usesPermittedDestination) {
+                    validSingleAssignDestinations.push(inst.destination);
+                }
+            }
             if(nested) {
                 for(var n = 0; n < nested.length; ++n) {
-                    let e = validateInstructions(inst[nested[n]]);
+                    let validDestinations = (action === "for-each") ? [] : validSingleAssignDestinations;
+                    let e = validateInstructions(inst[nested[n]], validDestinations);
                     if(e) { return e; }
                 }
             }

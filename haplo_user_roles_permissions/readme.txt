@@ -1,4 +1,4 @@
-title: Haplo user roles permissions
+title: User roles permissions
 --
 
 You should probably read this section for context if you haven't yet: [Labels and permissions](https://docs.haplo.org/setup/permissions).

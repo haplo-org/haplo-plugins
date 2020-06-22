@@ -91,8 +91,11 @@ P.implementService("std:web-publisher:observe:file-download", function(publicati
 // --------------------------------------------------------------------------
 // Querying events
 
-P.implementService("haplo_usage_tracking:query_events", function(specification) {
+// This service should only be used for migrations.
+// If using this service the query needs to be filtered and limited **VERY** carefully.
+// Loading the full events database into memory WILL crash the server.
+P.implementService("haplo_usage_tracking:TEMP:query_events", function(specification) {
     let select = P.db.events.select().
         order('datetime', true);
-    // TODO: Build query from spec and return
+    return select;
 });

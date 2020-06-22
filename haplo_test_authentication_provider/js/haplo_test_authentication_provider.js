@@ -5,6 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
 
+// NOTE: plugin.json has a very high loadPriority so other plugin installs can be detected.
+// Can't wait until later because the exception would be easy to miss.
+// Only disable this check with config data if you know exactly what you're doing.
+if(O.application.plugins.length > 3) {
+    if(!O.application.config["haplo_test_authentication_provider:disable_blank_app_check"]) {
+        throw new Error("haplo_test_authentication_provider must only be installed in a blank application because it interacts badly with other login plugins.");
+    }
+}
+
 P.db.table("results", {
     datetime: {type:"datetime"},
     identifier: {type:"text"},

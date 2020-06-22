@@ -1,0 +1,18 @@
+{
+  "pluginName": "haplo_publication_branding",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Publication Branding",
+  "displayDescription": "Generic implementation for updating the web publications with high definition branding images",
+  "installSecret": "bacaa644ea1fe7dc0430de11d3b35b1a068669f7",
+  "apiVersion": 4,
+  "depend": [
+      "std_web_publisher"
+  ],
+  "use": [
+    "std:web-publisher"
+  ],
+  "load": [
+    "js/haplo_publication_branding.js"
+  ]
+}

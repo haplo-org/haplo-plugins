@@ -1,4 +1,4 @@
-title: Haplo QA Audit Tool
+title: QA audit tool
 --
 
 The Haplo QA audit tool exists to flag up possible quality issues in code that is uploaded to a system.

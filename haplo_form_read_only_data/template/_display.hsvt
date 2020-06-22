@@ -1,0 +1,25 @@
+std:plugin:resources("read-only-data.css")
+
+each(fields) {
+    <div class="haplo-form-read-only-data">
+        if(label) {
+            <label for=unsafeAttributeValue(unsafeForId)>label</label>
+        }
+        <div>
+            if(asTable) {
+                <table id=unsafeAttributeValue(unsafeForId)>
+                each(values) {
+                    <tr>
+                        <td>if(label) { <i>label</i> }</td>
+                        <td>template:value()</td>
+                    </tr>
+                }
+                </table>
+            } else {
+                each(values) {
+                    <p id=unsafeAttributeValue(unsafeForId)>template:value()</p>
+                }
+            }
+        </div>
+    </div>
+}

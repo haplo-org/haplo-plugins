@@ -1,4 +1,4 @@
-title: Haplo Object Files
+title: Object files
 module_owner: Jenny
 --
 

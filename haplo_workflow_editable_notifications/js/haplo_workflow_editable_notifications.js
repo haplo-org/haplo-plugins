@@ -6,7 +6,7 @@
 
 /*HaploDoc
 node: /haplo_workflow_editable_notifications
-title: Haplo Editable Notifications
+title: Editable notifications
 sort: 47
 --
 
@@ -72,13 +72,15 @@ h4. Builder interface
 
 Your XML files are not strictly correct XML, as they should *not* include the root @<doc>@ element. But otherwise they're just the document text XML.
 
-There's also an optional configuration of the notification system for the entire workflow. You probably won't need to use it.
-
 h3(feature). use("haplo:editable_notification:config", config)
 
-where @config@ has properties:
+This feature optionally allows you to configure the notification system for the entire workflow.
+
+@config@ has properties:
 
 | panel | panel sort for the sent Notifications list |
+
+You probably won't need to use it.
 
 */
 
@@ -446,3 +448,29 @@ TextBuilder.prototype._build = function() {
     });
     return doc;
 };
+
+// Serialisation support
+P.implementService("std:serialiser:discover-sources", function(source) {
+    source({
+        name: "haplo_workflow:editable_notifications",
+        sort: 2000,
+        depend: "std:workflow",
+        setup(serialiser) {
+            serialiser.listen("std:workflow:extend", function(workflowDefinition, M, work) {
+                work.notifications = {};
+                let id = M.workUnit.id;
+                let rows = P.db.notifications.select().
+                    where("workUnitId","=",M.workUnit.id);
+                _.each(rows, (row) => {
+                    work.notifications[row.name] = {
+                        text: row.text,
+                        pending: row.pending,
+                        sentAt: serialiser.formatDate(row.sentAt)
+                    };
+                });
+            });
+        },
+        apply(serialiser, object, serialised) {
+        }
+    });
+});

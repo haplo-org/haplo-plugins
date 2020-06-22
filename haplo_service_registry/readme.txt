@@ -1,4 +1,4 @@
-title: Haplo service registry
+title: Service registry
 --
 
 Provides a composible method of grouping services from different places in the system. Services are described with metadata, which is then exposted to consumers of the @haplo:services-registry:query@ to select on.

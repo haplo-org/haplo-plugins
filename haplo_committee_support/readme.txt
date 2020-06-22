@@ -1,4 +1,4 @@
-title: Haplo committee support
+title: Committee support
 --
 
 The Haplo Committee Support plugin provides support for managing committees, scheduling regular meetings and notifying members of upcoming meetings.

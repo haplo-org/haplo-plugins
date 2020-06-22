@@ -1,0 +1,3 @@
+pageTitle(i("Past committee meetings"))
+
+each(committeeMeetings) { std:object(. "searchresult") }

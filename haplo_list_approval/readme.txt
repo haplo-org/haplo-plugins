@@ -1,10 +1,12 @@
-title: Haplo List Approval
+title: List approval
 module_owner: Am
 --
 
 h3(feature). haplo:list_approval
 
 Use this feature to repeat a state for all people in a given entity. Once entered the state will be repeated for each user in the entity given before the state can be exited to a different state. The current user for the state is the @target@ role. To setup list approval for a state pass specification with the properties below:
+
+By default, if a document store is defined for this entity to edit in the review state, then each user in the entity will be given the same instance of the document to edit. If each user in the entity needs a separate instance of the same form, then you cannot use the docstore workflow feature, instead you have to use the docstore plugin feature to control the instances yourself. Speak to a colleague if you intend to do this, as it is a potential area of enhancement of this feature.
 
 h3(property). listEntity
 

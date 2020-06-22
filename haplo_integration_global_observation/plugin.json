@@ -1,0 +1,17 @@
+{
+  "pluginName": "haplo_integration_global_observation",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Integration Global Observation",
+  "displayDescription": "Provide a queue of messages which describe changes to object and workflow states.",
+  "apiVersion": 4,
+  "privilegesRequired": ["pBackgroundProcessing"],
+  "depend": [
+      "std_serialisation",
+      "haplo_integration_messages"
+    ],
+  "load": [
+      "js/haplo_integration_global_observation.js"
+    ],
+  "respond": ["/do/haplo-integration-global-observation"]
+}

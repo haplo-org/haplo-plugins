@@ -1,4 +1,4 @@
-title: Haplo role importer
+title: Role importer
 --
 
 A quicker way of exporting/importing research institute and committee roles.

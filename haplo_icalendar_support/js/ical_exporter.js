@@ -7,7 +7,7 @@
 
 /*HaploDoc
 node: haplo_icalendar_support
-title: Haplo iCalendar Exporter
+title: iCalendar exporter
 --
 
 Usage: get a @CalendarExporter@ object by calling

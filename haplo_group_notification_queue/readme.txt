@@ -1,4 +1,4 @@
-title: Haplo Group Notification Queue
+title: Group notification queue
 --
 
 Use interface below to add simple tasks to system-wide queues that are assigned to a particular group.

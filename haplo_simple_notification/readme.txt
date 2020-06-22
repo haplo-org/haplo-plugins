@@ -1,4 +1,4 @@
-title: Haplo Simple Notification
+title: Simple notification
 --
 This is a layer on top of the @WorkUnit@ functionality to be used as a simple method for sending tasks to users, including email notifications. Recipients can also choose to reply where replies are sent to the user found in the @createdBy@ property of the @WorkUnit@.
 
@@ -62,7 +62,7 @@ h3(property). kind
 
 h3(property). recipient
 
-The @SecurityPricipal@ of the user/group receiving the task.
+The @SecurityPrincipal@ of the user/group receiving the task.
 
 Can be set with a numeric @ID@ or @SecurityPrincipal object@ (as it is set on the actionableBy property).
 

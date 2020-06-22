@@ -6,7 +6,7 @@
 
 /*HaploDoc
 node: /haplo_activity_guidance_notes
-title: Haplo activity guidance notes
+title: Activity guidance notes
 sort: 40
 --
 
