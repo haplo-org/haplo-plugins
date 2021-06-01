@@ -1,6 +1,8 @@
 pageTitle(i("Review: {}") { M.title })
 backLink(M.url)
 
+std:workflow:transition-steps:navigation(M "haplo:workflow:force_review_documents")
+
 std:ui:request(i("Please review the information below before continuing."))
 
 render(reviewUI.documents)

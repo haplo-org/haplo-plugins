@@ -155,20 +155,49 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
         // TODO changed so there's a specific one for each state with a specific flag
         // however lots of using plugins seem to rely on this so remove this once
         // that changes
-        workflow.actionPanelTransitionUI({flags:["directToTransitions"]}, function(M, builder) {
-            if(M.workUnit.isActionableBy(O.currentUser)) {
-                _.each(M.transitions.list, function(t) {
-                    builder.link(TRANSITION_BUTTON_PRIORITIES[t.name] || 150,
-                        // Extra transitions appear after feature's own transitions
-                        // Other things i.e. forms must appear between "forward to chair"
-                        // and "forward to dep chair" options so "forward to chair" is more
-                        // prominent (note schedule button added below)
-                        "/do/workflow/transition/"+M.workUnit.id+"?transition="+t.name,
-                        t.label, t.indicator);
-                });
-                return true;
-            }
-        });
+        if(true !== O.application.config["std_document_store:use_transition_steps_ui"]) {
+            workflow.actionPanelTransitionUI({flags:["directToTransitions"]}, function(M, builder) {
+                if(M.workUnit.isActionableBy(O.currentUser)) {
+                    _.each(M.transitions.list, function(t) {
+                        builder.link(TRANSITION_BUTTON_PRIORITIES[t.name] || 150,
+                            // Extra transitions appear after feature's own transitions
+                            // Other things i.e. forms must appear between "forward to chair"
+                            // and "forward to dep chair" options so "forward to chair" is more
+                            // prominent (note schedule button added below)
+                            M.transitionUrl(t.name),
+                            t.label, t.indicator);
+                    });
+                    return true;
+                }
+            });
+        } else {
+
+            var TRANSITION_ACTION_PANEL_PRIORITY  = 100;
+
+            workflow.hasBypassTransition(/^send_to_/);
+
+            workflow.actionPanelTransitionUI({flags:["committeeApproval"]}, function(M, builder) {
+                if(M.workUnit.isActionableBy(O.currentUser)) {
+                    _.each(M.transitions.list, function(t) {
+                        if(t.isBypass) {
+                            let panel = TRANSITION_BUTTON_PRIORITIES[t.name] ? builder.panel(COMMITTEE_ACTION_PANEL_PRIORITY) : builder.panel(TRANSITION_ACTION_PANEL_PRIORITY);
+                            panel.link(150, M.transitionUrl(t.name), t.label, t.indicator);
+                        }
+                    });
+                    builder.panel(TRANSITION_ACTION_PANEL_PRIORITY).link(100, M.transitionUrl(), "Progress", "primary");
+                    return false;
+                }
+            });
+        }
+
+        var makeTransitionsForState = function(stateInfo, onwardTransitions) {
+            return [
+                ["progress_application"].concat(stateInfo.exitStates)
+            ].
+            concat(stateInfo.additionalTransitions || []).
+            concat(onwardTransitions);
+
+        };
 
         _.each(spec.scheduleInfo, function(stateInfo) {
             var committeeEntityName = stateInfo.committeeEntityName;
@@ -184,12 +213,11 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             var committeeStateFlags = siFlags.concat(["directToTransitionsCommitteeSchedule"+stateInfo.state, "scheduleWorkflowExit"]);
             states[stateInfo.state] = {
                 actionableBy: committeeEntityName+"Rep",
-                transitions: [
-                    ["progress_application"].concat(stateInfo.exitStates),
+                transitions: makeTransitionsForState(stateInfo, [
                     ["send_to_chair", stateInfo.state+"_chair"],
                     ["send_to_dep_chair", stateInfo.state+"_dep_chair"],
                     ["send_to_member", stateInfo.state+"_member"]
-                ].concat(stateInfo.additionalTransitions || []),
+                ]),
                 flags: committeeStateFlags,
                 flagsSetOnEnter: siFlagsSetOnEnter,
                 flagsSetOnExit: siFlagsSetOnExit,
@@ -198,10 +226,9 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             };
             states[stateInfo.state+"_chair"] = {
                 actionableBy: committeeEntityName+"Chair",
-                transitions: [
-                    ["progress_application"].concat(stateInfo.exitStates),
+                transitions: makeTransitionsForState(stateInfo, [
                     ["return_to_rep", stateInfo.state]
-                ].concat(stateInfo.additionalTransitions || []),
+                ]),
                 flags: committeeStateFlags,
                 flagsSetOnEnter: siFlagsSetOnEnter,
                 flagsSetOnExit: siFlagsSetOnExit,
@@ -210,10 +237,9 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             };
             states[stateInfo.state+"_dep_chair"] = {
                 actionableBy: committeeEntityName+"DepChair",
-                transitions: [
-                    ["progress_application"].concat(stateInfo.exitStates),
+                transitions: makeTransitionsForState(stateInfo, [
                     ["return_to_rep", stateInfo.state]
-                ].concat(stateInfo.additionalTransitions || []),
+                ]),
                 flags: committeeStateFlags,
                 flagsSetOnEnter: siFlagsSetOnEnter,
                 flagsSetOnExit: siFlagsSetOnExit,
@@ -222,10 +248,9 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             };
             states[stateInfo.state+"_member"] = {
                 actionableBy: committeeEntityName+"Member",
-                transitions: [
-                    ["progress_application"].concat(stateInfo.exitStates),
+                transitions: makeTransitionsForState(stateInfo, [
                     ["return_to_rep", stateInfo.state]
-                ].concat(stateInfo.additionalTransitions || []),
+                ]),
                 flags: committeeStateFlags,
                 flagsSetOnEnter: siFlagsSetOnEnter,
                 flagsSetOnExit: siFlagsSetOnExit,
@@ -241,34 +266,46 @@ P.workflow.registerWorkflowFeature("haplo:committee_scheduling",
             };
 
             workflow.actionPanelTransitionUI({flags:["directToTransitionsCommitteeSchedule"+stateInfo.state]}, function(M, builder) {
+                var useStepsUI = O.application.config["std_document_store:use_transition_steps_ui"];
                 if(M.workUnit.isActionableBy(O.currentUser)) {
                     _.each(M.transitions.list, function(t) {
-                        if(!O.application.config["haplo_committee_scheduling:enable_forward_to_member"] &&
-                            t.name === "send_to_member") { return; }
+                        if(useStepsUI && (!TRANSITION_BUTTON_PRIORITIES[t.name] || t.isBypass)) { return; }
                         var panel = TRANSITION_BUTTON_PRIORITIES[t.name] ? builder.panel(COMMITTEE_ACTION_PANEL_PRIORITY) : builder;
                         panel.link(TRANSITION_BUTTON_PRIORITIES[t.name] || 150,
                             // Extra transitions appear after feature's own transitions
                             // Other things i.e. forms must appear between "forward to chair"
                             // and "forward to dep chair" options so "forward to chair" is more
                             // prominent (note schedule button added below)
-                            "/do/workflow/transition/"+M.workUnit.id+"?transition="+t.name,
+                            M.transitionUrl(t.name),
                             t.label, t.indicator);
                     });
+                }
+                if(!useStepsUI) {
                     return true;
                 }
             });
 
-            workflow.filterTransition({state:stateInfo.state}, function(M, name) {
+            var filterTransitions = function(M, name) {
                 if(name in TRANSITION_TO_ENTITY) {
                     var entityName = TRANSITION_TO_ENTITY[name];
                     if(!M.entities[entityName+'_refMaybe']) {
                         return false;
                     }
+                    if(!O.application.config["haplo_committee_scheduling:enable_forward_to_member"] &&
+                                name === "send_to_member") { 
+                        return false;
+                    }
                 }
-            });
+            };
+
+            if(true !== O.application.config["std_document_store:use_transition_steps_ui"]) {
+                workflow.filterTransition({state:stateInfo.state}, filterTransitions);
+            } else {
+                workflow.filterBypassTransition({state:stateInfo.state}, filterTransitions);
+            }
 
             workflow.observeExit({flags:["scheduleWorkflowExit"]}, function(M, transition) {
-                if(transition === "progress_application" && M.workUnit.data.currentCommitteeMeeting) {
+                if(M.workUnit.data.currentCommitteeMeeting) {
                     // So doesn't show up as being scheduled for subsequent committee stages
                     M.workUnit.data.currentCommitteeMeeting = null;
                 }

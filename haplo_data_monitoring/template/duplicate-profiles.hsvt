@@ -1,6 +1,7 @@
 std:plugin:resources("duplicate-profiles.js")
 std:layout:wide()
 
+backLink(backLink)
 pageTitle(i("Duplicate profiles dashboard"))
 
 <div>

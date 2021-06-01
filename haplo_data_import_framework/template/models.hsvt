@@ -2,3 +2,9 @@ pageTitle("Data import models")
 backLink("/do/haplo-data-import/admin")
 
 template:std:ui:choose()
+
+each(extraUI) {
+  <div style="margin-top:48px">
+    render(.)
+  </div>
+}

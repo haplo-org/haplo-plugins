@@ -46,4 +46,15 @@ t.test(function() {
     t.assert(O.typecode(url) === O.T_IDENTIFIER_URL);
     t.assert(url.toString() === "https://example.org");
 
+    var intTransform = make["integer"](undefined, {}, "test");
+    t.assert(intTransform("42") === 42);
+    t.assert(intTransform(42) === 42);
+    t.assert(intTransform(0) === 0);
+
+    var numTransform = make["number"](undefined, {}, "test");
+    t.assert(numTransform("42.2") === 42.2);
+    t.assert(numTransform(42.2) === 42.2);
+    t.assert(numTransform(42) === 42);
+    t.assert(numTransform(0) === 0);
+
 });

@@ -21,10 +21,12 @@ const PAGE_SIZE_OBJECTS = 24;
 P.respondToAPI("GET", "/api/v0-object/ref", [
     {pathElement:0, as:"ref"}
 ], function(api, ref) {
-    withObject(api, ref, (object) => {
-        withSerialiser(api, (serialiser) => {
-            api.respondWith("object", serialiser.encode(object));
-            api.success("haplo:api-v0:object:serialised");
+    O.withoutPermissionEnforcement(() => {
+        withObject(api, ref, (object) => {
+            withSerialiser(api, (serialiser) => {
+                api.respondWith("object", serialiser.encode(object));
+                api.success("haplo:api-v0:object:serialised");
+            });
         });
     });
 });
@@ -35,30 +37,31 @@ P.respondToAPI("GET", "/api/v0-object/linked", [
     {parameter:"attribute", as:"string", optional:true},
     {parameter:"qualifier", as:"string", optional:true}
 ], function(api, ref, type, attribute, qualifier) {
-    let desc, qual;
-    if(attribute) {
-        if(attribute in ATTR) { desc = ATTR[attribute]; }
-        else { return api.error("haplo:api-v0:object:bad-query", "Unknown attribute: "+attribute); }
-    }
-    if(qualifier) {
-        if(qualifier in QUAL) { qual = QUAL[qualifier]; }
-        else { return api.error("haplo:api-v0:object:bad-query", "Unknown qualifier: "+qualifier); }
-    }
-    let query = O.query().link(ref, desc, qual);
-    if(type) {
-        if(type in TYPE) { query.link(TYPE[type], ATTR.Type); }
-        else { return api.error("haplo:api-v0:object:bad-query", "Unknown type: "+type); }
-    }
-    respondWithQuery(api, query);
+    O.withoutPermissionEnforcement(() => {
+        let desc, qual;
+        if(attribute) {
+            if(attribute in ATTR) { desc = ATTR[attribute]; }
+            else { return api.error("haplo:api-v0:object:bad-query", "Unknown attribute: "+attribute); }
+        }
+        if(qualifier) {
+            if(qualifier in QUAL) { qual = QUAL[qualifier]; }
+            else { return api.error("haplo:api-v0:object:bad-query", "Unknown qualifier: "+qualifier); }
+        }
+        let query = O.query().link(ref, desc, qual);
+        if(type) {
+            if(type in TYPE) { query.link(TYPE[type], ATTR.Type); }
+            else { return api.error("haplo:api-v0:object:bad-query", "Unknown type: "+type); }
+        }
+        respondWithQuery(api, query);
+    });
 });
 
 // --------------------------------------------------------------------------
 
 var withObject = function(api, ref, fn) {
-    let object = O.withoutPermissionEnforcement(() => ref.load());
-    // Use the same error message for "not found" and no permission, to avoid leaking information
-    if(!(object && O.currentUser.canRead(object))) {
-        return api.error("haplo:api-v0:object:no-such-object", "Object "+ref+" does not exist or permissions do not allow it to be read");
+    let object = ref.load();
+    if(!object) {
+        return api.error("haplo:api-v0:object:no-such-object", "Object "+ref+" does not exist");
     }
     fn(object);
 };

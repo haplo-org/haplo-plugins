@@ -1,0 +1,33 @@
+{
+    "specificationVersion": 0,
+    "formId": "new-person",
+    "formTitle": "New person",
+    "elements": [
+        {
+            "type": "text",
+            "label": "Title",
+            "path": "title"
+        },
+        {
+            "type": "text",
+            "label": "First name",
+            "path": "firstName",
+            "required": true
+        },
+        {
+            "type": "text",
+            "label": "Last name",
+            "path": "lastName",
+            "required": true
+        },
+        {
+            "type": "text",
+            "label": "Email",
+            "path": "email",
+            "required": true,
+            "whitespace": "minimise",
+            "validationRegExp": "^.+@[^\\.]+\\..+$",
+            "validationFailureMessage": "Please enter a valid email address."
+        }
+    ]
+}

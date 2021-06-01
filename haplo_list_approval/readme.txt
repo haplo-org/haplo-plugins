@@ -57,8 +57,7 @@ EgWorkflow.states({
             ["approve", "wait_approver", "wait_decision"],
             ["not_approve", "wait_approver", "wait_decision"],
             ["decline", "wait_submit"]
-        ],
-        flags: ["directToTransitionsEGWorkflow"]
+        ]
     }
 });
 

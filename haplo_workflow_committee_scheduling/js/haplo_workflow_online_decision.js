@@ -4,6 +4,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
+/*HaploDoc
+node: /haplo_workflow_online_decision
+title: Online Decisions
+sort: 70
+--
+
+Allows online decisions to be made
+
+h3(config). "haplo_workflow_committee_scheduling:notification:redirect_to_online_decision"
+
+If true, the user is redirected to the online decision instead of the application when they receive their invitation email and their task
+
+h3(config). "haplo_workflow_committee_scheduling:notification:replace_full_info_text"
+
+Override text for 'Submit recommendation' text in the user's task for an online decision
+
+ */
+
 var startOnlineDecisionForm = P.form({
     specificationVersion: 0,
     formId: "startOnlineDecisionForm",
@@ -322,10 +340,12 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
                     data: {url: decisionUrl}
                 });
                 wu.save();
+                var linkUrl = O.application.url + (!!O.application.config["haplo_workflow_committee_scheduling:notification:redirect_to_online_decision"] ? decisionUrl : app.url());
                 var view = {
                     decisionUrl: O.application.url+decisionUrl,
                     note: document.note,
-                    deadline: document.deadline ? new XDate(document.deadline) : undefined
+                    deadline: document.deadline ? new XDate(document.deadline) : undefined,
+                    linkUrl: linkUrl
                 };
                 sendNotificationEmail(M, user, "email/online-decision-start",
                     "Online discussion "+app.title, app, view);
@@ -559,10 +579,12 @@ P.makeOnlineDecisionHandlers = function(workflow, spec) {
                         data: {url: decisionUrl}
                     });
                     wu.save();
+                    var linkUrl = O.application.url + (!!O.application.config["haplo_workflow_committee_scheduling:notification:redirect_to_online_decision"] ? decisionUrl : app.url());
                     var view = {
                         decisionUrl: O.application.url+decisionUrl,
                         note: previousDocument.note,
-                        deadline: previousDocument.deadline ? new XDate(previousDocument.deadline) : undefined
+                        deadline: previousDocument.deadline ? new XDate(previousDocument.deadline) : undefined,
+                        linkUrl: linkUrl
                     };
                     sendNotificationEmail(M, user, "email/online-decision-start",
                         "Invitation to discuss "+app.title, app, view);
@@ -913,10 +935,12 @@ P.workUnit({
         if(W.context === "object") { return; }
         var appRef = W.workUnit.ref;
         var app = appRef.load();
+        let data = W.workUnit.data;
+        let fullInfoText = O.application.config["haplo_workflow_committee_scheduling:notification:replace_full_info_text"];
         W.render({
             object: app,
-            fullInfo: app.url(),
-            fullInfoText: "Submit recommendation..."
+            fullInfo: !!O.application.config["haplo_workflow_committee_scheduling:notification:redirect_to_online_decision"] ? data.url : app.url(),
+            fullInfoText: fullInfoText ? fullInfoText : "Submit recommendation..."
         }, "workunit");
     }
 });

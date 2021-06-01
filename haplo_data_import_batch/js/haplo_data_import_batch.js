@@ -206,6 +206,9 @@ P.backgroundCallback("run", function(data) {
         });
 
         let importBatch = O.service("haplo:data-import-framework:batch", control, dataFiles, errorCallback);
+        importBatch.externalData({
+            batchIdentifier: batch.identifier
+        });
         importBatch.eachRecord((record) => {
             let transformation = importBatch.transform(record);
             if(transformation.isComplete) {
@@ -221,6 +224,7 @@ P.backgroundCallback("run", function(data) {
         log.push("EXCEPTION: Error during import: "+e.message+". File: "+e.fileName+", line: "+e.lineNumber);
         resultState = 'error';
     }
+    O.serviceMaybe("haplo:data-import-framework:notify-batch-complete", batch.identifier);
     O.audit.write({
         auditEntryType: "haplo_data_import_batch:end",
         data: {

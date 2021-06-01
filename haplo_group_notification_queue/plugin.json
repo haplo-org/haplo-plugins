@@ -6,6 +6,9 @@
   "displayDescription": "Implement task queues for groups",
   "apiVersion": 4,
   "privilegesRequired": ["pDatabase"],
+  "depend": [
+    "thirdparty_client_side_ui"
+  ],
   "load": [
     "js/haplo_group_notification_queue.js"
   ],

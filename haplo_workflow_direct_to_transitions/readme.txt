@@ -1,5 +1,9 @@
 title: Workflow direct to transitions
 --
+
+WARNING: This plugin is now deprecated. It is kept around only for backwards compatibility reasons. You should not use it for new clients. The transitions steps UI should make this unnecessary.
+
+
 This plugin implements the @"haplo:directToTransitions"@ feature to add transition panels to main page of workflow ui.
 
 h2(feature). haplo:directToTransitions

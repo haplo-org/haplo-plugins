@@ -2,7 +2,7 @@
 
 <h1>title</h1>
 
-<p>i("You are invited to participate in the NAME(online decision) process for {}") { <a href=appUrl>appTitle</a> }</p>
+<p>i("You are invited to participate in the NAME(online decision) process for {}") { <a href=linkUrl>appTitle</a> }</p>
 
 if(note) {
     <p>i("Note: {}") { note }</p>

@@ -7,6 +7,7 @@
   "apiVersion": 4,
   "loadPriority": 30000,
   "depend": [
+      "std_action_panel",
       "std_workflow",
       "std_document_store"
     ],

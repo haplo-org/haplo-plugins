@@ -92,7 +92,10 @@ P.respond("GET", "/do/haplo-data-import/models", [
             indicator: "standard"
         });
     });
+    let extraUI = [];
+    O.serviceMaybe("haplo:data-import-framework:admin-ui:model-information:extra-ui", extraUI);
     E.render({
+        extraUI: extraUI,
         options: options
     });
 });

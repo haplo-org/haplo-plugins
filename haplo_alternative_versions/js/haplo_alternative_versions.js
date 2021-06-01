@@ -45,19 +45,33 @@ var copyDataFromAltToOther = function(alternateVersion, other, keepAdditionalAtt
         let removeFrom = keepAdditionalAttributes ? alternateVersion : other;
         removeFrom.every((v,d,q) => {
             if(d !== A.AuthoritativeVersion) {
-                toRemove.push(d);
+                toRemove.push({desc: d, qual: q});
             }
         });
-        _.each(_.uniq(toRemove), (d) => other.remove(d));
+        _.chain(toRemove).
+            uniq((descQual) => {
+                // Uniq iteratees transform the values only for comparison, doesn't modify underlying array
+                // Using the api codes so as to not rely on the data type of attributes/qualifiers and ensure
+                // they form a distinct identifier for which values to replace
+                let identifier = [SCHEMA.getAttributeInfo(descQual.desc).code];
+                if(!!descQual.qual) { identifier.push(SCHEMA.getQualifierInfo(descQual.qual).code); }
+                return identifier.join("-");
+            }).
+            each((descQual) => other.remove(descQual.desc, descQual.qual));
+
+        let lastGroupId;
         alternateVersion.every((v,d,q,x) => {
             if(d !== A.AuthoritativeVersion) {
                 if(x) {
-                    let newGroup = other.newAttributeGroup(x.desc);
-                    let oldGroup = alternateVersion.extractSingleAttributeGroup(x.groupId);
-                    oldGroup.every((v,d,q) => {
-                        // Type of attribute group shown as attribute title
-                        if(d != A.Type) {
-                            other.append(v,d,q,newGroup);
+                    // Prevent duplicating values within groups
+                    if(lastGroupId === x.groupId) { return; }
+                    lastGroupId = x.groupId;
+                    let group = alternateVersion.extractSingleAttributeGroup(x.groupId);
+                    group.every((vv,dd,qq) => {
+                        // Attribute groups shouldn't be stored with types
+                        // `group` only has a type as its a temporary object to represent the group
+                        if(dd != A.Type) {
+                            other.append(vv,dd,qq,x);
                         }
                     });
                 } else {
@@ -65,9 +79,10 @@ var copyDataFromAltToOther = function(alternateVersion, other, keepAdditionalAtt
                 }
             }
         });
-        other.save();
     });
 };
+
+P.implementService("haplo_alternative_versions:copy_data_from_alternative_to_other", copyDataFromAltToOther);
 
 P.implementService("haplo_alternative_versions:copy_data_to_authoritative", function(alternateVersion) {
     let s = O.serviceMaybe("haplo_alternative_versions:source_for_alternative_object", alternateVersion);

@@ -153,12 +153,22 @@ P.doSyncApply = function(sync) {
                     // Implementation updates profile object
                     impl.updateProfileObject(this, updatedProfileObject, detailsFull, implData);
                     if(!(updatedProfileObject.firstType())) { updatedProfileObject.appendType(T.Person); }
+                    var titles = [];
+                    updatedProfileObject.every(A.Title, function(v,d,q) {
+                        titles.push({v:v, q:q});
+                    });
                     updatedProfileObject.remove(A.Title);
                     updatedProfileObject.appendTitle(O.text(O.T_TEXT_PERSON_NAME, {
                         title: details.title ? details.title : "",
                         first: details.nameFirst,
                         last: details.nameLast
                     }));
+                    // want person name without qualifier above person name(s) with qualifier
+                    _.each(titles, function(title) {
+                        if(title.q && (title.v.toString() !== updatedProfileObject.title)) {
+                            updatedProfileObject.appendTitle(title.v, title.q);
+                        }
+                    });
                     updatedProfileObject.remove(A.EmailAddress);
                     updatedProfileObject.append(O.text(O.T_IDENTIFIER_EMAIL_ADDRESS, details.email), A.EmailAddress);
 
@@ -183,6 +193,12 @@ P.doSyncApply = function(sync) {
                             log("reactivate "+username);
                             user.setIsActive(true);
                         }
+                        if("tags" in details) {
+                            _.each(details.tags, (value, key) => {
+                                user.tags[key] = value;
+                            });
+                            user.saveTags();
+                        }
                         user.setDetails(userDetails);   // Won't modify user if nothing changed
                         // Preserve any groups to which the user has been added manually
                         var existingUnmanagedGroups = _.filter(user.directGroupIds, function(gid) {
@@ -194,12 +210,17 @@ P.doSyncApply = function(sync) {
                             user.ref = updatedProfileObject.ref;
                         }
                     } else {
+                        var tags = {"username": username};
+                        if("tags" in details) {
+                            tags = _.extend(details.tags, tags);
+                        }
                         userDetails.groups = groups;
                         userDetails.ref = updatedProfileObject.ref;
-                        userDetails.tags = {"username": username};
+                        userDetails.tags = tags;
                         user = O.setup.createUser(userDetails);
                         row.userId = user.id;
                     }
+
 
                     // Update database
                     row.lastSync = sync.id;

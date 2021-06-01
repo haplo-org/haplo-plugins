@@ -1,0 +1,12 @@
+std:layout:minimal()
+pageTitle(i("Enter details for new {}...") { kind.kindSpec.displayName })
+
+template:page:_container() {
+  if(invalid) {
+    std:ui:notice(i("Please enter name and email address."))
+  }
+  <form method="POST"> std:form:token()
+    std:form(form)
+    <p> <input type="submit" value=i("Save details")> </p>
+  </form>
+}

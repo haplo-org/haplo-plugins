@@ -29,6 +29,16 @@
             "description": "Test model."
         }
     },
+    "haplo:data-import-framework:setup-model:test:four": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:setup-model"
+        ],
+        "metadata": {
+            "name": "test:four",
+            "title": "Test Model Four",
+            "description": "Test model."
+        }
+    },
     "haplo:data-import-framework:filter:test:order-1": {
         "statements": [
             "conforms-to haplo:data-import-framework:filter"

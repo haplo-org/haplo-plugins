@@ -1,0 +1,9 @@
+std:plugin:resources("people-picker.js" "people-picker.css")
+
+<div
+    id="haplo-people-picker-container"
+    data-picker=picker.linkSpecSigned
+    data-kind=kind.kind   // optional
+>
+  yield()
+</div>

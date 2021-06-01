@@ -1,0 +1,9 @@
+
+label test:label:test-person-label
+    title: Test Person Label
+    category: TEST
+
+type std:type:person
+    label-base std:label:common
+    label-base test:label:test-person-label
+

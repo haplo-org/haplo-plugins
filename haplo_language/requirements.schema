@@ -1,0 +1,1977 @@
+
+type haplo:type:language as Language
+    title: Language
+    search-name: Language
+    behaviour classification
+    attribute dc:attribute:title
+    attribute std:attribute:parent
+    attribute std:attribute:notes
+    attribute std:attribute:configured-behaviour
+    render-type classification
+    render-icon: E501,1,f
+    render-category 0
+    label-base std:label:concept
+    create-position never
+
+attribute haplo:attribute:language as Language
+    title: Language
+    search-name: language
+    qualifier std:qualifier:null
+    data-type link
+    linked-type haplo:type:language
+    ui-options dropdown
+
+attribute haplo:attribute:language-code as LanguageCode
+    title: Language Code
+    search-name: language-code
+    qualifier: std:qualifier:null
+    data-type text
+
+# -------- Languages (converted from ISO-639.2) -------------------------
+object haplo:list:language:aar:afar
+    type haplo:type:language
+    title: Afar
+
+object haplo:list:language:abk:abkhazian
+    type haplo:type:language
+    title: Abkhazian
+
+object haplo:list:language:ace:achinese
+    type haplo:type:language
+    title: Achinese
+
+object haplo:list:language:ach:acoli
+    type haplo:type:language
+    title: Acoli
+
+object haplo:list:language:ada:adangme
+    type haplo:type:language
+    title: Adangme
+
+object haplo:list:language:ady:adyghe-adygei
+    type haplo:type:language
+    title: Adyghe/Adygei
+
+object haplo:list:language:afa:afro-asiatic-languages
+    type haplo:type:language
+    title: Afro-Asiatic languages
+
+object haplo:list:language:afh:afrihili
+    type haplo:type:language
+    title: Afrihili
+
+object haplo:list:language:afr:afrikaans
+    type haplo:type:language
+    title: Afrikaans
+
+object haplo:list:language:ain:ainu
+    type haplo:type:language
+    title: Ainu
+
+object haplo:list:language:aka:akan
+    type haplo:type:language
+    title: Akan
+
+object haplo:list:language:akk:akkadian
+    type haplo:type:language
+    title: Akkadian
+
+object haplo:list:language:alb:albanian
+    type haplo:type:language
+    title: Albanian
+
+object haplo:list:language:ale:aleut
+    type haplo:type:language
+    title: Aleut
+
+object haplo:list:language:alg:algonquian-languages
+    type haplo:type:language
+    title: Algonquian languages
+
+object haplo:list:language:alt:southern-altai
+    type haplo:type:language
+    title: Southern Altai
+
+object haplo:list:language:amh:amharic
+    type haplo:type:language
+    title: Amharic
+
+object haplo:list:language:ang:english-old-ca-450-1100
+    type haplo:type:language
+    title: English, Old (ca.450-1100)
+
+object haplo:list:language:anp:angika
+    type haplo:type:language
+    title: Angika
+
+object haplo:list:language:apa:apache-languages
+    type haplo:type:language
+    title: Apache languages
+
+object haplo:list:language:ara:arabic
+    type haplo:type:language
+    title: Arabic
+
+object haplo:list:language:arc:official-aramaic-700-300-bce-imperial-aramaic-700-300-bce
+    type haplo:type:language
+    title: Official Aramaic (700-300 BCE)/Imperial Aramaic (700-300 BCE)
+
+object haplo:list:language:arg:aragonese
+    type haplo:type:language
+    title: Aragonese
+
+object haplo:list:language:arm:armenian
+    type haplo:type:language
+    title: Armenian
+
+object haplo:list:language:arn:mapudungun-mapuche
+    type haplo:type:language
+    title: Mapudungun/Mapuche
+
+object haplo:list:language:arp:arapaho
+    type haplo:type:language
+    title: Arapaho
+
+object haplo:list:language:art:artificial-languages
+    type haplo:type:language
+    title: Artificial languages
+
+object haplo:list:language:arw:arawak
+    type haplo:type:language
+    title: Arawak
+
+object haplo:list:language:asm:assamese
+    type haplo:type:language
+    title: Assamese
+
+object haplo:list:language:ast:asturian-bable-leonese-asturleonese
+    type haplo:type:language
+    title: Asturian/Bable/Leonese/Asturleonese
+
+object haplo:list:language:ath:athapascan-languages
+    type haplo:type:language
+    title: Athapascan languages
+
+object haplo:list:language:aus:australian-languages
+    type haplo:type:language
+    title: Australian languages
+
+object haplo:list:language:ava:avaric
+    type haplo:type:language
+    title: Avaric
+
+object haplo:list:language:ave:avestan
+    type haplo:type:language
+    title: Avestan
+
+object haplo:list:language:awa:awadhi
+    type haplo:type:language
+    title: Awadhi
+
+object haplo:list:language:aym:aymara
+    type haplo:type:language
+    title: Aymara
+
+object haplo:list:language:aze:azerbaijani
+    type haplo:type:language
+    title: Azerbaijani
+
+object haplo:list:language:bad:banda-languages
+    type haplo:type:language
+    title: Banda languages
+
+object haplo:list:language:bai:bamileke-languages
+    type haplo:type:language
+    title: Bamileke languages
+
+object haplo:list:language:bak:bashkir
+    type haplo:type:language
+    title: Bashkir
+
+object haplo:list:language:bal:baluchi
+    type haplo:type:language
+    title: Baluchi
+
+object haplo:list:language:bam:bambara
+    type haplo:type:language
+    title: Bambara
+
+object haplo:list:language:ban:balinese
+    type haplo:type:language
+    title: Balinese
+
+object haplo:list:language:baq:basque
+    type haplo:type:language
+    title: Basque
+
+object haplo:list:language:bas:basa
+    type haplo:type:language
+    title: Basa
+
+object haplo:list:language:bat:baltic-languages
+    type haplo:type:language
+    title: Baltic languages
+
+object haplo:list:language:bej:beja-bedawiyet
+    type haplo:type:language
+    title: Beja/Bedawiyet
+
+object haplo:list:language:bel:belarusian
+    type haplo:type:language
+    title: Belarusian
+
+object haplo:list:language:bem:bemba
+    type haplo:type:language
+    title: Bemba
+
+object haplo:list:language:ben:bengali
+    type haplo:type:language
+    title: Bengali
+
+object haplo:list:language:ber:berber-languages
+    type haplo:type:language
+    title: Berber languages
+
+object haplo:list:language:bho:bhojpuri
+    type haplo:type:language
+    title: Bhojpuri
+
+object haplo:list:language:bih:bihari-languages
+    type haplo:type:language
+    title: Bihari languages
+
+object haplo:list:language:bik:bikol
+    type haplo:type:language
+    title: Bikol
+
+object haplo:list:language:bin:bini-edo
+    type haplo:type:language
+    title: Bini/Edo
+
+object haplo:list:language:bis:bislama
+    type haplo:type:language
+    title: Bislama
+
+object haplo:list:language:bla:siksika
+    type haplo:type:language
+    title: Siksika
+
+object haplo:list:language:bnt:bantu-languages
+    type haplo:type:language
+    title: Bantu languages
+
+object haplo:list:language:bos:bosnian
+    type haplo:type:language
+    title: Bosnian
+
+object haplo:list:language:bra:braj
+    type haplo:type:language
+    title: Braj
+
+object haplo:list:language:bre:breton
+    type haplo:type:language
+    title: Breton
+
+object haplo:list:language:btk:batak-languages
+    type haplo:type:language
+    title: Batak languages
+
+object haplo:list:language:bua:buriat
+    type haplo:type:language
+    title: Buriat
+
+object haplo:list:language:bug:buginese
+    type haplo:type:language
+    title: Buginese
+
+object haplo:list:language:bul:bulgarian
+    type haplo:type:language
+    title: Bulgarian
+
+object haplo:list:language:bur:burmese
+    type haplo:type:language
+    title: Burmese
+
+object haplo:list:language:byn:blin-bilin
+    type haplo:type:language
+    title: Blin/Bilin
+
+object haplo:list:language:cad:caddo
+    type haplo:type:language
+    title: Caddo
+
+object haplo:list:language:cai:central-american-indian-languages
+    type haplo:type:language
+    title: Central American Indian languages
+
+object haplo:list:language:car:galibi-carib
+    type haplo:type:language
+    title: Galibi Carib
+
+object haplo:list:language:cat:catalan-valencian
+    type haplo:type:language
+    title: Catalan/Valencian
+
+object haplo:list:language:cau:caucasian-languages
+    type haplo:type:language
+    title: Caucasian languages
+
+object haplo:list:language:ceb:cebuano
+    type haplo:type:language
+    title: Cebuano
+
+object haplo:list:language:cel:celtic-languages
+    type haplo:type:language
+    title: Celtic languages
+
+object haplo:list:language:cha:chamorro
+    type haplo:type:language
+    title: Chamorro
+
+object haplo:list:language:chb:chibcha
+    type haplo:type:language
+    title: Chibcha
+
+object haplo:list:language:che:chechen
+    type haplo:type:language
+    title: Chechen
+
+object haplo:list:language:chg:chagatai
+    type haplo:type:language
+    title: Chagatai
+
+object haplo:list:language:chi:chinese
+    type haplo:type:language
+    title: Chinese
+
+object haplo:list:language:chk:chuukese
+    type haplo:type:language
+    title: Chuukese
+
+object haplo:list:language:chm:mari
+    type haplo:type:language
+    title: Mari
+
+object haplo:list:language:chn:chinook-jargon
+    type haplo:type:language
+    title: Chinook jargon
+
+object haplo:list:language:cho:choctaw
+    type haplo:type:language
+    title: Choctaw
+
+object haplo:list:language:chp:chipewyan-dene-suline
+    type haplo:type:language
+    title: Chipewyan/Dene Suline
+
+object haplo:list:language:chr:cherokee
+    type haplo:type:language
+    title: Cherokee
+
+object haplo:list:language:chu:church-slavic-old-slavonic-church-slavonic-old-bulgarian-old-church-slavonic
+    type haplo:type:language
+    title: Church Slavic/Old Slavonic/Church Slavonic/Old Bulgarian/Old Church Slavonic
+
+object haplo:list:language:chv:chuvash
+    type haplo:type:language
+    title: Chuvash
+
+object haplo:list:language:chy:cheyenne
+    type haplo:type:language
+    title: Cheyenne
+
+object haplo:list:language:cmc:chamic-languages
+    type haplo:type:language
+    title: Chamic languages
+
+object haplo:list:language:cnr:montenegrin
+    type haplo:type:language
+    title: Montenegrin
+
+object haplo:list:language:cop:coptic
+    type haplo:type:language
+    title: Coptic
+
+object haplo:list:language:cor:cornish
+    type haplo:type:language
+    title: Cornish
+
+object haplo:list:language:cos:corsican
+    type haplo:type:language
+    title: Corsican
+
+object haplo:list:language:cpe:creoles-and-pidgins-english-based
+    type haplo:type:language
+    title: Creoles and pidgins, English based
+
+object haplo:list:language:cpf:creoles-and-pidgins-french-based
+    type haplo:type:language
+    title: Creoles and pidgins, French-based
+
+object haplo:list:language:cpp:creoles-and-pidgins-portuguese-based
+    type haplo:type:language
+    title: Creoles and pidgins, Portuguese-based
+
+object haplo:list:language:cre:cree
+    type haplo:type:language
+    title: Cree
+
+object haplo:list:language:crh:crimean-tatar-crimean-turkish
+    type haplo:type:language
+    title: Crimean Tatar/Crimean Turkish
+
+object haplo:list:language:crp:creoles-and-pidgins
+    type haplo:type:language
+    title: Creoles and pidgins
+
+object haplo:list:language:csb:kashubian
+    type haplo:type:language
+    title: Kashubian
+
+object haplo:list:language:cus:cushitic-languages
+    type haplo:type:language
+    title: Cushitic languages
+
+object haplo:list:language:cze:czech
+    type haplo:type:language
+    title: Czech
+
+object haplo:list:language:dak:dakota
+    type haplo:type:language
+    title: Dakota
+
+object haplo:list:language:dan:danish
+    type haplo:type:language
+    title: Danish
+
+object haplo:list:language:dar:dargwa
+    type haplo:type:language
+    title: Dargwa
+
+object haplo:list:language:day:land-dayak-languages
+    type haplo:type:language
+    title: Land Dayak languages
+
+object haplo:list:language:del:delaware
+    type haplo:type:language
+    title: Delaware
+
+object haplo:list:language:den:slave-athapascan
+    type haplo:type:language
+    title: Slave (Athapascan)
+
+object haplo:list:language:dgr:dogrib
+    type haplo:type:language
+    title: Dogrib
+
+object haplo:list:language:din:dinka
+    type haplo:type:language
+    title: Dinka
+
+object haplo:list:language:div:divehi-dhivehi-maldivian
+    type haplo:type:language
+    title: Divehi/Dhivehi/Maldivian
+
+object haplo:list:language:doi:dogri
+    type haplo:type:language
+    title: Dogri
+
+object haplo:list:language:dra:dravidian-languages
+    type haplo:type:language
+    title: Dravidian languages
+
+object haplo:list:language:dsb:lower-sorbian
+    type haplo:type:language
+    title: Lower Sorbian
+
+object haplo:list:language:dua:duala
+    type haplo:type:language
+    title: Duala
+
+object haplo:list:language:dum:dutch-middle-ca-1050-1350
+    type haplo:type:language
+    title: Dutch, Middle (ca.1050-1350)
+
+object haplo:list:language:dut:dutch-flemish
+    type haplo:type:language
+    title: Dutch/Flemish
+
+object haplo:list:language:dyu:dyula
+    type haplo:type:language
+    title: Dyula
+
+object haplo:list:language:dzo:dzongkha
+    type haplo:type:language
+    title: Dzongkha
+
+object haplo:list:language:efi:efik
+    type haplo:type:language
+    title: Efik
+
+object haplo:list:language:egy:egyptian-ancient
+    type haplo:type:language
+    title: Egyptian (Ancient)
+
+object haplo:list:language:eka:ekajuk
+    type haplo:type:language
+    title: Ekajuk
+
+object haplo:list:language:elx:elamite
+    type haplo:type:language
+    title: Elamite
+
+object haplo:list:language:eng:english
+    type haplo:type:language
+    title: English
+
+object haplo:list:language:enm:english-middle-1100-1500
+    type haplo:type:language
+    title: English, Middle (1100-1500)
+
+object haplo:list:language:epo:esperanto
+    type haplo:type:language
+    title: Esperanto
+
+object haplo:list:language:est:estonian
+    type haplo:type:language
+    title: Estonian
+
+object haplo:list:language:ewe:ewe
+    type haplo:type:language
+    title: Ewe
+
+object haplo:list:language:ewo:ewondo
+    type haplo:type:language
+    title: Ewondo
+
+object haplo:list:language:fan:fang
+    type haplo:type:language
+    title: Fang
+
+object haplo:list:language:fao:faroese
+    type haplo:type:language
+    title: Faroese
+
+object haplo:list:language:fat:fanti
+    type haplo:type:language
+    title: Fanti
+
+object haplo:list:language:fij:fijian
+    type haplo:type:language
+    title: Fijian
+
+object haplo:list:language:fil:filipino-pilipino
+    type haplo:type:language
+    title: Filipino/Pilipino
+
+object haplo:list:language:fin:finnish
+    type haplo:type:language
+    title: Finnish
+
+object haplo:list:language:fiu:finno-ugrian-languages
+    type haplo:type:language
+    title: Finno-Ugrian languages
+
+object haplo:list:language:fon:fon
+    type haplo:type:language
+    title: Fon
+
+object haplo:list:language:fre:french
+    type haplo:type:language
+    title: French
+
+object haplo:list:language:frm:french-middle-ca-1400-1600
+    type haplo:type:language
+    title: French, Middle (ca.1400-1600)
+
+object haplo:list:language:fro:french-old-842-ca-1400
+    type haplo:type:language
+    title: French, Old (842-ca.1400)
+
+object haplo:list:language:frr:northern-frisian
+    type haplo:type:language
+    title: Northern Frisian
+
+object haplo:list:language:frs:eastern-frisian
+    type haplo:type:language
+    title: Eastern Frisian
+
+object haplo:list:language:fry:western-frisian
+    type haplo:type:language
+    title: Western Frisian
+
+object haplo:list:language:ful:fulah
+    type haplo:type:language
+    title: Fulah
+
+object haplo:list:language:fur:friulian
+    type haplo:type:language
+    title: Friulian
+
+object haplo:list:language:gaa:ga
+    type haplo:type:language
+    title: Ga
+
+object haplo:list:language:gay:gayo
+    type haplo:type:language
+    title: Gayo
+
+object haplo:list:language:gba:gbaya
+    type haplo:type:language
+    title: Gbaya
+
+object haplo:list:language:gem:germanic-languages
+    type haplo:type:language
+    title: Germanic languages
+
+object haplo:list:language:geo:georgian
+    type haplo:type:language
+    title: Georgian
+
+object haplo:list:language:ger:german
+    type haplo:type:language
+    title: German
+
+object haplo:list:language:gez:geez
+    type haplo:type:language
+    title: Geez
+
+object haplo:list:language:gil:gilbertese
+    type haplo:type:language
+    title: Gilbertese
+
+object haplo:list:language:gla:gaelic-scottish-gaelic
+    type haplo:type:language
+    title: Gaelic/Scottish Gaelic
+
+object haplo:list:language:gle:irish
+    type haplo:type:language
+    title: Irish
+
+object haplo:list:language:glg:galician
+    type haplo:type:language
+    title: Galician
+
+object haplo:list:language:glv:manx
+    type haplo:type:language
+    title: Manx
+
+object haplo:list:language:gmh:german-middle-high-ca-1050-1500
+    type haplo:type:language
+    title: German, Middle High (ca.1050-1500)
+
+object haplo:list:language:goh:german-old-high-ca-750-1050
+    type haplo:type:language
+    title: German, Old High (ca.750-1050)
+
+object haplo:list:language:gon:gondi
+    type haplo:type:language
+    title: Gondi
+
+object haplo:list:language:gor:gorontalo
+    type haplo:type:language
+    title: Gorontalo
+
+object haplo:list:language:got:gothic
+    type haplo:type:language
+    title: Gothic
+
+object haplo:list:language:grb:grebo
+    type haplo:type:language
+    title: Grebo
+
+object haplo:list:language:grc:greek-ancient-to-1453
+    type haplo:type:language
+    title: Greek, Ancient (to 1453)
+
+object haplo:list:language:gre:greek-modern-1453
+    type haplo:type:language
+    title: Greek, Modern (1453-)
+
+object haplo:list:language:grn:guarani
+    type haplo:type:language
+    title: Guarani
+
+object haplo:list:language:gsw:swiss-german-alemannic-alsatian
+    type haplo:type:language
+    title: Swiss German/Alemannic/Alsatian
+
+object haplo:list:language:guj:gujarati
+    type haplo:type:language
+    title: Gujarati
+
+object haplo:list:language:gwi:gwich-in
+    type haplo:type:language
+    title: Gwich'in
+
+object haplo:list:language:hai:haida
+    type haplo:type:language
+    title: Haida
+
+object haplo:list:language:hat:haitian-haitian-creole
+    type haplo:type:language
+    title: Haitian/Haitian Creole
+
+object haplo:list:language:hau:hausa
+    type haplo:type:language
+    title: Hausa
+
+object haplo:list:language:haw:hawaiian
+    type haplo:type:language
+    title: Hawaiian
+
+object haplo:list:language:heb:hebrew
+    type haplo:type:language
+    title: Hebrew
+
+object haplo:list:language:her:herero
+    type haplo:type:language
+    title: Herero
+
+object haplo:list:language:hil:hiligaynon
+    type haplo:type:language
+    title: Hiligaynon
+
+object haplo:list:language:him:himachali-languages-western-pahari-languages
+    type haplo:type:language
+    title: Himachali languages/Western Pahari languages
+
+object haplo:list:language:hin:hindi
+    type haplo:type:language
+    title: Hindi
+
+object haplo:list:language:hit:hittite
+    type haplo:type:language
+    title: Hittite
+
+object haplo:list:language:hmn:hmong-mong
+    type haplo:type:language
+    title: Hmong/Mong
+
+object haplo:list:language:hmo:hiri-motu
+    type haplo:type:language
+    title: Hiri Motu
+
+object haplo:list:language:hrv:croatian
+    type haplo:type:language
+    title: Croatian
+
+object haplo:list:language:hsb:upper-sorbian
+    type haplo:type:language
+    title: Upper Sorbian
+
+object haplo:list:language:hun:hungarian
+    type haplo:type:language
+    title: Hungarian
+
+object haplo:list:language:hup:hupa
+    type haplo:type:language
+    title: Hupa
+
+object haplo:list:language:iba:iban
+    type haplo:type:language
+    title: Iban
+
+object haplo:list:language:ibo:igbo
+    type haplo:type:language
+    title: Igbo
+
+object haplo:list:language:ice:icelandic
+    type haplo:type:language
+    title: Icelandic
+
+object haplo:list:language:ido:ido
+    type haplo:type:language
+    title: Ido
+
+object haplo:list:language:iii:sichuan-yi-nuosu
+    type haplo:type:language
+    title: Sichuan Yi/Nuosu
+
+object haplo:list:language:ijo:ijo-languages
+    type haplo:type:language
+    title: Ijo languages
+
+object haplo:list:language:iku:inuktitut
+    type haplo:type:language
+    title: Inuktitut
+
+object haplo:list:language:ile:interlingue-occidental
+    type haplo:type:language
+    title: Interlingue/Occidental
+
+object haplo:list:language:ilo:iloko
+    type haplo:type:language
+    title: Iloko
+
+object haplo:list:language:ina:interlingua-international-auxiliary-language-association
+    type haplo:type:language
+    title: Interlingua (International Auxiliary Language Association)
+
+object haplo:list:language:inc:indic-languages
+    type haplo:type:language
+    title: Indic languages
+
+object haplo:list:language:ind:indonesian
+    type haplo:type:language
+    title: Indonesian
+
+object haplo:list:language:ine:indo-european-languages
+    type haplo:type:language
+    title: Indo-European languages
+
+object haplo:list:language:inh:ingush
+    type haplo:type:language
+    title: Ingush
+
+object haplo:list:language:ipk:inupiaq
+    type haplo:type:language
+    title: Inupiaq
+
+object haplo:list:language:ira:iranian-languages
+    type haplo:type:language
+    title: Iranian languages
+
+object haplo:list:language:iro:iroquoian-languages
+    type haplo:type:language
+    title: Iroquoian languages
+
+object haplo:list:language:ita:italian
+    type haplo:type:language
+    title: Italian
+
+object haplo:list:language:jav:javanese
+    type haplo:type:language
+    title: Javanese
+
+object haplo:list:language:jbo:lojban
+    type haplo:type:language
+    title: Lojban
+
+object haplo:list:language:jpn:japanese
+    type haplo:type:language
+    title: Japanese
+
+object haplo:list:language:jpr:judeo-persian
+    type haplo:type:language
+    title: Judeo-Persian
+
+object haplo:list:language:jrb:judeo-arabic
+    type haplo:type:language
+    title: Judeo-Arabic
+
+object haplo:list:language:kaa:kara-kalpak
+    type haplo:type:language
+    title: Kara-Kalpak
+
+object haplo:list:language:kab:kabyle
+    type haplo:type:language
+    title: Kabyle
+
+object haplo:list:language:kac:kachin-jingpho
+    type haplo:type:language
+    title: Kachin/Jingpho
+
+object haplo:list:language:kal:kalaallisut-greenlandic
+    type haplo:type:language
+    title: Kalaallisut/Greenlandic
+
+object haplo:list:language:kam:kamba
+    type haplo:type:language
+    title: Kamba
+
+object haplo:list:language:kan:kannada
+    type haplo:type:language
+    title: Kannada
+
+object haplo:list:language:kar:karen-languages
+    type haplo:type:language
+    title: Karen languages
+
+object haplo:list:language:kas:kashmiri
+    type haplo:type:language
+    title: Kashmiri
+
+object haplo:list:language:kau:kanuri
+    type haplo:type:language
+    title: Kanuri
+
+object haplo:list:language:kaw:kawi
+    type haplo:type:language
+    title: Kawi
+
+object haplo:list:language:kaz:kazakh
+    type haplo:type:language
+    title: Kazakh
+
+object haplo:list:language:kbd:kabardian
+    type haplo:type:language
+    title: Kabardian
+
+object haplo:list:language:kha:khasi
+    type haplo:type:language
+    title: Khasi
+
+object haplo:list:language:khi:khoisan-languages
+    type haplo:type:language
+    title: Khoisan languages
+
+object haplo:list:language:khm:central-khmer
+    type haplo:type:language
+    title: Central Khmer
+
+object haplo:list:language:kho:khotanese-sakan
+    type haplo:type:language
+    title: Khotanese/Sakan
+
+object haplo:list:language:kik:kikuyu-gikuyu
+    type haplo:type:language
+    title: Kikuyu/Gikuyu
+
+object haplo:list:language:kin:kinyarwanda
+    type haplo:type:language
+    title: Kinyarwanda
+
+object haplo:list:language:kir:kirghiz-kyrgyz
+    type haplo:type:language
+    title: Kirghiz/Kyrgyz
+
+object haplo:list:language:kmb:kimbundu
+    type haplo:type:language
+    title: Kimbundu
+
+object haplo:list:language:kok:konkani
+    type haplo:type:language
+    title: Konkani
+
+object haplo:list:language:kom:komi
+    type haplo:type:language
+    title: Komi
+
+object haplo:list:language:kon:kongo
+    type haplo:type:language
+    title: Kongo
+
+object haplo:list:language:kor:korean
+    type haplo:type:language
+    title: Korean
+
+object haplo:list:language:kos:kosraean
+    type haplo:type:language
+    title: Kosraean
+
+object haplo:list:language:kpe:kpelle
+    type haplo:type:language
+    title: Kpelle
+
+object haplo:list:language:krc:karachay-balkar
+    type haplo:type:language
+    title: Karachay-Balkar
+
+object haplo:list:language:krl:karelian
+    type haplo:type:language
+    title: Karelian
+
+object haplo:list:language:kro:kru-languages
+    type haplo:type:language
+    title: Kru languages
+
+object haplo:list:language:kru:kurukh
+    type haplo:type:language
+    title: Kurukh
+
+object haplo:list:language:kua:kuanyama-kwanyama
+    type haplo:type:language
+    title: Kuanyama/Kwanyama
+
+object haplo:list:language:kum:kumyk
+    type haplo:type:language
+    title: Kumyk
+
+object haplo:list:language:kur:kurdish
+    type haplo:type:language
+    title: Kurdish
+
+object haplo:list:language:kut:kutenai
+    type haplo:type:language
+    title: Kutenai
+
+object haplo:list:language:lad:ladino
+    type haplo:type:language
+    title: Ladino
+
+object haplo:list:language:lah:lahnda
+    type haplo:type:language
+    title: Lahnda
+
+object haplo:list:language:lam:lamba
+    type haplo:type:language
+    title: Lamba
+
+object haplo:list:language:lao:lao
+    type haplo:type:language
+    title: Lao
+
+object haplo:list:language:lat:latin
+    type haplo:type:language
+    title: Latin
+
+object haplo:list:language:lav:latvian
+    type haplo:type:language
+    title: Latvian
+
+object haplo:list:language:lez:lezghian
+    type haplo:type:language
+    title: Lezghian
+
+object haplo:list:language:lim:limburgan-limburger-limburgish
+    type haplo:type:language
+    title: Limburgan/Limburger/Limburgish
+
+object haplo:list:language:lin:lingala
+    type haplo:type:language
+    title: Lingala
+
+object haplo:list:language:lit:lithuanian
+    type haplo:type:language
+    title: Lithuanian
+
+object haplo:list:language:lol:mongo
+    type haplo:type:language
+    title: Mongo
+
+object haplo:list:language:loz:lozi
+    type haplo:type:language
+    title: Lozi
+
+object haplo:list:language:ltz:luxembourgish-letzeburgesch
+    type haplo:type:language
+    title: Luxembourgish/Letzeburgesch
+
+object haplo:list:language:lua:luba-lulua
+    type haplo:type:language
+    title: Luba-Lulua
+
+object haplo:list:language:lub:luba-katanga
+    type haplo:type:language
+    title: Luba-Katanga
+
+object haplo:list:language:lug:ganda
+    type haplo:type:language
+    title: Ganda
+
+object haplo:list:language:lui:luiseno
+    type haplo:type:language
+    title: Luiseno
+
+object haplo:list:language:lun:lunda
+    type haplo:type:language
+    title: Lunda
+
+object haplo:list:language:luo:luo-kenya-and-tanzania
+    type haplo:type:language
+    title: Luo (Kenya and Tanzania)
+
+object haplo:list:language:lus:lushai
+    type haplo:type:language
+    title: Lushai
+
+object haplo:list:language:mac:macedonian
+    type haplo:type:language
+    title: Macedonian
+
+object haplo:list:language:mad:madurese
+    type haplo:type:language
+    title: Madurese
+
+object haplo:list:language:mag:magahi
+    type haplo:type:language
+    title: Magahi
+
+object haplo:list:language:mah:marshallese
+    type haplo:type:language
+    title: Marshallese
+
+object haplo:list:language:mai:maithili
+    type haplo:type:language
+    title: Maithili
+
+object haplo:list:language:mak:makasar
+    type haplo:type:language
+    title: Makasar
+
+object haplo:list:language:mal:malayalam
+    type haplo:type:language
+    title: Malayalam
+
+object haplo:list:language:man:mandingo
+    type haplo:type:language
+    title: Mandingo
+
+object haplo:list:language:mao:maori
+    type haplo:type:language
+    title: Maori
+
+object haplo:list:language:map:austronesian-languages
+    type haplo:type:language
+    title: Austronesian languages
+
+object haplo:list:language:mar:marathi
+    type haplo:type:language
+    title: Marathi
+
+object haplo:list:language:mas:masai
+    type haplo:type:language
+    title: Masai
+
+object haplo:list:language:may:malay
+    type haplo:type:language
+    title: Malay
+
+object haplo:list:language:mdf:moksha
+    type haplo:type:language
+    title: Moksha
+
+object haplo:list:language:mdr:mandar
+    type haplo:type:language
+    title: Mandar
+
+object haplo:list:language:men:mende
+    type haplo:type:language
+    title: Mende
+
+object haplo:list:language:mga:irish-middle-900-1200
+    type haplo:type:language
+    title: Irish, Middle (900-1200)
+
+object haplo:list:language:mic:mi-kmaq-micmac
+    type haplo:type:language
+    title: Mi'kmaq/Micmac
+
+object haplo:list:language:min:minangkabau
+    type haplo:type:language
+    title: Minangkabau
+
+object haplo:list:language:mis:uncoded-languages
+    type haplo:type:language
+    title: Uncoded languages
+
+object haplo:list:language:mkh:mon-khmer-languages
+    type haplo:type:language
+    title: Mon-Khmer languages
+
+object haplo:list:language:mlg:malagasy
+    type haplo:type:language
+    title: Malagasy
+
+object haplo:list:language:mlt:maltese
+    type haplo:type:language
+    title: Maltese
+
+object haplo:list:language:mnc:manchu
+    type haplo:type:language
+    title: Manchu
+
+object haplo:list:language:mni:manipuri
+    type haplo:type:language
+    title: Manipuri
+
+object haplo:list:language:mno:manobo-languages
+    type haplo:type:language
+    title: Manobo languages
+
+object haplo:list:language:moh:mohawk
+    type haplo:type:language
+    title: Mohawk
+
+object haplo:list:language:mon:mongolian
+    type haplo:type:language
+    title: Mongolian
+
+object haplo:list:language:mos:mossi
+    type haplo:type:language
+    title: Mossi
+
+object haplo:list:language:mul:multiple-languages
+    type haplo:type:language
+    title: Multiple languages
+
+object haplo:list:language:mun:munda-languages
+    type haplo:type:language
+    title: Munda languages
+
+object haplo:list:language:mus:creek
+    type haplo:type:language
+    title: Creek
+
+object haplo:list:language:mwl:mirandese
+    type haplo:type:language
+    title: Mirandese
+
+object haplo:list:language:mwr:marwari
+    type haplo:type:language
+    title: Marwari
+
+object haplo:list:language:myn:mayan-languages
+    type haplo:type:language
+    title: Mayan languages
+
+object haplo:list:language:myv:erzya
+    type haplo:type:language
+    title: Erzya
+
+object haplo:list:language:nah:nahuatl-languages
+    type haplo:type:language
+    title: Nahuatl languages
+
+object haplo:list:language:nai:north-american-indian-languages
+    type haplo:type:language
+    title: North American Indian languages
+
+object haplo:list:language:nap:neapolitan
+    type haplo:type:language
+    title: Neapolitan
+
+object haplo:list:language:nau:nauru
+    type haplo:type:language
+    title: Nauru
+
+object haplo:list:language:nav:navajo-navaho
+    type haplo:type:language
+    title: Navajo/Navaho
+
+object haplo:list:language:nbl:ndebele-south-south-ndebele
+    type haplo:type:language
+    title: Ndebele, South/South Ndebele
+
+object haplo:list:language:nde:ndebele-north-north-ndebele
+    type haplo:type:language
+    title: Ndebele, North/North Ndebele
+
+object haplo:list:language:ndo:ndonga
+    type haplo:type:language
+    title: Ndonga
+
+object haplo:list:language:nds:low-german-low-saxon-german-low-saxon-low
+    type haplo:type:language
+    title: Low German/Low Saxon/German, Low/Saxon, Low
+
+object haplo:list:language:nep:nepali
+    type haplo:type:language
+    title: Nepali
+
+object haplo:list:language:new:nepal-bhasa-newari
+    type haplo:type:language
+    title: Nepal Bhasa/Newari
+
+object haplo:list:language:nia:nias
+    type haplo:type:language
+    title: Nias
+
+object haplo:list:language:nic:niger-kordofanian-languages
+    type haplo:type:language
+    title: Niger-Kordofanian languages
+
+object haplo:list:language:niu:niuean
+    type haplo:type:language
+    title: Niuean
+
+object haplo:list:language:nno:norwegian-nynorsk-nynorsk-norwegian
+    type haplo:type:language
+    title: Norwegian Nynorsk/Nynorsk, Norwegian
+
+object haplo:list:language:nob:bokm-l-norwegian-norwegian-bokm-l
+    type haplo:type:language
+    title: Bokmål, Norwegian/Norwegian Bokmål
+
+object haplo:list:language:nog:nogai
+    type haplo:type:language
+    title: Nogai
+
+object haplo:list:language:non:norse-old
+    type haplo:type:language
+    title: Norse, Old
+
+object haplo:list:language:nor:norwegian
+    type haplo:type:language
+    title: Norwegian
+
+object haplo:list:language:nqo:n-ko
+    type haplo:type:language
+    title: N'Ko
+
+object haplo:list:language:nso:pedi-sepedi-northern-sotho
+    type haplo:type:language
+    title: Pedi/Sepedi/Northern Sotho
+
+object haplo:list:language:nub:nubian-languages
+    type haplo:type:language
+    title: Nubian languages
+
+object haplo:list:language:nwc:classical-newari-old-newari-classical-nepal-bhasa
+    type haplo:type:language
+    title: Classical Newari/Old Newari/Classical Nepal Bhasa
+
+object haplo:list:language:nya:chichewa-chewa-nyanja
+    type haplo:type:language
+    title: Chichewa/Chewa/Nyanja
+
+object haplo:list:language:nym:nyamwezi
+    type haplo:type:language
+    title: Nyamwezi
+
+object haplo:list:language:nyn:nyankole
+    type haplo:type:language
+    title: Nyankole
+
+object haplo:list:language:nyo:nyoro
+    type haplo:type:language
+    title: Nyoro
+
+object haplo:list:language:nzi:nzima
+    type haplo:type:language
+    title: Nzima
+
+object haplo:list:language:oci:occitan-post-1500
+    type haplo:type:language
+    title: Occitan (post 1500)
+
+object haplo:list:language:oji:ojibwa
+    type haplo:type:language
+    title: Ojibwa
+
+object haplo:list:language:ori:oriya
+    type haplo:type:language
+    title: Oriya
+
+object haplo:list:language:orm:oromo
+    type haplo:type:language
+    title: Oromo
+
+object haplo:list:language:osa:osage
+    type haplo:type:language
+    title: Osage
+
+object haplo:list:language:oss:ossetian-ossetic
+    type haplo:type:language
+    title: Ossetian/Ossetic
+
+object haplo:list:language:ota:turkish-ottoman-1500-1928
+    type haplo:type:language
+    title: Turkish, Ottoman (1500-1928)
+
+object haplo:list:language:oto:otomian-languages
+    type haplo:type:language
+    title: Otomian languages
+
+object haplo:list:language:paa:papuan-languages
+    type haplo:type:language
+    title: Papuan languages
+
+object haplo:list:language:pag:pangasinan
+    type haplo:type:language
+    title: Pangasinan
+
+object haplo:list:language:pal:pahlavi
+    type haplo:type:language
+    title: Pahlavi
+
+object haplo:list:language:pam:pampanga-kapampangan
+    type haplo:type:language
+    title: Pampanga/Kapampangan
+
+object haplo:list:language:pan:panjabi-punjabi
+    type haplo:type:language
+    title: Panjabi/Punjabi
+
+object haplo:list:language:pap:papiamento
+    type haplo:type:language
+    title: Papiamento
+
+object haplo:list:language:pau:palauan
+    type haplo:type:language
+    title: Palauan
+
+object haplo:list:language:peo:persian-old-ca-600-400-b-c
+    type haplo:type:language
+    title: Persian, Old (ca.600-400 B.C.)
+
+object haplo:list:language:per:persian
+    type haplo:type:language
+    title: Persian
+
+object haplo:list:language:phi:philippine-languages
+    type haplo:type:language
+    title: Philippine languages
+
+object haplo:list:language:phn:phoenician
+    type haplo:type:language
+    title: Phoenician
+
+object haplo:list:language:pli:pali
+    type haplo:type:language
+    title: Pali
+
+object haplo:list:language:pol:polish
+    type haplo:type:language
+    title: Polish
+
+object haplo:list:language:pon:pohnpeian
+    type haplo:type:language
+    title: Pohnpeian
+
+object haplo:list:language:por:portuguese
+    type haplo:type:language
+    title: Portuguese
+
+object haplo:list:language:pra:prakrit-languages
+    type haplo:type:language
+    title: Prakrit languages
+
+object haplo:list:language:pro:proven-al-old-to-1500-occitan-old-to-1500
+    type haplo:type:language
+    title: Provençal, Old (to 1500)/Occitan, Old (to 1500)
+
+object haplo:list:language:pus:pushto-pashto
+    type haplo:type:language
+    title: Pushto/Pashto
+
+object haplo:list:language:qaaqtz:reserved-for-local-use
+    type haplo:type:language
+    title: Reserved for local use
+
+object haplo:list:language:que:quechua
+    type haplo:type:language
+    title: Quechua
+
+object haplo:list:language:raj:rajasthani
+    type haplo:type:language
+    title: Rajasthani
+
+object haplo:list:language:rap:rapanui
+    type haplo:type:language
+    title: Rapanui
+
+object haplo:list:language:rar:rarotongan-cook-islands-maori
+    type haplo:type:language
+    title: Rarotongan/Cook Islands Maori
+
+object haplo:list:language:roa:romance-languages
+    type haplo:type:language
+    title: Romance languages
+
+object haplo:list:language:roh:romansh
+    type haplo:type:language
+    title: Romansh
+
+object haplo:list:language:rom:romany
+    type haplo:type:language
+    title: Romany
+
+object haplo:list:language:rum:romanian-moldavian-moldovan
+    type haplo:type:language
+    title: Romanian/Moldavian/Moldovan
+
+object haplo:list:language:run:rundi
+    type haplo:type:language
+    title: Rundi
+
+object haplo:list:language:rup:aromanian-arumanian-macedo-romanian
+    type haplo:type:language
+    title: Aromanian/Arumanian/Macedo-Romanian
+
+object haplo:list:language:rus:russian
+    type haplo:type:language
+    title: Russian
+
+object haplo:list:language:sad:sandawe
+    type haplo:type:language
+    title: Sandawe
+
+object haplo:list:language:sag:sango
+    type haplo:type:language
+    title: Sango
+
+object haplo:list:language:sah:yakut
+    type haplo:type:language
+    title: Yakut
+
+object haplo:list:language:sai:south-american-indian-languages
+    type haplo:type:language
+    title: South American Indian languages
+
+object haplo:list:language:sal:salishan-languages
+    type haplo:type:language
+    title: Salishan languages
+
+object haplo:list:language:sam:samaritan-aramaic
+    type haplo:type:language
+    title: Samaritan Aramaic
+
+object haplo:list:language:san:sanskrit
+    type haplo:type:language
+    title: Sanskrit
+
+object haplo:list:language:sas:sasak
+    type haplo:type:language
+    title: Sasak
+
+object haplo:list:language:sat:santali
+    type haplo:type:language
+    title: Santali
+
+object haplo:list:language:scn:sicilian
+    type haplo:type:language
+    title: Sicilian
+
+object haplo:list:language:sco:scots
+    type haplo:type:language
+    title: Scots
+
+object haplo:list:language:sel:selkup
+    type haplo:type:language
+    title: Selkup
+
+object haplo:list:language:sem:semitic-languages
+    type haplo:type:language
+    title: Semitic languages
+
+object haplo:list:language:sga:irish-old-to-900
+    type haplo:type:language
+    title: Irish, Old (to 900)
+
+object haplo:list:language:sgn:sign-languages
+    type haplo:type:language
+    title: Sign Languages
+
+object haplo:list:language:shn:shan
+    type haplo:type:language
+    title: Shan
+
+object haplo:list:language:sid:sidamo
+    type haplo:type:language
+    title: Sidamo
+
+object haplo:list:language:sin:sinhala-sinhalese
+    type haplo:type:language
+    title: Sinhala/Sinhalese
+
+object haplo:list:language:sio:siouan-languages
+    type haplo:type:language
+    title: Siouan languages
+
+object haplo:list:language:sit:sino-tibetan-languages
+    type haplo:type:language
+    title: Sino-Tibetan languages
+
+object haplo:list:language:sla:slavic-languages
+    type haplo:type:language
+    title: Slavic languages
+
+object haplo:list:language:slo:slovak
+    type haplo:type:language
+    title: Slovak
+
+object haplo:list:language:slv:slovenian
+    type haplo:type:language
+    title: Slovenian
+
+object haplo:list:language:sma:southern-sami
+    type haplo:type:language
+    title: Southern Sami
+
+object haplo:list:language:sme:northern-sami
+    type haplo:type:language
+    title: Northern Sami
+
+object haplo:list:language:smi:sami-languages
+    type haplo:type:language
+    title: Sami languages
+
+object haplo:list:language:smj:lule-sami
+    type haplo:type:language
+    title: Lule Sami
+
+object haplo:list:language:smn:inari-sami
+    type haplo:type:language
+    title: Inari Sami
+
+object haplo:list:language:smo:samoan
+    type haplo:type:language
+    title: Samoan
+
+object haplo:list:language:sms:skolt-sami
+    type haplo:type:language
+    title: Skolt Sami
+
+object haplo:list:language:sna:shona
+    type haplo:type:language
+    title: Shona
+
+object haplo:list:language:snd:sindhi
+    type haplo:type:language
+    title: Sindhi
+
+object haplo:list:language:snk:soninke
+    type haplo:type:language
+    title: Soninke
+
+object haplo:list:language:sog:sogdian
+    type haplo:type:language
+    title: Sogdian
+
+object haplo:list:language:som:somali
+    type haplo:type:language
+    title: Somali
+
+object haplo:list:language:son:songhai-languages
+    type haplo:type:language
+    title: Songhai languages
+
+object haplo:list:language:sot:sotho-southern
+    type haplo:type:language
+    title: Sotho, Southern
+
+object haplo:list:language:spa:spanish-castilian
+    type haplo:type:language
+    title: Spanish/Castilian
+
+object haplo:list:language:srd:sardinian
+    type haplo:type:language
+    title: Sardinian
+
+object haplo:list:language:srn:sranan-tongo
+    type haplo:type:language
+    title: Sranan Tongo
+
+object haplo:list:language:srp:serbian
+    type haplo:type:language
+    title: Serbian
+
+object haplo:list:language:srr:serer
+    type haplo:type:language
+    title: Serer
+
+object haplo:list:language:ssa:nilo-saharan-languages
+    type haplo:type:language
+    title: Nilo-Saharan languages
+
+object haplo:list:language:ssw:swati
+    type haplo:type:language
+    title: Swati
+
+object haplo:list:language:suk:sukuma
+    type haplo:type:language
+    title: Sukuma
+
+object haplo:list:language:sun:sundanese
+    type haplo:type:language
+    title: Sundanese
+
+object haplo:list:language:sus:susu
+    type haplo:type:language
+    title: Susu
+
+object haplo:list:language:sux:sumerian
+    type haplo:type:language
+    title: Sumerian
+
+object haplo:list:language:swa:swahili
+    type haplo:type:language
+    title: Swahili
+
+object haplo:list:language:swe:swedish
+    type haplo:type:language
+    title: Swedish
+
+object haplo:list:language:syc:classical-syriac
+    type haplo:type:language
+    title: Classical Syriac
+
+object haplo:list:language:syr:syriac
+    type haplo:type:language
+    title: Syriac
+
+object haplo:list:language:tah:tahitian
+    type haplo:type:language
+    title: Tahitian
+
+object haplo:list:language:tai:tai-languages
+    type haplo:type:language
+    title: Tai languages
+
+object haplo:list:language:tam:tamil
+    type haplo:type:language
+    title: Tamil
+
+object haplo:list:language:tat:tatar
+    type haplo:type:language
+    title: Tatar
+
+object haplo:list:language:tel:telugu
+    type haplo:type:language
+    title: Telugu
+
+object haplo:list:language:tem:timne
+    type haplo:type:language
+    title: Timne
+
+object haplo:list:language:ter:tereno
+    type haplo:type:language
+    title: Tereno
+
+object haplo:list:language:tet:tetum
+    type haplo:type:language
+    title: Tetum
+
+object haplo:list:language:tgk:tajik
+    type haplo:type:language
+    title: Tajik
+
+object haplo:list:language:tgl:tagalog
+    type haplo:type:language
+    title: Tagalog
+
+object haplo:list:language:tha:thai
+    type haplo:type:language
+    title: Thai
+
+object haplo:list:language:tib:tibetan
+    type haplo:type:language
+    title: Tibetan
+
+object haplo:list:language:tig:tigre
+    type haplo:type:language
+    title: Tigre
+
+object haplo:list:language:tir:tigrinya
+    type haplo:type:language
+    title: Tigrinya
+
+object haplo:list:language:tiv:tiv
+    type haplo:type:language
+    title: Tiv
+
+object haplo:list:language:tkl:tokelau
+    type haplo:type:language
+    title: Tokelau
+
+object haplo:list:language:tlh:klingon-tlhingan-hol
+    type haplo:type:language
+    title: Klingon/tlhIngan-Hol
+
+object haplo:list:language:tli:tlingit
+    type haplo:type:language
+    title: Tlingit
+
+object haplo:list:language:tmh:tamashek
+    type haplo:type:language
+    title: Tamashek
+
+object haplo:list:language:tog:tonga-nyasa
+    type haplo:type:language
+    title: Tonga (Nyasa)
+
+object haplo:list:language:ton:tonga-tonga-islands
+    type haplo:type:language
+    title: Tonga (Tonga Islands)
+
+object haplo:list:language:tpi:tok-pisin
+    type haplo:type:language
+    title: Tok Pisin
+
+object haplo:list:language:tsi:tsimshian
+    type haplo:type:language
+    title: Tsimshian
+
+object haplo:list:language:tsn:tswana
+    type haplo:type:language
+    title: Tswana
+
+object haplo:list:language:tso:tsonga
+    type haplo:type:language
+    title: Tsonga
+
+object haplo:list:language:tuk:turkmen
+    type haplo:type:language
+    title: Turkmen
+
+object haplo:list:language:tum:tumbuka
+    type haplo:type:language
+    title: Tumbuka
+
+object haplo:list:language:tup:tupi-languages
+    type haplo:type:language
+    title: Tupi languages
+
+object haplo:list:language:tur:turkish
+    type haplo:type:language
+    title: Turkish
+
+object haplo:list:language:tut:altaic-languages
+    type haplo:type:language
+    title: Altaic languages
+
+object haplo:list:language:tvl:tuvalu
+    type haplo:type:language
+    title: Tuvalu
+
+object haplo:list:language:twi:twi
+    type haplo:type:language
+    title: Twi
+
+object haplo:list:language:tyv:tuvinian
+    type haplo:type:language
+    title: Tuvinian
+
+object haplo:list:language:udm:udmurt
+    type haplo:type:language
+    title: Udmurt
+
+object haplo:list:language:uga:ugaritic
+    type haplo:type:language
+    title: Ugaritic
+
+object haplo:list:language:uig:uighur-uyghur
+    type haplo:type:language
+    title: Uighur/Uyghur
+
+object haplo:list:language:ukr:ukrainian
+    type haplo:type:language
+    title: Ukrainian
+
+object haplo:list:language:umb:umbundu
+    type haplo:type:language
+    title: Umbundu
+
+object haplo:list:language:und:undetermined
+    type haplo:type:language
+    title: Undetermined
+
+object haplo:list:language:urd:urdu
+    type haplo:type:language
+    title: Urdu
+
+object haplo:list:language:uzb:uzbek
+    type haplo:type:language
+    title: Uzbek
+
+object haplo:list:language:vai:vai
+    type haplo:type:language
+    title: Vai
+
+object haplo:list:language:ven:venda
+    type haplo:type:language
+    title: Venda
+
+object haplo:list:language:vie:vietnamese
+    type haplo:type:language
+    title: Vietnamese
+
+object haplo:list:language:vol:volap-k
+    type haplo:type:language
+    title: Volapük
+
+object haplo:list:language:vot:votic
+    type haplo:type:language
+    title: Votic
+
+object haplo:list:language:wak:wakashan-languages
+    type haplo:type:language
+    title: Wakashan languages
+
+object haplo:list:language:wal:wolaitta-wolaytta
+    type haplo:type:language
+    title: Wolaitta/Wolaytta
+
+object haplo:list:language:war:waray
+    type haplo:type:language
+    title: Waray
+
+object haplo:list:language:was:washo
+    type haplo:type:language
+    title: Washo
+
+object haplo:list:language:wel:welsh
+    type haplo:type:language
+    title: Welsh
+
+object haplo:list:language:wen:sorbian-languages
+    type haplo:type:language
+    title: Sorbian languages
+
+object haplo:list:language:wln:walloon
+    type haplo:type:language
+    title: Walloon
+
+object haplo:list:language:wol:wolof
+    type haplo:type:language
+    title: Wolof
+
+object haplo:list:language:xal:kalmyk-oirat
+    type haplo:type:language
+    title: Kalmyk/Oirat
+
+object haplo:list:language:xho:xhosa
+    type haplo:type:language
+    title: Xhosa
+
+object haplo:list:language:yao:yao
+    type haplo:type:language
+    title: Yao
+
+object haplo:list:language:yap:yapese
+    type haplo:type:language
+    title: Yapese
+
+object haplo:list:language:yid:yiddish
+    type haplo:type:language
+    title: Yiddish
+
+object haplo:list:language:yor:yoruba
+    type haplo:type:language
+    title: Yoruba
+
+object haplo:list:language:ypk:yupik-languages
+    type haplo:type:language
+    title: Yupik languages
+
+object haplo:list:language:zap:zapotec
+    type haplo:type:language
+    title: Zapotec
+
+object haplo:list:language:zbl:blissymbols-blissymbolics-bliss
+    type haplo:type:language
+    title: Blissymbols/Blissymbolics/Bliss
+
+object haplo:list:language:zen:zenaga
+    type haplo:type:language
+    title: Zenaga
+
+object haplo:list:language:zgh:standard-moroccan-tamazight
+    type haplo:type:language
+    title: Standard Moroccan Tamazight
+
+object haplo:list:language:zha:zhuang-chuang
+    type haplo:type:language
+    title: Zhuang/Chuang
+
+object haplo:list:language:znd:zande-languages
+    type haplo:type:language
+    title: Zande languages
+
+object haplo:list:language:zul:zulu
+    type haplo:type:language
+    title: Zulu
+
+object haplo:list:language:zun:zuni
+    type haplo:type:language
+    title: Zuni
+
+object haplo:list:language:zxx:no-linguistic-content-not-applicable
+    type haplo:type:language
+    title: No linguistic content/Not applicable
+
+object haplo:list:language:zza:zaza-dimili-dimli-kirdki-kirmanjki-zazaki
+    type haplo:type:language
+    title: Zaza/Dimili/Dimli/Kirdki/Kirmanjki/Zazaki

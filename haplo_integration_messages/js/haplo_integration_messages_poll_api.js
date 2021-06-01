@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
+const MESSAGE_LIMIT = 16;
 
 var CanUsePollAPI = O.action("haplo:integration-message-queue:can-use-poll-api").
     title("Can use Integration Message Queue Poll API").
@@ -36,12 +37,16 @@ P.respond("GET,POST", "/api/haplo-integration-messages/poll", [
                 marked++;
             }
         });
-        E.response.kind = 'text';
-        E.response.body = 'Marked: '+marked;
+        let unmarked = P.db.messages.select().where("sentDate", "=", null).where("groupName", "=", groupName).count();
+        E.response.kind = 'json';
+        E.response.body = JSON.stringify({
+            markedCount: marked,
+            unreadCount: unmarked
+        });
 
     } else {
         // Send all outstanding messages
-        let messagesToSend = P.db.messages.select().where("sentDate", "=", null).where("groupName", "=", groupName).order("id");
+        let messagesToSend = P.db.messages.select().where("sentDate", "=", null).where("groupName", "=", groupName).order("creationDate").limit(MESSAGE_LIMIT);
         let messages = _.map(messagesToSend, (m) => {
             return {
                 id: m.id,

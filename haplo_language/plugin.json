@@ -1,0 +1,13 @@
+{
+  "pluginName": "haplo_language",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Language",
+  "displayDescription": "Facilitates the selection of languages within a Haplo system.",
+  "installSecret": "f3b6304ca698ee56ac504dd37570b19a96d928fb",
+  "apiVersion": 4,
+  "load": [
+      "js/haplo_language.js"
+    ],
+  "respond": ["/do/haplo-language"]
+}

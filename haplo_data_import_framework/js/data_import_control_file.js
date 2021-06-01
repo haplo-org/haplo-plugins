@@ -164,7 +164,8 @@ var validateInstructions = function(instructions, validSingleAssignDestinations)
             }
             if(validSingleAssignDestinations) {
                 let usesPermittedDestination = (-1 !== validSingleAssignDestinations.indexOf(inst.destination));
-                if((-1 !== assignmentInstruction.indexOf(action)) && !inst.multivalue && !usesPermittedDestination) {
+                if((-1 !== assignmentInstruction.indexOf(action)) && (-1 === inst.destination.indexOf("load")) &&
+                 !inst.multivalue && !usesPermittedDestination) {
                     return "Assigning values within for-each without a new/load statement or setting multivalue property will result "+
                         "in overwritten data";
                 } else if((-1 !== ["new", "load"].indexOf(action)) && !usesPermittedDestination) {

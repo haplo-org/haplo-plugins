@@ -27,7 +27,7 @@ var valuesForField = function(field, M) {
         });
     } else if(field.entity) {
         if(M.entities[field.entity + "_refMaybe"]) {
-            values.push(field.type === 'ref' ? M.entities[field.entity + "_ref"] : M.entities[field.entity].title);
+            values.push(field.type === 'ref' ? M.entities[field.entity + "_ref"].toString() : M.entities[field.entity].title);
         }
     } else if(field.service) {
         if(field.service.indexOf("haplo:form-read-only-data:") !== 0) {

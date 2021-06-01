@@ -1,0 +1,13 @@
+pageTitle(M.title ": " spec.form.formTitle)
+backLink(M.url)
+
+std:workflow:transition-steps:navigation(M concat("haplo:transition_decision_form:" spec.form.formId))
+
+if(incomplete) {
+  std:ui:notice(i("Please complete the form below."))
+}
+
+<form method="POST"> std:form:token()
+  std:form(form)
+  <p> <input type="submit" value=i("Next")> </p>
+</form>

@@ -1,0 +1,12 @@
+std:layout:minimal()
+pageTitle(i("Details for {}") { person.displayName })
+
+template:page:_container() {
+  <p>
+    std:ui:button-link(
+      "/do/haplo-people-picker/select/" picker.linkSpecSigned ? edit="1" kind=kind.kind person=person.data.identifier
+    ) { i("Edit...") }
+  </p>
+
+  std:document(person.formInstance)
+}

@@ -1,0 +1,15 @@
+{
+  "pluginName": "haplo_data_import_auto_models",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Data Import Auto Models",
+  "displayDescription": "Automatic model definitions for data import framework",
+  "apiVersion": 4,
+  "depend": [
+      "haplo_data_import_framework"
+    ],
+  "load": [
+      "js/haplo_data_import_auto_models.js"
+    ],
+  "respond": ["/do/haplo-data-import-auto-models"]
+}

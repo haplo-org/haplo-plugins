@@ -63,6 +63,7 @@ var Batch = function(control, model, files, errorCallback) {
     this._errorCount = 0;
     this._observers = {};
     this._filterFunctions = {};
+    this._externalData = {};
 };
 
 Batch.prototype = {
@@ -76,6 +77,14 @@ Batch.prototype = {
         if((name === "report-all-errors") && value) {
             this._opt_reportAllErrors = true;
         }
+    },
+
+    externalData(externalData) {
+        _.extend(this._externalData, externalData||{});
+    },
+
+    getExternalData() {
+        return Object.create(this._externalData);
     },
 
     getReaders() {

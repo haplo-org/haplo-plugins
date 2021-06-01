@@ -1,0 +1,15 @@
+{
+  "pluginName": "haplo_people_picker",
+  "pluginAuthor": "Haplo Services",
+  "pluginVersion": 1,
+  "displayName": "People Picker",
+  "displayDescription": "Selection or one or more people within a form",
+  "apiVersion": 4,
+  "privilegesRequired": ["pDatabase"],
+  "depend": ["std_document_store"],
+  "use": ["std:document_store"],
+  "load": [
+      "js/haplo_people_picker.js"
+    ],
+  "respond": ["/do/haplo-people-picker"]
+}

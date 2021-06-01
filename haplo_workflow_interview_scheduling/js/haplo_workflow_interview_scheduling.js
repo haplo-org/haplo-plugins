@@ -184,8 +184,6 @@ P.workflow.registerWorkflowFeature("haplo:meeting_scheduling", function(workflow
             }
         }
     });
-    
-
 
     plugin.implementService("haplo_meeting_scheduling:meeting_date_passed", function(workUnit, meetingDateInfo) {
         var matchDateDesc = true;

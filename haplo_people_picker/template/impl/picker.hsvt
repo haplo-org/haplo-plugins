@@ -1,0 +1,8 @@
+template:std:resource:plugin_adaptor()
+if(picker.spec.reorderable) { template:std:jquery_ui:sortable() }
+
+template:page:_container() {
+  <div id="haplo-people-picker-form-element">
+    template:impl:picker-list()
+  </div>
+}

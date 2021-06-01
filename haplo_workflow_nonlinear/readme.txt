@@ -199,6 +199,26 @@ h3(service). haplo:nonlinear:get_other_instance
 
 Workflow service for sub-workflows. Returns the latest sub-workflow with the same parent for the given workflow definition.
 
+h3(service). haplo:nonlinear:get_document_from_child
+
+Workflow service for parent workflows to be able to retrieve the last committed document from the most recent instance of it's children workflows. Call the service with:
+
+* **REQUIRED**: @arg2@ (str) the full name of the child workflow, as defined in the parent workflow/via WorkflowDefinition.fullName
+* **REQUIRED**: @arg3@ (str) the name of the documentStore you are accessing
+
+h3(service). haplo:nonlinear:get_child_workflow_instance
+
+Workflow service for parent workflows to be able to retrieve the most recent workflow instance for any of it's children workflows. Call the service with:
+
+* **REQUIRED**: @arg2@ (str) the full name of the child workflow, as defined in the parent workflow/via WorkflowDefinition.fullName
+
+h3(service). haplo:nonlinear:get_document_from_sibling
+
+Workflow service for sub-workflows to be able to retrieve the last committed document from the most recent instance of it's sibling workflows. Call the service with:
+
+* **REQUIRED**: @arg2@ (str) the full name of the sibling workflow, as defined in the parent workflow/via WorkflowDefinition.fullName
+* **REQUIRED**: @arg3@ (str) the name of the documentStore you are accessing
+
 h3(service). haplo:nonlinear:is_subsequent
 
 Call the workflow service on sub-workflows. Returns a boolean of whether or not the sub-workflow was not created by the parent workflow instance first.
@@ -207,9 +227,9 @@ The same logic is used for the @subsequentWorkflowTitlePrefix@ property.
 
 h3(service). haplo:nonlinear:start
 
-Workflow service for parent workflows to start a new instance of the given sub-workflow definition. Call the service with:
+Workflow service for parent workflows to start a new instance of the given sub-workflow definition or name. Call the service with:
 
-* **REQUIRED**: @arg1@ the sub-workflow workflow definition object.
+* **REQUIRED**: @arg1@ the sub-workflow workflow definition object or sub-workflow name.
 * @arg2@ the @JavaScript@ object of the additional properties to pass to start the workflow.
 
 You can read your additional properties in the properties parameter of the @Subworkflow.start()@ function that is used to initialise the workflow instance. The special additional properties are:

@@ -32,7 +32,7 @@ P.hook('hUserAdminUserInterface', function(response, user) {
     var info = userQuery[0];
     response.information.push([null, "This user is managed by the user sync and should not be changed."]);
     response.information.push([null, "Username: "+info.username]);
-    if(info.inFeed === false) {
+    if(info.inFeed === false && info.lastSync !== -1) {
         response.information.push([null, "This user cannot log in because their information does not appear in the user feed."]);
     }
     if(O.currentUser.allowed(P.canUserAdministrateSync)) {

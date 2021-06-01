@@ -3,7 +3,7 @@ each(documents) {
 
   switch(^{documents.length})
       {
-        <div id=unsafeAttributeValue(unsafeAnchor) style="padding:8px 16px;background:#eee">
+        <div id=unsafeAttributeValue(unsafeAnchor) style="padding:8px 16px;background:#eee;margin-bottom:16px">
           <h1 style="margin:0;padding:0"> title </h1>
         </div>
       }

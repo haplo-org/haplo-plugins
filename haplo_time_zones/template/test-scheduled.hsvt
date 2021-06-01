@@ -1,0 +1,8 @@
+pageTitle("Test scheduled actions")
+
+if(form) {
+  <form method="POST"> std:form:token()
+      std:form(form)
+      <p><input type="submit" value="Test actions for this date"></p>
+  </form>
+}

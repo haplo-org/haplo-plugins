@@ -52,11 +52,24 @@ P.implementService("haplo:data-import-framework:setup-model:haplo:user-sync", fu
         kind: "object",
         objectType: TYPE["std:type:person"],
         without: [
-            "dc:attribute:title",
             "dc:attribute:type",
             "std:attribute:email"
-        ]
+        ],
+        objectAttributesOverride: {
+            "dc:attribute:title": {
+                type: "person-name",
+                description: "Person's name",
+                // Will always get a title from the user destination,
+                // this allows for additional titles to be provided (formal names etc)
+                required: false
+            }
+        }
     });
+
+    let userTagsDictionaryNames = O.serviceMaybe("haplo_user_sync_generic:get_user_tag_destination_names") || {};
+    if("username" in userTagsDictionaryNames) {
+        throw new Error("username cannot be set in the 'user:tags' destination this should be set in the 'user' destination.");
+    }
 
     model.addDestination({
         name: "user:tags",
@@ -65,16 +78,13 @@ P.implementService("haplo:data-import-framework:setup-model:haplo:user-sync", fu
         depends: "user",
         kind: "dictionary",
         optional: true,
-        dictionaryNames: {
-            // TODO: Add service which gets the names for tags for this client (and disallows "username")
-        },
+        dictionaryNames: userTagsDictionaryNames,
         tryMakeTargetAvailableForDependency(dependencyName, dependencyTarget) {
             return new UserTags();
         }
     });
 
 });
-
 
 var UserTags = function() {
 };
@@ -84,7 +94,16 @@ P.implementService("haplo_user_sync_generic:get_sync_plugins", function(syncPlug
         onApply(engine, batch) {
         },
         onUpdatedRecord(engine, batch, record, transformation) {
-            //TODO: take tags from the user:tags destination and update the user
+            let userTags = transformation.getTarget("user:tags");
+            if(!_.isEmpty(userTags)) {
+                let user = transformation.getTarget("user");
+                user.tags = {};
+                _.each(userTags, (value, key) => {
+                    user.tags[key] = value.toString();
+                });
+                transformation.setTarget("user", user);
+            }
+
         },
         onUpdateBlockedProfileObject(engine, batch, object, username, user) {
         },

@@ -30,9 +30,20 @@ P.getAvailableModels = function() {
                 properties: m.metadata
             };
         });
+        // Only for use by haplo_data_import_* plugins
+        O.serviceMaybe("__internal__:haplo:data-import-framework:discover-generated-data-models", function(name, service, properties) {
+            _models[name] = {
+                service: service,
+                properties: properties
+            };
+        });
     }
     return _models;
 };
+
+P.implementService("__internal__:haplo:data-import-framework:invalidate-available-models", function() {
+    _models = undefined;
+});
 
 // --------------------------------------------------------------------------
 
@@ -63,6 +74,12 @@ Model.prototype = {
                 if(!haveSetupForType[dataType]) {
                     O.serviceMaybe("haplo:data-import-framework:structured-data-type:add-destination:"+dataType, this);
                     haveSetupForType[dataType] = true;
+                    // if new structured data type is defined, provide a simple constructor for that type so destinations
+                    // can be given the structured field as a data type
+                    if(!(dataType in P.valueTransformerConstructors)) {
+                        let pseudoDestination = this._destinations["value:"+dataType];
+                        P.valueTransformerConstructors[dataType] = pseudoDestination ? pseudoDestination._valueTransformerConstructor : P.DEFAULT_STRUCTURED_CONSTRUCTOR;
+                    }
                 }
             });
         });
@@ -123,6 +140,7 @@ DestinationBase.prototype = {
             let n = new Name(name, properties);
             names[name] = n;
         });
+        this._valueTransformerConstructor = this.delegate.valueTransformerConstructor || P.DEFAULT_STRUCTURED_CONSTRUCTOR;
         this._names = names;
         this._isPseudoDestination = !!this.delegate.pseudo;
         this._setup();
@@ -269,10 +287,10 @@ DestinationObject.prototype._getNameDefinitions = function() {
     // Create Names for each of the attribute in the schema
     let defns = {},
         without = this.delegate.without || [],
-        override = this.delegate.objectAttributesOverride || {},
-        type = SCHEMA.getTypeInfo(this.delegate.objectType);
-    if(type) {
-        type.attributes.forEach((desc) => {
+        override = this.delegate.objectAttributesOverride || {};
+    // Arrow function to avoid changing scope for @this@
+    let defineAllAttributesAsNamesForType = (typeInfo) => {
+        typeInfo.attributes.forEach((desc) => {
             let attr = SCHEMA.getAttributeInfo(desc);
             if(attr && attr.code && (-1 === without.indexOf(attr.code))) {
                 let props = {
@@ -296,8 +314,6 @@ DestinationObject.prototype._getNameDefinitions = function() {
                 // Titles are required
                 if(desc === ATTR.Title) {
                     props.required = true;
-                    // And since it has a title, flag it needs to be checked
-                    this._checkTitleExists = true;
                 }
 
                 // Destination might want to override things (primarily when aliases used)
@@ -307,6 +323,19 @@ DestinationObject.prototype._getNameDefinitions = function() {
                 if(attr.code === "dc:attribute:type") { props.type = "object-type"; }
 
                 defns[attr.code] = props;
+            }
+        });
+    };
+    if("objectType" in this.delegate) {
+        let typeInfo = SCHEMA.getTypeInfo(this.delegate.objectType);
+        if(typeInfo) {
+            defineAllAttributesAsNamesForType(typeInfo);
+        }
+    } else if("annotatedTypes" in this.delegate) {
+        SCHEMA.getTypesWithAnnotation(this.delegate.annotatedTypes).forEach((type) => {
+            let typeInfo = SCHEMA.getTypeInfo(type);
+            if(typeInfo) {
+                defineAllAttributesAsNamesForType(typeInfo);
             }
         });
     }
@@ -328,6 +357,11 @@ DestinationObject.prototype._destinationPseudoDestinationAdder = function(model)
     });
 };
 
+DestinationObject.prototype._isUsingAnnotatedTypes = function() {
+    // objectType takes precedence so we need to check that isn't defined
+    return !("objectType" in this.delegate) && ("annotatedTypes" in this.delegate);
+};
+
 DestinationObject.prototype.constructNewDestinationTarget = function() {
     let object = O.object();
     return object;
@@ -337,8 +371,12 @@ DestinationObject.prototype.tryLoadDestinationTarget = function(loadInfo) {
     // TODO: Call function in delegate?
     if(O.isRef(loadInfo.ref)) {
         let object = loadInfo.ref.load();
-        if(object && object.isKindOf(this.delegate.objectType)) {
-            return object.mutableCopy();
+        if(object) {
+            let objectIsCorrectType = this._isUsingAnnotatedTypes() ? object.isKindOfTypeAnnotated(this.delegate.annotatedTypes) :
+                object.isKindOf(this.delegate.objectType);
+            if(objectIsCorrectType) {
+                return object.mutableCopy();
+            }
         }
     }
 };
@@ -347,9 +385,11 @@ DestinationObject.prototype.tryMakeTargetAvailableForDependency = function(depen
     let depDesc = this.delegate.objectDependsWithAttribute;
     if(depDesc) {
         if(dependencyTarget.ref) {
+            let validTypesForLink = this._isUsingAnnotatedTypes() ? SCHEMA.getTypesWithAnnotation(this.delegate.annotatedTypes) :
+                this.delegate.objectType;
             // Dependency already exists, is there an object of this type linked already?
             let q = O.query().
-                link(this.delegate.objectType, ATTR.Type).
+                link(validTypesForLink, ATTR.Type).
                 link(dependencyTarget.ref, depDesc).
                 limit(1).
                 sortByDateAscending().
@@ -366,6 +406,11 @@ DestinationObject.prototype.tryMakeTargetAvailableForDependency = function(depen
 DestinationObject.prototype.createCommitter = function(target, transformation) {
     return () => {
         if(!target.firstType()) {
+            if(this._isUsingAnnotatedTypes()) {
+                transformation.abortRecord();
+                transformation.batch._reportError("annotatedTypes used but target has no type defined");
+                return;
+            }
             target.appendType(this.delegate.objectType);
         }
         let depDesc = this.delegate.objectDependsWithAttribute;
@@ -409,7 +454,8 @@ DestinationObject.prototype.hasValueForName = function(target, name, transformat
 };
 
 DestinationObject.prototype._checkTarget = function(target, transformation) {
-    if(this._checkTitleExists) {
+    // Abort if title is required & not present
+    if("dc:attribute:title" in this._names && this._names["dc:attribute:title"].required) {
         if(!target.firstTitle()) {
             transformation.abortRecord();
             transformation.batch._reportError("dc:attribute:title is not set in object "+this.destinationName);

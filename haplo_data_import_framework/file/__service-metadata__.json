@@ -59,6 +59,15 @@
             "documentationURL": "https://docs.haplo.org/import/control/value-conversion/filter/to-upper-case"
         }
     },
+    "haplo:data-import-framework:filter:haplo:to-string": {
+        "statements": [
+            "conforms-to haplo:data-import-framework:filter"
+        ],
+        "metadata": {
+            "name": "haplo:to-string",
+            "description": "Convert a value to a string."
+        }
+    },
     "haplo:data-import-framework:filter:haplo:username-to-ref": {
         "statements": [
             "conforms-to haplo:data-import-framework:filter"

@@ -1,0 +1,35 @@
+{
+    "specificationVersion": 0,
+    "formId": "test-scheduled-actions",
+    "formTitle": "Test scheduled actions",
+    "class": "oforms-no-autofocus",
+    "elements": [
+        {
+            "type": "static",
+            "html":"<p>Use this carefully. This will run the timezone relative scheduled actions for input dates (guidance below) and console.log the time at which the hook was called in UTC (i.e. your input date in UTC) after the hook is successfully called.</p>"
+        },
+        {
+            "type": "boolean",
+            "path": "utc",
+            "label": "Test date/hour is UTC",
+            "required": true
+        },
+        {
+            "type": "date",
+            "path": "date",
+            "label": "Test date",
+            "required": true
+        },
+        {
+            "type": "number",
+            "path": "hour",
+            "minimumValue": 0,
+            "maximumValue": 23,
+            "label": "Test hour (0-23)"
+        },
+        {
+            "type": "static",
+            "html":"<p><b><u>Guidance:</u></b></p><p>Schedulers will always be run on UTC time, if you state that your input date is not in UTC, the date/hour will be converted from local to UTC time.</p> <p>e.g.</p> <p>In winter time, 11am UTC in Auckland is midnight.</p> <p>To test at midnight for the 5th of December: </p> <ul> <li>If Yes selected for 'Date in UTC', your Test Date should be 4th of December, and your Test hour should be 11. </li> <li> If No is selected for 'Date in UTC', your Test Date should be 5th of December, and your Test hour should be 0.</li> </ul>"
+        }
+    ]
+}

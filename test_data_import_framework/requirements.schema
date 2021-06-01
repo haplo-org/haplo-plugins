@@ -5,7 +5,30 @@ attribute test:attribute:data-import-framework-test-multiline as TestMultiline
     qualifier std:qualifier:null
     data-type text-multiline
 
+attribute test:attribute:data-import-framework-test-date as TestDate
+    title: Test Date
+    search-name: 
+    qualifier: std:qualifier:null
+    data-type datetime
+    ui-options d,n,n,n,n
+
+# Used for checking annotatedType destination can't add attributes not on any of the annotatedTypes
+# Don't add to any type with the annotation: 'test:annotation:data-import-framework-test-annotation'
+attribute test:attribute:data-import-framework-generic-string as GenericString
+    title: Generic String
+    search-name: 
+    qualifier: std:qualifier:null
+    data-type text
+
+attribute test:attribute:book-author as TestBookAuthor
+    title: Test book author
+    search-name test-book-author
+    qualifier std:qualifier:null
+    data-type link
+    linked-type std:type:person
+
 type test:type:data-import-framework-test-attributes as TestAttributes
+    annotation test:annotation:data-import-framework-test-annotation
     title: Test Attributes
     search-name: test attributes
     attribute dc:attribute:title
@@ -16,4 +39,19 @@ type test:type:data-import-framework-test-attributes as TestAttributes
     label-applicable std:label:common
     label-default std:label:common
     default-subtype test:type:data-import-framework-test-attributes
+    create-position normal
+
+type test:type:data-import-framework-test-other-attributes as TestOtherAttributes
+    annotation test:annotation:data-import-framework-test-annotation
+    title: Test other attributes
+    search-name: test other attributes
+    attribute dc:attribute:title
+    attribute dc:attribute:type
+    attribute std:attribute:configured-behaviour
+    attribute std:attribute:notes
+    attribute test:attribute:data-import-framework-test-date
+    render-category 0
+    label-applicable std:label:common
+    label-default std:label:common
+    default-subtype test:type:data-import-framework-test-other-attributes
     create-position normal

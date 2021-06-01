@@ -50,6 +50,16 @@ P.SubworkflowInfo.prototype.getBackLinkTextForObject = function(object) {
     return backLinkText;
 };
 
+P.SubworkflowInfo.prototype.getStartTextForObject = function(object) {
+    var i = P.locale().text("template");
+    var displayableSubworkflowName = this.spec._workflow.getWorkflowProcessName();
+    var startText = O.interpolateString(i["Would you like to start the {name}?"], {name: displayableSubworkflowName});
+    if(this.spec.startText) {
+        startText= this.spec.startText;
+    }
+    return startText;
+};
+
 P.SubworkflowInfo.prototype.__defineGetter__("checklistState", function() {
     if(!this.workUnit) { return "notStarted"; }
     return this.closed ? "closed" : "open";
@@ -140,7 +150,7 @@ P.respond("GET,POST", "/do/subworkflow/manual-start", [
         backLinkText: subworkflowToStart.getBackLinkTextForObject(object),
         object: object,
         confirm: {
-            text: O.interpolateString(i["Would you like to start the {name}?"], {name: subworkflowToStart.displayableSubworkflowName}),
+            text: subworkflowToStart.getStartTextForObject(object),
             options: [{label:i["Start"]}],
             backLink: parentM.url,
             backLinkText: i["Cancel"]

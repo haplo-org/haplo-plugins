@@ -1108,4 +1108,3 @@ t.test(function() {
         if(testUser4) { testUser4.setIsActive(false); }
     }
 });
-

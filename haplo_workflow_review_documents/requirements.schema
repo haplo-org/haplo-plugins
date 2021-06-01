@@ -1,0 +1,3 @@
+
+feature std:configuration-data
+    property: {"std_document_store:use_transition_steps_ui":true}

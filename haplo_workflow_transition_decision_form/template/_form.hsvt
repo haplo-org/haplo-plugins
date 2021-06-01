@@ -1,0 +1,7 @@
+<div style="margin-bottom:48px">
+  within(transition) { template:std:ui:choose:selected-item() }
+  std:document(form)
+  <div style="padding:4px 8px;background:#eee;border-radius:4px">
+    i("{} at {date}") { <b>user.name</b> } date{ std:date:time(row.datetime) }
+  </div>
+</div>

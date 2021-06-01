@@ -1,0 +1,19 @@
+pageTitle("Select automatic model definitions")
+backLink("/do/haplo-data-import/models") { "Cancel" }
+
+<p> "Automatic model definitions are based on object types. Enable a model definition to import objects of that type." </p>
+
+<form method="POST"> std:form:token()
+  <p> <input type="submit" value="Enable selected automatic models"> </p>
+
+  each(rootTypes) {
+    <p>
+      <label>
+        <input type="checkbox" name=concat("type[" ref "]") value="1" checked=if(selected){"checked"}>
+          name
+          " "
+          <span style="color:#888"> "(" code ")" </span>
+      </label>
+    </p>
+  }
+</form>

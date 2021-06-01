@@ -31,7 +31,7 @@ var commonValueInstructionDecode = function(batch, instruction, instructionActio
         if(instruction.qualifier in QUAL) {
             qualifier = QUAL[instruction.qualifier];
         } else {
-            batch._reportError("Invalid qualifier in "+instructionAction+" "+destinationName+"/"+instruction.name);
+            batch._reportError("Invalid qualifier '"+instruction.qualifier+"' in "+instructionAction+" "+destinationName+"/"+instruction.name);
         }
     }
     let multivalue = !!instruction.multivalue;
@@ -48,7 +48,7 @@ constructors["field"] = function(batch, instruction) {
     if(!ok) { return; }
     return function(transformation, context) {
         let value = context[source];
-        if(value) {
+        if(value || value === 0) {
             let transformedValue = valueTransformer(value);
             if(undefined !== transformedValue) {
                 let target = transformation.getTarget(destinationName);
@@ -145,7 +145,7 @@ constructors["if-exists"] = function(batch, instruction) {
         elseList =          batch._prepareInstructionList(instruction.else);
     return function(transformation, context) {
         transformation._executeInstructionList(
-            (source in context) ? thenList : elseList,
+            ((source in context) && (context[source] || context[source] === 0)) ? thenList : elseList,
             context
         );
     };

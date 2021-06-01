@@ -138,6 +138,24 @@ P.implementService("haplo:qa-audit:identify-issues", function(audit) {
 
     // ----------------------------------------------------------------------
 
+    // Recommended opt-in to new style features/APIs/UI
+    if(true !== O.application.config["std_workflow:new_transition_ui"]) {
+        audit.issue(
+            "opt-in-to-shiny-things/std_workflow:new_transition_ui",
+            "Use new Workflow transition UI",
+            "Set \"std_workflow:new_transition_ui\":true in config data in your application root requirements.schema file to use the improved transitions UI."
+        );
+    }
+    if(true !== O.application.config["std_document_store:use_transition_steps_ui"]) {
+        audit.issue(
+            "opt-in-to-shiny-things/std_document_store:use_transition_steps_ui",
+            "Docstore should use transition steps API",
+            "Set \"std_document_store:use_transition_steps_ui\":true in config data in your application root requirements.schema file so that the document store will use the new transitons steps UI. If updating an old application, you MUST check that you are using the latest versions of plugins which interact with the docstore, such as force review, which need to also use the transition steps API."
+        );
+    }
+
+    // ----------------------------------------------------------------------
+
     // Basic checks on forms
     var formSpecifications = audit.getInformation("formSpecifications");
 
@@ -190,15 +208,6 @@ P.implementService("haplo:qa-audit:identify-issues", function(audit) {
                     "Array of choices contains one or more strings, which is not recommended.\n"+
                     "Plugin: "+pluginName+", form: "+formId+", path: "+element.path+"\n"+
                     "To resolve, specify ids for the choices: https://docs.haplo.org/plugin/form/specification/choice. Do not suppress this issue."
-                );
-            } else if(element.type === "display-value") {
-                audit.issue(
-                    "deprecated-element-type-display-value/"+pluginName+"/"+element.path,
-                    "Use of deprecated 'display-value' element type in form",
-                    "You've included a display-value element in your form, but haplo-form-read-only-data provides a nicer user experience and is likely to be shorter to implement.\n"+
-                    "Plugin: "+pluginName+", form: "+formId+", path: "+element.path+"\n"+
-                    "To resolve, follow the example in the internal documentation for the haplo-form-read-only-data plugin. If this form went live pre-2020 you may wish "+
-                    "to simply suppress this message to avoid making unnecessary user-facing changes"
                 );
             }
             // Recurse into sections

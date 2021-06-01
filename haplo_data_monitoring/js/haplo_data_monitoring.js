@@ -17,6 +17,13 @@ P.respond("GET", "/do/haplo-data-monitoring/duplicate-profiles", [
 ], function(E, action, ref) {
     if(!O.currentUser.isMemberOf(Group.Administrators)) { O.stop("Not permitted"); }
     var notDuplicates = P.data.notDuplicates || [];
+    var setNameFieldsMaybe = function(object, title, first, last) {
+        if(object.firstTitle()) {
+            title = object.firstTitle().toFields();
+            first = normalise(title.first);
+            last = normalise(title.last);
+        }
+    };
     if(action === "unignoreAll") {
         P.data.notDuplicates = [];
         return E.response.redirect("/do/haplo-data-monitoring/duplicate-profiles");
@@ -45,12 +52,9 @@ P.respond("GET", "/do/haplo-data-monitoring/duplicate-profiles", [
                 b = allProfiles[i+1];
             }
         }
-        var aTitle = a.firstTitle().toFields(),
-            bTitle = b.firstTitle().toFields();
-        var aFirst = normalise(aTitle.first),
-            bFirst = normalise(bTitle.first),
-            aLast = normalise(aTitle.last),
-            bLast = normalise(bTitle.last);
+        var aTitle, bTitle, aFirst, bFirst, aLast, bLast;
+        setNameFieldsMaybe(a, aTitle, aFirst, aLast);
+        setNameFieldsMaybe(b, bTitle, bFirst, bLast);
         if(aLast && bLast && aLast === bLast) {
             // check that first names exist for both names we're comparing else skip over
             if(!aFirst || !bFirst) { continue; }
@@ -78,6 +82,7 @@ P.respond("GET", "/do/haplo-data-monitoring/duplicate-profiles", [
     var end = new Date();
     var generated = (end.getTime() - start.getTime())/1000;
     E.render({
+        backLink: "/do/activity/graduate-school",
         duplicates: duplicates,
         count: count,
         generated: generated,

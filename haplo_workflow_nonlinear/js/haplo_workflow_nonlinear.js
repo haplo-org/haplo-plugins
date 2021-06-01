@@ -21,9 +21,9 @@ var isSubworkflowWorkUnitSubsequent = P.isSubworkflowWorkUnitSubsequent = functi
 };
 
 var startSubworkflow = function(parentM, workflowDefn, additionalProperties) {
-    var info = subworkflows[workflowDefn.fullName];
+    var info = subworkflows[workflowDefn.fullName] || subworkflows[workflowDefn];
     if(!info) {
-        throw new Error("Trying to start sub-workflow of kind "+workflowDefn.fullName+" but it is not defined as a sub-workflow.");
+        throw new Error("Trying to start sub-workflow of kind "+workflowDefn.fullName || workflowDefn+" but it is not defined as a sub-workflow.");
     }
     var subworkflow = new P.SubworkflowInfo(parentM, info.spec);
     return subworkflow.start(additionalProperties || {});
@@ -60,6 +60,26 @@ P.workflow.registerWorkflowFeature("haplo:nonlinear", function(workflow) {
     workflow.implementWorkflowService("haplo:nonlinear:start", function(M, workflowDefn, additionalProperties) {
         return startSubworkflow(M, workflowDefn, additionalProperties);
     });
+
+    var getChildWorkflowInstance = function(M, childFullName) {
+        let childWorkUnits = O.work.query(childFullName).
+            tag("_nonlinearparent", M.workUnit.id.toString()).
+            isEitherOpenOrClosed();
+        if(!childWorkUnits.length) { throw new Error("No work units found for child workflow: "+childFullName); }
+
+        let childWorkflowDefn = O.service("std:workflow:definition_for_name", childFullName);
+        if(!childWorkflowDefn) { throw new Error("Couldn't find workflow definition for child workflow: "+childFullName); }
+        return childWorkflowDefn.instanceForRef(childWorkUnits.latest().ref);
+    };
+
+    workflow.implementWorkflowService("haplo:nonlinear:get_document_from_child", function(M, childFullName, documentName) {
+        let childWorkflowDefn = O.service("std:workflow:definition_for_name", childFullName);
+        let childM = getChildWorkflowInstance(M, childFullName);
+        let instance = childWorkflowDefn.documentStore[documentName].instance(childM);
+        return instance.hasCommittedDocument ? instance.lastCommittedDocument : undefined;
+    });
+
+    workflow.implementWorkflowService("haplo:nonlinear:get_child_workflow_instance", getChildWorkflowInstance);
 
 });
 
@@ -237,6 +257,23 @@ var setupSubworkflow = function(subworkflow, info) {
 
     subworkflow.implementWorkflowService("haplo:nonlinear:is_subsequent", function(M) {
         return isSubworkflowWorkUnitSubsequent(M.workUnit);
+    });
+
+    subworkflow.implementWorkflowService("haplo:nonlinear:get_document_from_sibling", function(M, siblingFullName, documentName) {
+        let parentM = subworkflowWorkUnitToParentInstance(M.workUnit);
+        if(!parentM) { throw new Error("Can't find parent workflow instance"); }
+
+        let siblingWorkUnits = O.work.query(siblingFullName).
+            tag("_nonlinearparent", parentM.workUnit.id.toString()).
+            isEitherOpenOrClosed();
+        if(!siblingWorkUnits.length) { return undefined; }
+
+        let siblingWorkflowDefn = O.service("std:workflow:definition_for_name", siblingFullName);
+        if(!siblingWorkflowDefn) { throw new Error("Couldn't find workflow definition for sibling workflow: "+siblingFullName); }
+
+        let siblingM = siblingWorkflowDefn.instance(siblingWorkUnits.latest());
+        let docstoreInstance = siblingWorkflowDefn.documentStore[documentName].instance(siblingM);
+        return docstoreInstance.hasCommittedDocument ? docstoreInstance.lastCommittedDocument : {};
     });
 
 };

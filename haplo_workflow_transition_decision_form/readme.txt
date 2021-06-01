@@ -53,6 +53,8 @@ h3(property). prepareFormInstance(M, instance)
 
 A function to set up a form instance before it's used.
 
+NB: like std:transition forms this does not take a @form@ argument, unlike @document stores@, since there will only ever be one form.
+
 <b>External data available by default</b>
 This feature provides the following items in the instance's @externalData@ by default for your convenience:
 
@@ -64,6 +66,10 @@ h3(property). blankDocumentForKey(M)
 
 Return what the blank document for a given key should be. You should return a JSON document that sets any default values you want to be set when the user first edits the document store.
 
+h3(property). updateDocumentBeforeEdit(M, formInstance, document)
+
+function equivalent to updateDocumentBeforeEdit(M, instance, document) in std:document_store
+
 h3(property). view
 
 Similar to the docstore version of view, but hides links from the application panel (which are, by default, visible to everyone in the workflow). This has the concept of "allowing for roles at selectors" and takes a list of these definition objects, which has properties:
@@ -74,8 +80,21 @@ selector: {state:"state"} - Workflow selector to match on
 
 action: "deny" - Default: allow. specify whether to eg: give permissions for a particular matched role/selector or whether to deny access
 
+h3(property). getAdditionalUIForEditor(M, instance, document)
+
+Similar to the docstore version of getAdditionalUIForEditor, but top/formTop and bottom/formBottom are interchangeable - these will not render above the transitionUI/form navigation i.e. 'top' and 'bottom' will act as 'formTop' and 'formBottom', respectively. Where notes are enabled bottom/formBottom will render above the notes fields, directly below the final form element.
+
+https://docs.haplo.org/standard/document-store/definition
+
 <hr>
 
 h3(workflowService). "haplo:transition_decision_form:last_committed_document"
 
 A "workflow service":https://docs.haplo.org/standard/workflow/interfaces/instance#workflowService to get the last committed document for a given @formId@. Returns an empty object if there isn't one.
+
+
+h3(workflowService). "haplo:transition_decision_form:docstore_query"
+
+A workflow service, as above. That takes a formId or id (for transition decision form) which returns a docstore query for that form.
+
+

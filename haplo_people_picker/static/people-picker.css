@@ -1,0 +1,174 @@
+/* Haplo Plugins                                     https://haplo.org
+ * (c) Haplo Services Ltd 2006 - 2021            https://www.haplo.com
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
+
+
+.haplo-people-picker-person-entry {
+    position: relative;
+    padding-left: 42px;
+    margin: 0 0 16px 0;
+}
+
+.haplo-people-picker-person-entry-icon {
+    position: absolute;
+    top: 3px;
+    left: 0;
+}
+
+.haplo-people-picker-person-entry-name {
+    font-size: 16px;
+    font-family: Ubuntu,Helvetica,Arial,sans-serif;
+    padding-top: 4px;
+    margin-bottom: 4px;
+}
+
+.haplo-people-picker-person-remove {
+    position: absolute;
+    top: 8px;
+    right: 0;
+}
+
+.haplo-people-picker-person-entry-form-button {
+    padding: 0 0 8px 0;
+}
+.haplo-people-picker-person-entry-form-button a {
+    color: #666;
+}
+
+.haplo-people-picker-person-entry-form-incomplete {
+    color: red;
+    margin-left: 8px;
+}
+
+.haplo-people-picker-empty-slot,
+.haplo-people-picker-empty-slot:visited {
+    display: block;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    margin: 8px 0;
+    padding: 4px 4px;
+    color: #999;
+    font-size: 20px;
+    font-family: Ubuntu,Helvetica,Arial,sans-serif;
+    line-height: 30px;
+}
+.haplo-people-picker-empty-slot:hover {
+    background: #eee;
+    text-decoration: none;
+}
+.haplo-people-picker-empty-slot span.haplo-people-picker-empty-slot-index {
+    margin-left: 8px;
+}
+.haplo-people-picker-empty-slot span.haplo-people-picker-empty-slot-required {
+    font-size: 14px;
+}
+
+.haplo-people-picker-person-entry-form {
+    margin: 16px 0 0 0;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.haplo-people-picker-person-entry-form .oform {
+    margin: 0;
+}
+
+.haplo-people-picker-person-reorder-button {
+    position: absolute;
+    right: -45px;
+    top: -2px;
+    color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10px;
+    padding: 2px 3px;
+    border-radius: 2px;
+    cursor: ns-resize;
+}
+
+.ui-sortable-handle {
+    /* ns-resize is up-down arrow, better description than cursor: move; */
+    cursor: ns-resize;
+}
+
+.haplo-people-picker-person-entry:hover .haplo-people-picker-person-reorder-button {
+    color: #888;
+    background: #eee;
+}
+
+/* Add additional spacing to guidance for better UI */
+.haplo-people-picker-kind:not(:first-of-type) .haplo-people-picker-guidance {
+    margin-top: 40px;
+}
+
+/* ----------------------------------------------------------------------- */
+
+#haplo-people-picker-add-ui input {
+    width: 100%;
+    font-size: 18px;
+}
+
+#haplo-person-picker-search-result-keep-typing {
+    margin: 8px 0;
+    padding: 0 0 0 48px;
+}
+#haplo-person-picker-search-result-keep-typing span {
+    color: #444;
+    background: #fffdd0;
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+#haplo-people-picker-add-results {
+    margin: 16px 0;
+}
+
+#haplo-person-picker-search-result-container {
+    margin: 20px 0 16px 0;
+}
+
+.haplo-person-picker-search-result .haplo-person-picker-search-result-details {
+    position: relative;
+    display: block;
+    padding: 4px 8px 4px 48px;
+    border-radius: 4px;
+    min-height: 40px;
+}
+
+.haplo-person-picker-search-result > div {
+    color: #666;
+}
+
+.haplo-person-picker-search-result a {
+    color: #000;
+}
+
+.haplo-person-picker-search-result a:hover {
+    background: #eee;
+}
+
+.haplo-person-picker-search-result .haplo-person-picker-icon {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+}
+
+.haplo-person-picker-search-result .haplo-person-picker-icon-unselectable {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    opacity: 0.5;
+}
+
+.haplo-person-picker-search-result p {
+    margin: 2px 0;
+}
+
+.haplo-person-picker-search-result p.haplo-person-picker-name {
+    font-size: 16px;
+    font-family: Ubuntu,Helvetica,Arial,sans-serif;
+}
+

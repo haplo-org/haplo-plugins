@@ -70,6 +70,8 @@ keys are optional:
 * continueLink -- link to the next label
 * continueLabel -- text for the continue button
 
+3) call @getText()@ on the note object to get the plain-text contents of the note, suitable for use in e.g. @std:ui:choose@ @notes@.
+
 */
 
 // --------------------------------------------------------------------------
@@ -203,6 +205,9 @@ GuidanceNote.prototype = {
         return P.template("display-note").deferredRender({
             document: O.text(O.T_TEXT_DOCUMENT, getNoteDocument(this.$info))
         });
+    },
+    getText: function() {
+        return O.text(O.T_TEXT_DOCUMENT, getNoteDocument(this.$info)).toString("plaintext");
     },
     respondIntroductionPage: function(E, view) {
         E.setResponsiblePlugin(P);

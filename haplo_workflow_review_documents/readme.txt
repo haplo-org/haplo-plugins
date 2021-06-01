@@ -31,6 +31,10 @@ By default all forms that the user is permitted to see will be displayed for rev
 
 You can apply this feature to the workflow only once.
 
+h3(config). "haplo_force_review_documents:use_transition_decision_forms_filtering"
+
+It is also possible to specify a subset of transition decision forms to be reviewed, following the same set of rules. To do so, add the above to your system's config data and set it to true.
+
 h2. Filter Rule
 
 A JavaScript object which you can set options:
@@ -41,11 +45,11 @@ A @Selector@ that chooses when a subset of document stores should be reviewed.
 
 h3(property). set
 
-A list of document store names that should be reviewed.
+A list of document store names (or transition decision form @formId@s) that should be reviewed.
 
 h3(property). exclude
 
-A list of document store names that should not be reviewed.
+A list of document store names (or transition decision form @formId@s) that should not be reviewed.
 
 h3(service). haplo:workflow:review_documents:review_ui_deferred
 

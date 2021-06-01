@@ -130,6 +130,14 @@ P.respond("GET", "/do/haplo-qa-audit/menu", [
         highlight: true,
         indicator: "forward"
     });
+    options.push({
+        action:"/do/haplo-qa-audit/get-all-suppression-messages",
+        label: "Suppress all issues with TODOs",
+        notes: "This generates the content of a __qa__.json file which suppresses all "+
+            "active QA issues, to be used for older clients where advancements in the QA "+
+            "tool have found previous issues which are not feasible to resolve.",
+        indicator: "terminal"
+    });
 
     E.render({
         pageTitle: "QA Audit",
@@ -166,4 +174,16 @@ P.respond("GET", "/do/haplo-qa-audit/issues", [
         showSuppressed: showSuppressed,
         issues: audit[showSuppressed ? "issuesSuppressed" : "issues"]
     });
+});
+
+P.respond("GET", "/do/haplo-qa-audit/get-all-suppression-messages", [
+], function(E) {
+    CanViewQAAudit.enforce();
+    var audit = runAudit();
+    var suppression = {};
+    _.each(audit.issues, function(issue) {
+        suppression[issue.code] = "TODO: Check this suppression is correct";
+    });
+    E.response.kind = "json";
+    E.response.body = JSON.stringify({suppress: suppression}, null, 2);
 });

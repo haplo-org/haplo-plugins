@@ -1,5 +1,6 @@
+thirdparty:client_side_ui:resources("tablesort" "0")
 
-<table class="hgn_width hgn_no_wrapping">
+<table class="hgn_width hgn_no_wrapping tablesort">
     <tr>
         <th class="hgn_source">i("Source")</th>
         <th class="hgn_description">i("Description")</th>

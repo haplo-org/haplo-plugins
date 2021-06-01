@@ -1,0 +1,49 @@
+
+if(kind.kindSpec.allowEnterNew) {
+  <div class="haplo-person-picker-search-result">
+    <a href=["/do/haplo-people-picker/new/" picker.linkSpecSigned ? kind=kind.kind] class="haplo-person-picker-search-result-details">
+      <div class="haplo-person-picker-icon"> std:icon:description("E21A,7,f E21B,3,f 002b,6,e,n" "medium") </div>
+      <p class="haplo-person-picker-name"> i("Not listed?") </p>
+      i("Enter details for new {}...") { kind.kindSpec.displayName }
+    </a>
+  </div>
+}
+
+if(haveMore) {
+  <p id="haplo-person-picker-search-result-keep-typing">
+    <span> i("Not everyone shown, keep typing to narrow search...") </span>
+  </p>
+}
+
+<div id="haplo-person-picker-search-result-container">
+  each(results) {
+    <div class="haplo-person-picker-search-result">
+      unless(warning) {
+        <a href="#" data-person=person.ref role="button" class="haplo-person-picker-search-result-details">
+          <div class="haplo-person-picker-icon"> std:icon:object(person "medium") </div>
+          <p class="haplo-person-picker-name"> person.title </p>
+          ifContent() {
+            <div class="haplo-person-picker-search-result-info-blocks">
+              markContent() {
+                each(infoBlocks) { render(deferred) }
+              }
+            </div>
+          }
+        </a>
+      } else {
+        <div class="haplo-person-picker-search-result-details">
+          <div class="haplo-person-picker-icon-unselectable"> std:icon:object(person "medium") </div>
+          <p class="haplo-person-picker-name"> person.title </p>
+          <div class="haplo-person-picker-search-result-info-blocks">
+            <p> warning </p>
+            each(infoBlocks) { render(deferred) }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+unless(results.length) {
+  std:ui:notice(i("Nobody found. Please check your spelling."))
+}

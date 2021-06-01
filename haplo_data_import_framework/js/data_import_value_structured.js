@@ -114,3 +114,12 @@ P.implementService("haplo:data-import-framework:structured-data-type:add-destina
         }
     });
 });
+
+// --------------------------------------------------------------------------
+
+P.DEFAULT_STRUCTURED_CONSTRUCTOR = function(batch, specification, sourceDetailsForErrors) {
+    return function(value) {
+        if(typeof(value) !== 'object') { return undefined; }
+        return value;
+    };
+};

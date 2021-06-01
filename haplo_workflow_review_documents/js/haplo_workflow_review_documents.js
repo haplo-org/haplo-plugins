@@ -4,72 +4,58 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.         */
 
-var specForWorkflow = {};
+var specsForWorkflow = {};
+var USE_TRANSITION_DECISION_FORMS_FILTERING = O.application.config["haplo_force_review_documents:use_transition_decision_forms_filtering"] || false;
 
 P.workflow.registerWorkflowFeature("haplo:workflow:force_review_documents", function(workflow, spec) {
-    specForWorkflow[workflow.fullName] = spec;
-    workflow.transitionUI(spec.selector, checkHasReviewed);
-    workflow.transitionUIWithoutTransitionChoice(spec.selector, checkHasReviewed);
-
-    // Integrate into docstore editing so that review is shown before form edit
-    // (without this, the redirect at the end of the docstore edit is intercepted so the user
-    // is asked to review the forms after other forms have been edited)
-    workflow.implementWorkflowService("std:workflow:modify-edit-url-for-transition-ui", function(M, editUrl, docstore, docstoreSpec) {
-        // Only ask the user to review the forms if they are the actionable user
-        if(M.workUnit.isActionableBy(O.currentUser) && M.selected(spec.selector)) {
-            return P.template("docstore-review-then-edit-url").render({M:M,then:editUrl});
+    var specs = specsForWorkflow[workflow.fullName];
+    if(!specs) { specsForWorkflow[workflow.fullName] = specs = []; }
+    specs.push(spec);
+    let Step = {
+        id: "haplo:workflow:force_review_documents",
+        sort: spec.transitionStepsSort || 100,
+        title: function(M, stepsUI) {
+            let i = P.locale().text("template");
+            return i["Review"];
+        },
+        url: function(M, stepsUI) {
+            return P.template("redirect-url").render({M:M});
+        },
+        complete: function(M, stepsUI) {
+            return stepsUI.data["haplo:workflow:force_review_documents:complete"] || false;
         }
-    });
-    workflow.implementWorkflowService("std:workflow:transition-url-properties-after-edit", function(M, transitionUrl, docstore, docstoreSpec) {
-        if(M.workUnit.isActionableBy(O.currentUser) && M.selected(spec.selector)) {
-            // If it's got to this point, then the review will have been forced when the edit button was clicked
-            // on the application object. It can therefore be safely marked as reviewed.
-            transitionUrl.extraParameters.reviewed = "yes";
-        }
+    };
+    workflow.transitionStepsUI(spec.selector, function(M, step) {
+        step(Step);
     });
 });
 
 // --------------------------------------------------------------------------
 
-var checkHasReviewed = function(M, E, ui) {
-    // Don't mess with anything other than GETs.
-    if(E.request.method !== "GET") { return; }
-    // Stop now if reviewed, but pass on reviewed flag to any other bit of transition UI
-    if(E.request.parameters.reviewed === "yes") {
-        ui.addUrlExtraParameter("reviewed", "yes");
-        return;
-    }
-    // Otherwise redirect to page to transition (will include state in parameters)
-    E.response.redirect(P.template("redirect-url").render({M:M,E:E}));
-};
-
-// --------------------------------------------------------------------------
-
-P.respond("GET", "/do/haplo-workflow-review-documents/review", [
+P.respond("GET,POST", "/do/haplo-workflow-review-documents/review", [
     {pathElement:0, as:"workUnit"} // Security: Only allow actionable user to see this page
 ], function(E, workUnit) {
     var workflow = O.service("std:workflow:definition_for_name", workUnit.workType);
     var M = workflow.instance(workUnit);
 
-    var forwardUrl = O.checkedSafeRedirectURLPath(E.request.parameters.then);
-    if(!forwardUrl) {
-        var forwardTransitionParams = _.clone(E.request.parameters);
-        forwardTransitionParams.reviewed = "yes";
-        forwardUrl = M.transitionUrl(undefined, forwardTransitionParams);
-    }
+    var stepsUI = M.transitionStepsUI;
+    var markAsComplete = function() {
+        stepsUI.data["haplo:workflow:force_review_documents:complete"] = true;
+        stepsUI.saveData();
+        E.response.redirect(stepsUI.nextRedirect());
+    };
 
     var reviewUI = O.service("haplo:workflow:review_documents:review_ui_deferred", M, O.currentUser);
     if(!reviewUI) {
-        return E.response.redirect(forwardUrl);
+        return markAsComplete();
     }
-    var i = P.locale().text("template");
-    E.renderIntoSidebar({
-        elements: [{
-            href: forwardUrl, 
-            label: i["Continue"],
-            indicator: "primary"
-        }]
-    }, "std:ui:panel");
+
+    // User confirmed they've reviewed the documents?
+    if(E.request.method === "POST") {
+        return markAsComplete();
+    }
+
+    E.renderIntoSidebar({}, "sidebar");
     E.renderIntoSidebar(reviewUI.links, "std:render");
 
     E.render({
@@ -84,9 +70,16 @@ P.respond("GET", "/do/haplo-workflow-review-documents/review", [
 // Acceptable to call on any workflow instance, whether or not it uses the feature.
 // SECURITY: Caller must ensure current user is permitted to see these forms.
 P.implementService("haplo:workflow:review_documents:review_ui_deferred", function(M, user) {
-    var spec = specForWorkflow[M.workUnit.workType];
-    if(!(spec && M.selected(spec.selector))) { return; }
+    var specs = specsForWorkflow[M.workUnit.workType] || [];
+    var spec = _.find(specs, (spec) => M.selected(spec.selector));
+    if(!spec) { return; }
     var visibleStores = O.service("std:document_store:workflow:sorted_store_names_action_allowed", M, user, "view");
+    if(USE_TRANSITION_DECISION_FORMS_FILTERING) {
+        var visibleTransitionDecisionForms = O.service("haplo:workflow:transition_decision_form:get-form-id-view-allowed", M);
+        if(visibleTransitionDecisionForms) {
+            visibleStores = visibleStores.concat(visibleTransitionDecisionForms);
+        }
+    }
     if(visibleStores.length === 0) { return; }
 
     // Apply filters
@@ -104,21 +97,48 @@ P.implementService("haplo:workflow:review_documents:review_ui_deferred", functio
         });
     }
 
+    var priorityDecode = O.service("std:action_panel_priority_decode");
+    var sortAs = function(panel, priority) {
+        return _.sprintf("%012d-%012d", priorityDecode(panel||0), priorityDecode(priority||0));
+    };
+
     // Get documents and render if there is something to see
     var workflow = O.service("std:workflow:definition_for_name", M.workUnit.workType);
     var documents = [];
     var anchorIndex = 0;
     _.each(stores, function(name) {
         var s = workflow.documentStore[name];
-        var i = s.instance(M);
-        if(i.hasCommittedDocument || i.currentDocumentIsEdited) {
-            documents.push({
-                title: s.delegate.title,    // TODO: Get title from docstore in a more documented manner
-                unsafeAnchor: "form"+(anchorIndex++),
-                deferred: i.deferredRenderCurrentDocument()
+        if(!s) {
+            O.service("haplo:workflow:transition_decision_form:filter-documents-by-form-id", M, name, function(title, panel, priority, deferred) {
+                documents.push({
+                    title: title,
+                    sort: sortAs(panel, priority),
+                    unsafeAnchor: "formex"+(anchorIndex++),
+                    deferred: deferred
+                });
             });
+        } else {
+            var i = s.instance(M);
+            if(i.hasCommittedDocument || i.currentDocumentIsEdited) {
+                documents.push({
+                    title: s.delegate.title,    // TODO: Get title from docstore in a more documented manner
+                    sort: sortAs(s.delegate.panel, s.delegate.priority),
+                    unsafeAnchor: "form"+(anchorIndex++),
+                    deferred: i.deferredRenderCurrentDocument()
+                });
+            }
         }
     });
+    // Other plugins might want to add things to review
+    O.serviceMaybe("haplo:workflow:force_review_documents:additional-entries-to-review", M, user, function(title, panel, priority, deferred) {
+        documents.push({
+            title: title,
+            sort: sortAs(panel, priority),
+            unsafeAnchor: "formex"+(anchorIndex++),
+            deferred: deferred
+        });
+    });
+    documents = _.sortBy(documents, 'sort');
 
     // Maybe there weren't any forms to review after the filtering?
     if(documents.length === 0) { return; }

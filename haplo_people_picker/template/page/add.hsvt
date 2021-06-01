@@ -1,0 +1,18 @@
+std:layout:minimal()
+pageTitle(i("Add {}...") { kind.kindSpec.displayName })
+
+template:page:_container() {
+  <div id="haplo-people-picker-add-ui" data-hasform=if(kind.hasForm){"1"}>
+    <div>
+      <input type="text" placeholder=i("Type name to search...") autofocus="autofocus" id="haplo-people-picker-search">
+    </div>
+    <div id="haplo-people-picker-add-results">
+    </div>
+  </div>
+}
+
+<form id="haplo-people-picker-add-form" method="POST" action=["/do/haplo-people-picker/select/" picker.linkSpecSigned]>
+  std:form:token()
+  <input type="hidden" name="kind" value=kind.kind>
+  <input type="hidden" name="ref">
+</form>

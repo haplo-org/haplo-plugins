@@ -1,0 +1,67 @@
+
+<div class="haplo-people-picker-list-container" data-complete=if(picker.isComplete){"t"}>
+  each(picker.kinds) {
+    <div class="haplo-people-picker-kind" data-kind=kind>
+      <div class="haplo-people-picker-guidance">
+        ifAll(kindSpec.guidanceDeferred ^{picker.editable}) {
+          render(kindSpec.guidanceDeferred)
+        }
+      </div>
+      <h2> kindSpec.displayName </h2>
+      each(people) {
+        <div class="haplo-people-picker-person-entry" data-identifier=data.identifier>
+          if(data.newPerson) {
+            <span class="haplo-people-picker-person-entry-icon"> std:icon:description("E21A,7,f E21B,3,f 002b,6,e,n" "medium") </span>
+            <div class="haplo-people-picker-person-entry-name">
+              data.newPerson.title " " data.newPerson.firstName " " data.newPerson.lastName <br> data.newPerson.email
+            </div>
+          } else {
+            <span class="haplo-people-picker-person-entry-icon"> std:icon:object(object "medium") </span>
+            <div class="haplo-people-picker-person-entry-name">
+              object.title
+            </div>
+          }
+          if(^^{picker.editable}) {
+            <div class="haplo-people-picker-person-remove">
+              std:ui:button-link(#) { i("Remove...") }
+              if(^^{picker.spec.reorderable}) {
+                <div class="haplo-people-picker-person-reorder-button"> "DRAG" </div>
+              }
+            </div>
+          }
+          if(hasForm) {
+            if(^^{picker.editable}) {
+              <div class="haplo-people-picker-person-entry-form-button" role="button">
+                <a href="#"> std:icon:description("E202,1,f E415,1,f" "micro") " " formTitle </a>
+                if(data.documentIncomplete) {
+                  " " <span class="haplo-people-picker-person-entry-form-incomplete"> i("(incomplete)") </span>
+                }
+              </div>
+            } else {
+              <div class="haplo-people-picker-person-entry-form">
+                std:document(formInstance)
+              </div>
+            }
+          }
+        </div>
+      }
+      if(^{picker.editable}) {
+        each(emptySlots) {
+          <a class="haplo-people-picker-empty-slot" href="#">
+            std:icon:description("E20A,1,f,x" "medium")
+            <span class="haplo-people-picker-empty-slot-index"> index "." </span>
+            " "
+            <span class="haplo-people-picker-empty-slot-required">
+              if(required) { i("(required)") } else { i("(optional)") }
+            </span>
+          </a>
+        }
+        if(canAddAnotherPerson) {
+          <p class="haplo-people-picker-add">
+            std:ui:button-link(#) { i("Add...") }
+          </p>
+        }
+      }
+    </div>
+  }
+</div>

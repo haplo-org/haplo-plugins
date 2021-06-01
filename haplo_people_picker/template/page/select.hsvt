@@ -1,0 +1,44 @@
+std:layout:minimal()
+pageTitle(
+  if(isEdit) {
+    i("Edit {}...") { kind.kindSpec.displayName }
+  } else {
+    i("Add {}...") { kind.kindSpec.displayName }
+  }
+)
+
+template:page:_container() {
+  <h1>
+    i("{kind}: {}") {
+        <b>
+          if(selectedPersonObject) {
+            selectedPersonObject.title
+          } else {
+            existingPerson.newPerson.title " " existingPerson.newPerson.firstName " " existingPerson.newPerson.lastName
+          }
+        </b>
+      }
+      kind { kind.kindSpec.displayName }
+  </h1>
+  if(incompleteForm) {
+    std:ui:notice(i("Please complete all the requested information."))
+  } else {
+    if(haveRemembered) {
+      std:ui:request(i("The information below was entered when this person was last selected. Please review it for accuracy and update with any new information."))
+    }
+  }
+  <form method="POST"> std:form:token()
+    std:form(form)
+    <p>
+      <input
+        type="submit"
+        value=if(isEdit) {
+          i("Update {}"){kind.kindSpec.displayName}
+        } else {
+          i("Add {}"){kind.kindSpec.displayName}
+        }
+      >
+      " &nbsp; " <input type="submit" name="__save" value=i("Save for later")>
+    </p>
+  </form>
+}

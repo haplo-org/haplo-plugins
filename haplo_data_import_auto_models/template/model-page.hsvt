@@ -1,0 +1,4 @@
+
+<p>
+  std:ui:button-link("/do/haplo-data-import-auto-models/select") { "Select automatic model definitions..." }
+</p>

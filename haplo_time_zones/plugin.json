@@ -1,0 +1,16 @@
+{
+  "pluginName": "haplo_time_zones",
+  "pluginAuthor": "Haplo services",
+  "pluginVersion": 1,
+  "displayName": "Haplo Time Zones",
+  "displayDescription": "Use of date relative to timezone.",
+  "installSecret": "29ddfccbd46f14a554dda0b55b378cbc7226066e",
+  "apiVersion": 4,
+  "privilegesRequired": [
+    "pBackgroundProcessing"
+  ],
+  "load": [
+      "js/haplo_time_zones.js"
+    ],
+  "respond": ["/do/haplo-time-zones"]
+}

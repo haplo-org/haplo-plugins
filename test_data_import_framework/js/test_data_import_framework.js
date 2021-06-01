@@ -31,7 +31,7 @@ P.implementService("haplo:data-import-framework:setup-model:test:one", function(
         displaySort: 100,
         kind: "object",
         objectType: TYPE["std:type:book"],
-        objectDependsWithAttribute: ATTR["dc:attribute:author"]
+        objectDependsWithAttribute: A.TestBookAuthor
     });
 
     model.addDestination({
@@ -126,6 +126,19 @@ P.implementService("haplo:data-import-framework:setup-model:test:three", functio
         displaySort: 100,
         kind: "object",
         objectType: T.TestAttributes
+    });
+
+});
+
+// Model with a test annotation for testing creation of similar types
+
+P.implementService("haplo:data-import-framework:setup-model:test:four", function(model) {
+
+    model.addDestination({
+        name: "annotatedItem",
+        title: "Some similar items",
+        kind: "object",
+        annotatedTypes: "test:annotation:data-import-framework-test-annotation"
     });
 
 });

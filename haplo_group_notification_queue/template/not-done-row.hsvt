@@ -7,7 +7,7 @@
         description
       }
     </td>
-    <td>std:date(created)</td>
+    <td data-sort=std:utc:date:sort(created)>std:date(created)</td>
     <td class="hgn_done">
         "-"
         <form style="float: right;" method="post" action=["/do/haplo-group-notification-queue/task/" id]>

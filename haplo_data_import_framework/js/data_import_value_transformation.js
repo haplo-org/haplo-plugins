@@ -97,6 +97,29 @@ constructors["text"] = function(batch, specification, sourceDetailsForErrors) {
 
 // --------------------------------------------------------------------------
 
+constructors["boolean"] = function(batch, specification, sourceDetailsForErrors) {
+    return function(value) {
+        switch(typeof(value)) {
+            case "boolean":
+                return value;
+            case "string":
+                switch(value) {
+                    case specification.trueValue || "true":
+                        return true;
+                    case specification.falseValue || "false":
+                        return false;
+                    default:
+                        batch._reportError("Invalid boolean value for "+sourceDetailsForErrors+": "+value);
+                }
+                break;
+            default:
+                batch._reportError("Invalid boolean value for "+sourceDetailsForErrors+": "+value);
+        }
+    };
+};
+
+// --------------------------------------------------------------------------
+
 constructors["datetime"] = function(batch, specification, sourceDetailsForErrors) {
     if(typeof(specification.dateFormat) !== "string") {
         batch._reportError("Date format not specified for "+sourceDetailsForErrors);
@@ -274,4 +297,31 @@ var makeSimpleTextValueType = function(dataType, textTypecode) {
 makeSimpleTextValueType("text-paragraph",       O.T_TEXT_PARAGRAPH);
 makeSimpleTextValueType("text-multiline",       O.T_TEXT_MULTILINE);
 makeSimpleTextValueType("configuration-name",   O.T_IDENTIFIER_CONFIGURATION_NAME);
+makeSimpleTextValueType("isbn",                 O.T_IDENTIFIER_ISBN);
 
+// --------------------------------------------------------------------------
+
+constructors["integer"] = function(batch, specification, sourceDetailsForErrors) {
+    return function(value) {
+        let originalValueString = value.toString();
+        value = parseInt(value, 10);
+        // must check against original value because parseInt converts a float to an int
+        if(!isNaN(value) && (value.toString() === originalValueString)) {
+            return value;
+        } else {
+            batch._reportError("Invalid integer for "+sourceDetailsForErrors+": "+originalValueString);
+        }
+    };
+};
+
+constructors["number"] = function(batch, specification, sourceDetailsForErrors) {
+    return function(value) {
+        let originalValueString = value.toString();
+        value = parseFloat(value, 10);
+        if(!isNaN(value)) {
+            return value;
+        } else {
+            batch._reportError("Invalid number for "+sourceDetailsForErrors+": "+originalValueString);
+        }
+    };
+};

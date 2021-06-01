@@ -7,8 +7,8 @@
         description
     }
     </strike></td>
-    <td>std:date(created)</td>
-    <td>
+    <td data-sort=std:utc:date:sort(created)>std:date(created)</td>
+    <td data-sort=std:utc:date:sort(done)>
         std:date(done) <br>
         i("By: {}") {<a href=[O.application.url "/" doneBy.ref]>doneBy.name</a>}
         <form style="float: right;" method="post" action=["/do/haplo-group-notification-queue/task/" id]>

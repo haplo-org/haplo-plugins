@@ -1,0 +1,12 @@
+std:layout:minimal()
+pageTitle(i("Updating..."))
+
+template:page:_container() {
+  <div
+    id="haplo-person-picker-redisplay"
+    data-html=updated
+    data-redirect=if(redirectToSelectWithIdentifier) {
+      url("/do/haplo-people-picker/select/" picker.linkSpecSigned ? kind=kind.kind person=redirectToSelectWithIdentifier)
+    }
+  > </div>
+}

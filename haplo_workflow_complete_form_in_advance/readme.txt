@@ -26,7 +26,8 @@ The feature takes a spec containing the following keys:
 | @pageTitle(project)@ | (optional) Function returning a string to append to form/overlay page title |
 | @blankDocument(project)@ | (optional) Equivalent to @blankDocumentForKey@, applied if current document is empty |
 | @updateDocumentBeforeEdit(project, document)@ | (optional) Equivalent to document store @updateDocumentBeforeEdit@ function |
-| @onConfirm(document, project)@ | (optional) Called when saved if form is complete |
+| @onSetCurrentDocument(instance, document, isComplete)@ | (optional) Passed to document store's @onSetCurrentDocument@ function. |
+| @onCommit(instance, user)@ | (optional) Passed to document store's @onCommit@ function. NB. @clearOnExit@ sets the current document to @{}@ and commits it, so checks for a non-empty document should be included here as appropriate. The @project@ ref is available as @instance.key@. |
 
 This registers a docstore, uniquely identified by its @spec.name@. You can then fill in the form directly by linking to the following handler:
 
@@ -38,9 +39,9 @@ h3(handler). /do/haplo-workflow-complete-form-in-advance/input-details
 
 It may be more convenient to access this either from an information page or by integrating it into a dashboard.
 
-h3(service). "haplo:complete_form_in_advance_of_workflow:get_document:"+spec.name
+h3(service). "haplo:complete_form_in_advance_of_workflow:get_instance:"+spec.name
 
-Call this service with the project ref as the only argument to retrieve the docstore's @lastCommittedDocument@.
+Call this service with the project ref as the only argument to retrieve the docstore @instance@.
 
 h2. Information page integration
 
@@ -66,7 +67,7 @@ To complete the form via a dashboard, set the @spec.dashboardName@ property. Thi
 
 The default overlay page title is 'Edit details'. You can optionally use @spec.pageTitle(project)@ to append extra text, e.g. to confirm the right dashboard row was selected: "PGR name : School"
 
-You will need to update @get_facts_for_object@ for your collection to retrieve the saved details, and invalidate facts for that object (e.g. in @spec.onConfirm@ ) to ensure they display on the dashboard.
+You will need to update @get_facts_for_object@ for your collection to retrieve the saved details, and invalidate facts for that object (e.g. in @spec.onCommit@ or @spec.onSetCurrentDocument@ ) to ensure they display on the dashboard.
 
 If you are using this feature to register panel scheduling arrangements in advance, it may be useful to integrate this with the 'upcoming panels and vivas' dashboard.
 Set the @phd_doctoral_supervision:advance_panel_scheduling_types@ config data with the @spec.name@ set above and a display title to include on the dashboard. (see "PhD doctoral supervision":/phd/phd_doctoral_supervision#reporting)

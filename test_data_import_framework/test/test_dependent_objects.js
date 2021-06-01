@@ -23,7 +23,7 @@ t.test(function() {
             book = O.object();
             book.appendType(TYPE["std:type:book"]);
             book.appendTitle(bookTitle);
-            book.append(person, ATTR["dc:attribute:author"]);
+            book.append(person, A.TestBookAuthor);
             if(bookNotes) {
                 book.append(bookNotes, ATTR["std:attribute:notes"]);
             }
@@ -234,7 +234,7 @@ t.test(function() {
         t.assertEqual(expected.personName,      latestObject.title);
         let books = O.query().
             link(TYPE["std:type:book"], ATTR.Type).
-            link(latestObject.ref, ATTR["dc:attribute:author"]).
+            link(latestObject.ref, A.TestBookAuthor).
             sortByTitle().
             execute();
         t.assertEqual(expected.books.length,    books.length);

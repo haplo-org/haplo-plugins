@@ -29,7 +29,9 @@ P.workflow.registerWorkflowFeature("haplo:complete_form_in_advance_of_workflow",
             },
             formsForKey: function(key) {
                 return [spec.form];
-            }
+            },
+            onSetCurrentDocument: spec.onSetCurrentDocument,
+            onCommit: spec.onCommit
         });
 
         registeredWorkflows[spec.name] = {
@@ -40,7 +42,7 @@ P.workflow.registerWorkflowFeature("haplo:complete_form_in_advance_of_workflow",
 
         if(spec.infoPageBuildService) {
             P.implementService(spec.infoPageBuildService, function(project, builder) {
-                var hasCommittedDocument = store.instance(project.ref).hasCommittedDocument;
+                var hasCommittedDocument = !_.isEmpty(store.instance(project.ref).lastCommittedDocument);
                 if(O.currentUser.allowed(spec.canUpdateDetails)) {
                     builder.sidebar.link(
                         "default",
@@ -61,10 +63,10 @@ P.workflow.registerWorkflowFeature("haplo:complete_form_in_advance_of_workflow",
             });
         }
 
-        P.implementService("haplo:complete_form_in_advance_of_workflow:get_document:"+spec.name,
+        P.implementService("haplo:complete_form_in_advance_of_workflow:get_instance:"+spec.name,
             function(projectRef) {
                 var instance = store.instance(projectRef);
-                return instance.lastCommittedDocument;
+                return instance;
             }
         );
 
@@ -124,14 +126,8 @@ P.respond("GET,POST", "/do/haplo-workflow-complete-form-in-advance/input-details
     }
     var workflowStoreInstance;
     if(spec.workflowDocumentStore) {
-        var workflowWorkUnit = O.work.query(info.workflow.fullName).
-            tag("project", project.ref.toString()).
-            tag("advanceFormHandedOver", "1").
-            latest();
-        if(workflowWorkUnit) {
-            var M = info.workflow.instance(workflowWorkUnit);
-            var workflowStore = info.spec.workflowDocumentStore;
-            workflowStoreInstance = info.workflow.documentStore[workflowStore].instance(M);
+        workflowStoreInstance = getWorkflowStoreInstanceMaybe(info, project);
+        if(workflowStoreInstance) {
             _.extend(document, workflowStoreInstance.currentDocument);
         }
     }
@@ -160,9 +156,6 @@ P.respond("GET,POST", "/do/haplo-workflow-complete-form-in-advance/input-details
                     workflowStoreInstance.commit();
                 }
             }
-            if(spec.onConfirm) {
-                spec.onConfirm(document, project);
-            }
             return E.response.redirect(E.request.path+"?showConfirmation=true&submitted=true");
         }
     }
@@ -187,6 +180,13 @@ P.respond("GET,POST", "/do/haplo-workflow-complete-form-in-advance/view-details"
     spec.canViewDetails.enforce();
     var instance = info.store.instance(project.ref);
     var document = instance.currentDocument;
+    var workflowStoreInstance;
+    if(spec.workflowDocumentStore) {
+        workflowStoreInstance = getWorkflowStoreInstanceMaybe(info, project);
+        if(workflowStoreInstance) {
+            _.extend(document, workflowStoreInstance.lastCommittedDocument);
+        }
+    }
     var form = spec.form.instance(document);
     var pageTitle = spec.pageTitle ? spec.pageTitle(project) : undefined;
     var formTitle = spec.form.specification.formTitle;
@@ -197,3 +197,15 @@ P.respond("GET,POST", "/do/haplo-workflow-complete-form-in-advance/view-details"
         formTitle: formTitle
     });
 });
+
+var getWorkflowStoreInstanceMaybe = function(info, project) {
+    var workflowWorkUnit = O.work.query(info.workflow.fullName).
+        tag("project", project.ref.toString()).
+        tag("advanceFormHandedOver", "1").
+        latest();
+    if(workflowWorkUnit) {
+        var M = info.workflow.instance(workflowWorkUnit);
+        var workflowStore = info.spec.workflowDocumentStore;
+        return info.workflow.documentStore[workflowStore].instance(M);
+    }
+};

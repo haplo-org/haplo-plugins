@@ -1,0 +1,5 @@
+<form method="POST"> std:form:token()
+  template:std:ui:button:panel-style-submit() {
+    i("Continue")
+  }
+</form>

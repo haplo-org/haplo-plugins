@@ -6,7 +6,10 @@
   "displayDescription": "Display a form on a workflow transition page, then display contents of form along with selected transition on the workflow object's action panel.",
   "apiVersion": 4,
   "loadPriority": 30000,
-  "depend": ["std_workflow"],
+  "depend": [
+    "std_workflow",
+    "std_serialisation"
+  ],
   "use": ["std:workflow"],
   "load": [
       "js/haplo_workflow_transition_decision_form.js"

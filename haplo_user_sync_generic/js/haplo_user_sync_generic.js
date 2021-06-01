@@ -178,7 +178,11 @@ IMPL.prototype = {
         return _.isEqual(_.keys(files).sort(), expected);
     },
 
-    fetchFilesFromServices: function() { return {}; },
+    fetchFilesFromServices: function() { 
+        let files = {};
+        O.serviceMaybe("haplo_user_sync_generic:fetch_files_from_services", files);
+        return files;
+    },
 
     managedGroups: function() {
         return _.map(getGroupsAndPeopleTypes(), (g) => GROUP[g.code]);

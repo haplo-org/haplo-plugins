@@ -63,7 +63,7 @@ P.implementService("haplo:integration-message:send", function(details) {
         if(details.avoidSendEmpty && messagesToSend.length === 0) { return; }
         let httpClient = O.httpClient();
         O.serviceMaybe("haplo:integration-message:setup-http-request:"+group, httpClient, messages);
-        let body = O.serviceMaybe("haplo:integration-message:write-messages:"+group, messages);
+        let body = P.formatMessageForBody(group, messages);
         httpClient.body(body.mimeType, body.readAsString("utf-8"));
         if(O.application.config.haplo_integration_messages_enable_on_hostname === O.application.hostname) {
             httpClient.request(SendMessages, {

@@ -5,4 +5,13 @@ if(incomplete) {
     std:ui:notice("Please complete all the required fields.")
   }
 }
+
+if(additionalUI.formTop) {
+  render(additionalUI.formTop)
+}
+
 std:form(form)
+
+if(additionalUI.formBottom) {
+  render(additionalUI.formBottom)
+}

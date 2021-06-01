@@ -22,7 +22,11 @@ P.workflow.registerWorkflowFeature("haplo:download_pdf",
                 return (instance.hasCommittedDocument || canViewDraft);
             });
             if(canDownload || (spec.canDownloadPDF && M.hasAnyRole(O.currentUser, spec.canDownloadPDF))) {
-                builder.panel(1498).link("default", "/do/haplo-workflow-download-pdf/download/"+M.workUnit.ref+"/"+M.workUnit.id, "Download printable PDF...");
+                var workUnitRef = M.workUnit.ref;
+                if(!workUnitRef && ("getRefForWorkflow" in spec)) {
+                    workUnitRef = spec.getRefForWorkflow(M);
+                }
+                builder.panel(1498).link("default", "/do/haplo-workflow-download-pdf/download/"+workUnitRef+"/"+M.workUnit.id, "Download printable PDF...");
             }
         });
     }

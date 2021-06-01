@@ -1,0 +1,6 @@
+std:layout:minimal()
+pageTitle(i("Select type of new {}...") { kind.kindSpec.displayName })
+
+template:page:_container() {
+  template:std:ui:choose()
+}

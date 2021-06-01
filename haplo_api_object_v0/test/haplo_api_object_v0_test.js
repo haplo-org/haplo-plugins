@@ -21,7 +21,7 @@ t.test(function() {
     let testRef1 = testObject1.ref.toString();
     let testObjectCreatedDateString = new XDate(testObject1.creationDate).toString(dateFormat);
     let testObjectLastModifiedDateString = new XDate(testObject1.lastModificationDate).toString(dateFormat);
-    let identityLabelRef = LABEL["hres:label:identity"].toString();
+    let testPersonLabelRef = LABEL["test:label:test-person-label"].toString();
 
     let emptyRef = O.object().preallocateRef().toString();
 
@@ -44,12 +44,12 @@ t.test(function() {
     let noRefResponse = t.request("GET", "/api/v0-object/ref", {}, {});
     t.assertEqual(noRefResponse.body, "Bad request (failed validation)");
 
-    let noObjectResponse = t.request("GET", "/api/v0-object/ref/"+emptyRef, {}, {});
+    let noObjectResponse = t.request("GET", "/api/v0-object/ref/"+emptyRef, {sources:"NONE"}, {});
     t.assertJSONBody(noObjectResponse, {
         "success": false,
         "kind": "haplo:api-v0:object:no-such-object",
         "error": {
-            "message": "Object "+emptyRef+" does not exist or permissions do not allow it to be read"
+            "message": "Object "+emptyRef+" does not exist"
         }
     });
 
@@ -75,13 +75,14 @@ t.test(function() {
             "title":"Test User",
             "labels":[
                 {
-                    "ref":"20x0",
-                    "title":"Person"
+                    "ref":"1x7z",
+                    "title":"Common",
+                    "code":"std:label:common"
                 },
                 {
-                    "ref":identityLabelRef,
-                    "title":"Identity",
-                    "code":"hres:label:identity"
+                    "ref":testPersonLabelRef,
+                    "title":"Test Person Label",
+                    "code":"test:label:test-person-label"
                 }
             ],
             "deleted":false,
@@ -134,13 +135,14 @@ t.test(function() {
             "title":"Test User",
             "labels":[
                 {
-                    "ref":"20x0",
-                    "title":"Person"
+                    "ref":"1x7z",
+                    "title":"Common",
+                    "code":"std:label:common"
                 },
                 {
-                    "ref":identityLabelRef,
-                    "title":"Identity",
-                    "code":"hres:label:identity"
+                    "ref":testPersonLabelRef,
+                    "title":"Test Person Label",
+                    "code":"test:label:test-person-label"
                 }
             ],
             "deleted":false,
@@ -172,57 +174,15 @@ t.test(function() {
         }
     });
 
-    // // TODO: figure out how to find the full list of sources for the serialiser, because that is included in the serialisation
-    // let getObjectResponseWithAllSources = t.request("GET", "/api/v0-object/ref/"+testRef1, {sources:"ALL"}, {});
-    // t.assertJSONBody(getObjectResponseWithAllSources, {
-    //     "success": true,
-    //     "kind": "haplo:api-v0:object:serialised",
-    //     "object": {
-    //         "kind":"haplo:object:0",
-    //         "sources":[],
-    //         "ref":testRef1,
-    //         "url": "https://"+O.application.hostname+"/"+testRef1+"/test-user",
-    //         "recordVersion":1,
-    //         "title":"Test User",
-    //         "labels":[
-    //             {
-    //                 "ref":"20x0",
-    //                 "title":"Person"
-    //             },
-    //             {
-    //                 "ref":identityLabelRef,
-    //                 "title":"Identity",
-    //                 "code":"hres:label:identity"
-    //             }
-    //         ],
-    //         "deleted":false,
-    //         "creationDate":testObjectCreatedDateString,
-    //         "lastModificationDate":testObjectLastModifiedDateString,
-    //         "type": {
-    //             "code":"std:type:person",
-    //             "name":"Person",
-    //             "rootCode":"std:type:person",
-    //             "annotations":[]
-    //         },
-    //         "attributes":{
-    //             "dc:attribute:type": [
-    //                 {
-    //                     "type":"link",
-    //                     "ref":"20x0",
-    //                     "code":"std:type:person",
-    //                     "title":"Person"
-    //                 }
-    //             ],
-    //             "dc:attribute:title":[
-    //                 {
-    //                     "type":"text",
-    //                     "value":"Test User"
-    //                 }
-    //             ]
-    //         }
-    //     }
-    // });
-
+    // Test all sources
+    let getObjectResponseWithAllSources = t.request("GET", "/api/v0-object/ref/"+testRef1, {sources:"ALL"}, {});
+    let serialiser = O.service("std:serialisation:serialiser").useAllSources();
+    t.assertJSONBody(getObjectResponseWithAllSources, {
+        "success": true,
+        "kind": "haplo:api-v0:object:serialised",
+        "object": O.withoutPermissionEnforcement(() => serialiser.encode(testObject1))
+    });
+    t.assert(JSON.parse(t.last.body).object.sources.length > 0);
 
     // --------------------------------------------------------------------------
     // Teardown

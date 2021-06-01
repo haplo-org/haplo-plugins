@@ -561,8 +561,6 @@ function computePeriodDate(now, dates, rules, flags, state, suspensions, dateNam
 
 // PLUGIN SERVICE INTERFACE WRAPPER
 
-var ruleSets = {};
-
 // Input language:
 
 // <date name>
@@ -599,18 +597,14 @@ function compileRule(rule) {
         } else if(rule.or) {
             return ["or"].concat(_.map(rule.or, compileRule));
         } else {
-            throw new Error("Unknown date rule form " + rule);
+            throw new Error("Unknown date rule form " + JSON.stringify(rule));
         }
     } else {
         throw new Error("Unknown date rule form " + rule);
     }
 }
 
-function getRuleset(setName) {
-    if(ruleSets[setName]) {
-        return ruleSets[setName];
-    }
-
+function getRuleset(setName, object) {
     var rs = false;
     function ensureValid(name) {
         if(!rs) {
@@ -686,18 +680,19 @@ function getRuleset(setName) {
             O.service(name, builder, setName);
         }
     });
+    if(O.serviceImplemented("haplo:date_rule_engine:get_additional_rules_for_object")) {
+        O.service("haplo:date_rule_engine:get_additional_rules_for_object", builder, setName, object);
+    }
 
     if(rs) {
-        ruleSets[setName] = rs;
         return rs;
     } else {
         throw new Error("No plugin responded to a request to provide date computation rules for '" + setName + "'");
     }
 }
 
-var computeDatesForRuleset = function(inputDates, rulesetName, flags, state, suspensions) {
+var computeDatesForRuleset = function(inputDates, rules, flags, state, suspensions) {
     debug("Input dates: ", inputDates);
-    var rules = getRuleset(rulesetName);
     var now = new XDate();
 
     if(inputDates["$$$TEST_OVERRIDE_CURRENT_DATE$$$"]) {
@@ -737,7 +732,8 @@ var computeDatesForRuleset = function(inputDates, rulesetName, flags, state, sus
 };
 
 var getOutputDates = function(inputDates, inputState, rulesetName, object, flags, existingState, suspensions) {
-    var result = computeDatesForRuleset(inputDates, rulesetName, flags, inputState, suspensions);
+    var rules = getRuleset(rulesetName, object);
+    var result = computeDatesForRuleset(inputDates, rules, flags, inputState, suspensions);
     if(existingState) {
         existingState.state = result.state;
         existingState.save();
@@ -750,6 +746,11 @@ var getOutputDates = function(inputDates, inputState, rulesetName, object, flags
     }
     return result.outputDates;
 };
+
+P.implementService("haplo:date_rule_engine:calculation_dates_for_object_ruleset", function(setName, object) {
+    var rules = getRuleset(setName, object.ref);
+    return _.keys(rules);
+});
 
 //Update dates claculates the new dates, and saves the new state. Compute dates calculates the new dates, but leaves the state untouched.
 
@@ -768,7 +769,8 @@ P.implementService("haplo:date_rule_engine:compute_dates", function(inputDates, 
     if(stateQuery.length) {
         state = deserialiseState(stateQuery[0].state);
     }
-    return computeDatesForRuleset(inputDates, rulesetName, flags, state, suspensions).outputDates;
+    var rules = getRuleset(rulesetName, object);
+    return computeDatesForRuleset(inputDates, rules, flags, state, suspensions).outputDates;
 });
 
 // Use WITH CAUTION to correct calculations for periodEndRules
@@ -780,7 +782,8 @@ P.implementService("haplo:date_rule_engine:update_dates_ignoring_previous_state"
 });
 
 P.implementService("haplo:date_rule_engine:compute_dates_ignoring_previous_state", function(inputDates, rulesetName, flags, suspensions, object) {
-    return computeDatesForRuleset(inputDates, rulesetName, flags, {}, suspensions).outputDates;
+    var rules = getRuleset(rulesetName, object);
+    return computeDatesForRuleset(inputDates, rules, flags, {}, suspensions).outputDates;
 });
 
 // ----------------------------------------------------------------------

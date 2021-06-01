@@ -184,6 +184,25 @@ P.implementService("haplo_user_sync:update_user_row_by_username", function(curre
 
 // --------------------------------------------------------------------------------------------------
 
+// This service is provided for cases where users are created using haplo_login_created_users.
+// Users are added to the users db to prevent duplicates if they are later included in the sync.
+P.implementService("haplo_user_sync:register_login_created_users", function(userDetails) {
+    var usernameCount = P.db.users.select().where("username","=",userDetails.username).count();
+    var userIdCount = P.db.users.select().where("userId","=",userDetails.userId).count();
+    if(usernameCount || userIdCount) { return; }
+    var row = P.db.users.create({
+        username: userDetails.username,
+        userId: userDetails.userId,
+        dataDigest: "",
+        inFeed: false,
+        lastSync: -1,
+        error: false
+    });
+    row.save();
+});
+
+// --------------------------------------------------------------------------------------------------
+
 var NULL_IMPL = {
     adminUI: function() { return ''; },
     fetchFilesFromServices: function() { return {}; },
